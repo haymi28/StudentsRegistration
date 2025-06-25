@@ -13,9 +13,13 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, User, Clock, Loader2 } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
-import { mockStudents } from '@/lib/mock-data';
+import { mockStudents, type AttendanceRecord } from '@/lib/mock-data';
 
-export function AttendanceTracker() {
+interface AttendanceTrackerProps {
+    onAttendanceSubmit: (record: Omit<AttendanceRecord, 'id'>) => void;
+}
+
+export function AttendanceTracker({ onAttendanceSubmit }: AttendanceTrackerProps) {
   const students = mockStudents;
   const [studentId, setStudentId] = useState<string | undefined>();
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -24,6 +28,14 @@ export function AttendanceTracker() {
   const [timeOut, setTimeOut] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const resetForm = () => {
+    setStudentId(undefined);
+    setDate(new Date());
+    setStatus('present');
+    setTimeIn('');
+    setTimeOut('');
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,18 +54,22 @@ export function AttendanceTracker() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    console.log({
+    const newRecord = {
         studentId,
-        date: format(date, "yyyy-MM-dd"),
+        date,
         status,
         timeIn: status === 'present' ? timeIn : null,
         timeOut: status === 'present' ? timeOut : null,
-    });
+    };
+
+    onAttendanceSubmit(newRecord);
 
     toast({
         title: "Success",
         description: `Attendance for ${students.find(s => s.registrationNumber === studentId)?.fullName} has been recorded.`,
     });
+    
+    resetForm();
     setIsLoading(false);
   };
 
@@ -67,7 +83,7 @@ export function AttendanceTracker() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="student">Student</Label>
-              <Select onValueChange={setStudentId} value={studentId}>
+              <Select onValueChange={setStudentId} value={studentId || ""}>
                 <SelectTrigger id="student" className="w-full">
                   <User className="mr-2 h-4 w-4 text-muted-foreground" />
                   <SelectValue placeholder="Select a student" />
@@ -127,7 +143,7 @@ export function AttendanceTracker() {
                 <Label htmlFor="time-in">Time In</Label>
                  <div className="relative">
                     <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="time-in" type="time" value={timeIn} onChange={e => setTimeIn(e.target.value)} className="pl-10" />
+                    <Input id="time-in" type="time" value={timeIn} onChange={e => setTimeIn(e.target.value)} className="pl-10" required/>
                 </div>
               </div>
               <div className="space-y-2">

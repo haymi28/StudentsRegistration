@@ -10,10 +10,14 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { mockAttendanceRecords, mockStudents } from '@/lib/mock-data';
+import { mockStudents, type AttendanceRecord } from '@/lib/mock-data';
 import { format } from 'date-fns';
 
-export function AttendanceHistory() {
+interface AttendanceHistoryProps {
+  records: AttendanceRecord[];
+}
+
+export function AttendanceHistory({ records }: AttendanceHistoryProps) {
   const studentsMap = new Map(mockStudents.map(s => [s.registrationNumber, s.fullName]));
 
   return (
@@ -35,7 +39,7 @@ export function AttendanceHistory() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockAttendanceRecords.sort((a, b) => b.date.getTime() - a.date.getTime()).map((record) => (
+              {[...records].sort((a, b) => b.date.getTime() - a.date.getTime()).map((record) => (
                 <TableRow key={record.id}>
                   <TableCell className="font-medium">{studentsMap.get(record.studentId) || 'Unknown Student'}</TableCell>
                   <TableCell>{format(record.date, 'PPP')}</TableCell>
