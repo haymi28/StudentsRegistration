@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Logo } from './logo';
-import { LogOut, LayoutDashboard, UserPlus, Menu, X } from 'lucide-react';
+import { LogOut, LayoutDashboard, UserPlus, Menu, X, Users } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -38,6 +38,7 @@ export function Header() {
   const navLinks = [
     { href: '/attendance', label: 'Attendance', icon: LayoutDashboard },
     { href: '/register', label: 'New Student', icon: UserPlus },
+    { href: '/students', label: 'Students', icon: Users },
   ];
 
   if (isAuthenticated === null) {
