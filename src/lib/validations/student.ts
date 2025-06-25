@@ -7,13 +7,14 @@ const phoneRegex = new RegExp(
 export const studentRegistrationSchema = z.object({
   registrationNumber: z.string().min(1, { message: "ቁጥር is required." }),
   fullName: z.string().min(2, { message: "ሙሉ ስም is required." }),
+  gender: z.string({ required_error: "ጾታ is required." }).min(1, { message: "ጾታ is required." }),
   serviceDepartment: z.string().optional(),
   baptismalName: z.string().min(2, { message: "የክርስትና ስም is required." }),
   mothersName: z.string().min(2, { message: "የእናት ስም is required." }),
   dateOfBirth: z.date({
     required_error: "የትውልድ ቀን is required.",
   }),
-  educationLevel: z.string().min(2, { message: "የትምህርት ደረጃ is required." }),
+  educationLevel: z.string({ required_error: "የትምህርት ደረጃ is required." }).min(1, { message: "የትምህርት ደረጃ is required." }),
   fathersPhoneNumber: z.string().regex(phoneRegex, 'Invalid number').optional().or(z.literal('')),
   mothersPhoneNumber: z.string().regex(phoneRegex, 'Invalid number').optional().or(z.literal('')),
   additionalPhoneNumber: z.string().regex(phoneRegex, 'Invalid number').optional().or(z.literal('')),

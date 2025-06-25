@@ -16,8 +16,12 @@ import { format } from 'date-fns';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { studentRegistrationSchema } from '@/lib/validations/student';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 type StudentFormValues = z.infer<typeof studentRegistrationSchema>;
+
+const educationLevels = ['ከKG በታች', 'KG 1-3', '1ኛ-4ኛ ክፍል', '5ኛ-8ኛ ክፍል', '9ኛ-10ኛ ክፍል', '11ኛ-12ኛ ክፍል', 'TVET', 'ዲፕሎማ', 'ዲግሪ', 'ማስተርስ', 'ፒኤችዲ', 'ሌላ'];
+const genders = ['ወንድ', 'ሴት'];
 
 export function StudentRegistrationForm() {
   const { toast } = useToast();
@@ -28,6 +32,7 @@ export function StudentRegistrationForm() {
     defaultValues: {
         registrationNumber: '',
         fullName: '',
+        gender: '',
         serviceDepartment: '',
         baptismalName: '',
         mothersName: '',
@@ -67,26 +72,42 @@ export function StudentRegistrationForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-8">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               <FormField control={form.control} name="registrationNumber" render={({ field }) => (
                 <FormItem><FormLabel>ቁጥር</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="fullName" render={({ field }) => (
                 <FormItem><FormLabel>ሙሉ ስም</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
               )} />
-            </div>
-             <div className="grid md:grid-cols-2 gap-6">
-              <FormField control={form.control} name="serviceDepartment" render={({ field }) => (
-                <FormItem><FormLabel>የአገልግሎት ክፍል</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              <FormField control={form.control} name="gender" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>ጾታ</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="ጾታ ይምረጡ" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {genders.map(gender => <SelectItem key={gender} value={gender}>{gender}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
               )} />
+            </div>
+             <div className="grid md:grid-cols-3 gap-6">
               <FormField control={form.control} name="baptismalName" render={({ field }) => (
                 <FormItem><FormLabel>የክርስትና ስም</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
               )} />
-            </div>
-             <div className="grid md:grid-cols-2 gap-6">
               <FormField control={form.control} name="mothersName" render={({ field }) => (
                 <FormItem><FormLabel>የእናት ስም</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
               )} />
+              <FormField control={form.control} name="serviceDepartment" render={({ field }) => (
+                <FormItem><FormLabel>የአገልግሎት ክፍል</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+            </div>
+             <div className="grid md:grid-cols-2 gap-6">
                <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
                 <FormItem className="flex flex-col"><FormLabel>የትውልድ ቀን</FormLabel>
                   <Popover><PopoverTrigger asChild>
@@ -103,24 +124,37 @@ export function StudentRegistrationForm() {
                   </Popover><FormMessage />
                 </FormItem>
               )} />
+               <FormField control={form.control} name="educationLevel" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>የትምህርት ደረጃ</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="የትምህርት ደረጃ ይምረጡ" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {educationLevels.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
             </div>
              <div className="grid md:grid-cols-2 gap-6">
-               <FormField control={form.control} name="educationLevel" render={({ field }) => (
-                <FormItem><FormLabel>የትምህርት ደረጃ</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
                <FormField control={form.control} name="phoneNumber" render={({ field }) => (
                 <FormItem><FormLabel>ስልክ ቁጥር</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
               )} />
+              <FormField control={form.control} name="additionalPhoneNumber" render={({ field }) => (
+                <FormItem><FormLabel>ተጨማሪ ስልክ</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
                 <FormField control={form.control} name="fathersPhoneNumber" render={({ field }) => (
                     <FormItem><FormLabel>የአባት ስልክ ቁጥር</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="mothersPhoneNumber" render={({ field }) => (
                     <FormItem><FormLabel>የእናት ስልክ ቁጥር</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="additionalPhoneNumber" render={({ field }) => (
-                    <FormItem><FormLabel>ተጨማሪ ስልክ</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
             </div>
             <div className="grid md:grid-cols-3 gap-6">
