@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -41,11 +40,23 @@ export function AttendanceTracker({ onAttendanceSubmit }: AttendanceTrackerProps
     e.preventDefault();
     setIsLoading(true);
 
+    const student = students.find(s => s.registrationNumber.toLowerCase() === studentId?.toLowerCase());
+
     if (!studentId || !date) {
         toast({
             variant: "destructive",
-            title: "Error",
-            description: "Please select a student and a date.",
+            title: "Missing Information",
+            description: "Please enter a student number and select a date.",
+        });
+        setIsLoading(false);
+        return;
+    }
+
+    if (!student) {
+        toast({
+            variant: "destructive",
+            title: "Student Not Found",
+            description: `No student found with registration number "${studentId}".`,
         });
         setIsLoading(false);
         return;
@@ -55,7 +66,7 @@ export function AttendanceTracker({ onAttendanceSubmit }: AttendanceTrackerProps
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     const newRecord = {
-        studentId,
+        studentId: student.registrationNumber,
         date,
         status,
         timeIn: status === 'present' ? timeIn : null,
@@ -66,7 +77,7 @@ export function AttendanceTracker({ onAttendanceSubmit }: AttendanceTrackerProps
 
     toast({
         title: "Success",
-        description: `Attendance for ${students.find(s => s.registrationNumber === studentId)?.fullName} has been recorded.`,
+        description: `Attendance for ${student.fullName} has been recorded.`,
     });
     
     resetForm();
@@ -82,18 +93,17 @@ export function AttendanceTracker({ onAttendanceSubmit }: AttendanceTrackerProps
         <CardContent className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="student">Student</Label>
-              <Select onValueChange={setStudentId} value={studentId || ""}>
-                <SelectTrigger id="student" className="w-full">
-                  <User className="mr-2 h-4 w-4 text-muted-foreground" />
-                  <SelectValue placeholder="Select a student" />
-                </SelectTrigger>
-                <SelectContent>
-                  {students.map(student => (
-                    <SelectItem key={student.registrationNumber} value={student.registrationNumber}>{student.fullName}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <Label htmlFor="student-id">Student Number</Label>
+                <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                    id="student-id"
+                    placeholder="Enter registration number (e.g., S001)"
+                    value={studentId || ""}
+                    onChange={(e) => setStudentId(e.target.value)}
+                    className="pl-10"
+                    />
+                </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="date">Date</Label>
