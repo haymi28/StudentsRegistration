@@ -19,6 +19,8 @@ import { studentRegistrationSchema } from '@/lib/validations/student';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Separator } from '@/components/ui/separator';
 import { ImageUpload } from './image-upload';
+import { useRouter } from 'next/navigation';
+import { mockStudents } from '@/lib/mock-data';
 
 type StudentFormValues = z.infer<typeof studentRegistrationSchema>;
 
@@ -28,12 +30,13 @@ const genders = ['ወንድ', 'ሴት'];
 export function StudentRegistrationForm() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentRegistrationSchema),
     defaultValues: {
         photo: '',
-        registrationNumber: '',
+        registrationNumber: `S${(mockStudents.length + 1).toString().padStart(3, '0')}`,
         fullName: '',
         gender: '',
         serviceDepartment: '',
@@ -48,6 +51,7 @@ export function StudentRegistrationForm() {
         kebele: '',
         houseNumber: '',
         specificAddress: '',
+        formCompletionDate: new Date(),
     },
   });
 
@@ -56,15 +60,21 @@ export function StudentRegistrationForm() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
+    // In a real application, you would send this data to your backend.
+    // For this mock version, we'll add the new student to our in-memory array.
+    mockStudents.push(data);
+    
     console.log(data);
     
     toast({
       title: 'Registration Successful',
-      description: `Student ${data.fullName} has been registered.`,
+      description: `Student ${data.fullName} has been registered. Redirecting...`,
     });
     
     form.reset();
     setIsLoading(false);
+
+    router.push('/students');
   }
 
   return (
@@ -101,7 +111,7 @@ export function StudentRegistrationForm() {
                 <Separator />
                 <div className="grid md:grid-cols-3 gap-6">
                 <FormField control={form.control} name="registrationNumber" render={({ field }) => (
-                    <FormItem><FormLabel>ቁጥር</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>ቁጥር</FormLabel><FormControl><Input {...field} readOnly className="text-muted-foreground" /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="fullName" render={({ field }) => (
                     <FormItem><FormLabel>ሙሉ ስም</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>

@@ -36,7 +36,7 @@ export function StudentList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {students.map((student) => (
+              {[...students].reverse().map((student) => (
                 <TableRow key={student.registrationNumber}>
                   <TableCell>
                     <Avatar>
