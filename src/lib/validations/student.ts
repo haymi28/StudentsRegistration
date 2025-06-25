@@ -5,6 +5,7 @@ const phoneRegex = new RegExp(
 );
 
 export const studentRegistrationSchema = z.object({
+  photo: z.string().optional(),
   registrationNumber: z.string().min(1, { message: "ቁጥር is required." }),
   fullName: z.string().min(2, { message: "ሙሉ ስም is required." }),
   gender: z.string({ required_error: "ጾታ is required." }).min(1, { message: "ጾታ is required." }),

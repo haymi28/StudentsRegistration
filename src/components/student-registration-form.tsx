@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { studentRegistrationSchema } from '@/lib/validations/student';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Separator } from '@/components/ui/separator';
+import { ImageUpload } from './image-upload';
 
 type StudentFormValues = z.infer<typeof studentRegistrationSchema>;
 
@@ -31,6 +32,7 @@ export function StudentRegistrationForm() {
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentRegistrationSchema),
     defaultValues: {
+        photo: '',
         registrationNumber: '',
         fullName: '',
         gender: '',
@@ -73,6 +75,27 @@ export function StudentRegistrationForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-8">
+            <div className="space-y-6">
+                <h3 className="text-lg font-medium">የተማሪ ፎቶ</h3>
+                <Separator />
+                <FormField
+                    control={form.control}
+                    name="photo"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Student Photo</FormLabel>
+                            <FormControl>
+                                <ImageUpload
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+            
             <div className="space-y-6">
                 <h3 className="text-lg font-medium">የግል መረጃ</h3>
                 <Separator />
