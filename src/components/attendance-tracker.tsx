@@ -13,17 +13,10 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, User, Clock, Loader2 } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
-
-// Mock student data
-const students = [
-  { id: '1', name: 'Abebe Bikila' },
-  { id: '2', name: 'Tirunesh Dibaba' },
-  { id: '3', name: 'Haile Gebrselassie' },
-  { id: '4', name: 'Kenenisa Bekele' },
-  { id: '5', name: 'Derartu Tulu' },
-];
+import { mockStudents } from '@/lib/mock-data';
 
 export function AttendanceTracker() {
+  const students = mockStudents;
   const [studentId, setStudentId] = useState<string | undefined>();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [status, setStatus] = useState<'present' | 'absent'>('present');
@@ -59,7 +52,7 @@ export function AttendanceTracker() {
 
     toast({
         title: "Success",
-        description: `Attendance for ${students.find(s => s.id === studentId)?.name} has been recorded.`,
+        description: `Attendance for ${students.find(s => s.registrationNumber === studentId)?.fullName} has been recorded.`,
     });
     setIsLoading(false);
   };
@@ -81,7 +74,7 @@ export function AttendanceTracker() {
                 </SelectTrigger>
                 <SelectContent>
                   {students.map(student => (
-                    <SelectItem key={student.id} value={student.id}>{student.name}</SelectItem>
+                    <SelectItem key={student.registrationNumber} value={student.registrationNumber}>{student.fullName}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

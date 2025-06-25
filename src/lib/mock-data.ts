@@ -65,3 +65,63 @@ export const mockStudents: Student[] = [
     formCompletionDate: new Date('2023-01-12'),
   },
 ];
+
+export interface AttendanceRecord {
+  id: string;
+  studentId: string;
+  date: Date;
+  status: 'present' | 'absent';
+  timeIn: string | null;
+  timeOut: string | null;
+}
+
+export const mockAttendanceRecords: AttendanceRecord[] = [
+  {
+    id: 'att1',
+    studentId: 'S001',
+    date: new Date(new Date().setDate(new Date().getDate())),
+    status: 'present',
+    timeIn: '09:05',
+    timeOut: '16:00',
+  },
+  {
+    id: 'att2',
+    studentId: 'S002',
+    date: new Date(new Date().setDate(new Date().getDate())),
+    status: 'present',
+    timeIn: '09:00',
+    timeOut: '16:05',
+  },
+  {
+    id: 'att3',
+    studentId: 'S003',
+    date: new Date(new Date().setDate(new Date().getDate())),
+    status: 'absent',
+    timeIn: null,
+    timeOut: null,
+  },
+  {
+    id: 'att4',
+    studentId: 'S001',
+    date: new Date(new Date().setDate(new Date().getDate() - 1)),
+    status: 'present',
+    timeIn: '09:02',
+    timeOut: '15:55',
+  },
+  {
+    id: 'att5',
+    studentId: 'S002',
+    date: new Date(new Date().setDate(new Date().getDate() - 1)),
+    status: 'absent',
+    timeIn: null,
+    timeOut: null,
+  },
+  {
+    id: 'att6',
+    studentId: 'S003',
+    date: new Date(new Date().setDate(new Date().getDate() - 1)),
+    status: 'present',
+    timeIn: '09:15',
+    timeOut: '16:10',
+  },
+];
