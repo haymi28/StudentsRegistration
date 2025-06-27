@@ -45,7 +45,7 @@ export function StudentRegistrationForm() {
     resolver: zodResolver(studentRegistrationSchema),
     defaultValues: {
         photo: '',
-        registrationNumber: `S${(mockStudents.length + 1).toString().padStart(3, '0')}`,
+        registrationNumber: '',
         fullName: '',
         gender: '',
         group: defaultGroup,
@@ -87,7 +87,7 @@ export function StudentRegistrationForm() {
     form.reset({
       ...form.getValues(),
       photo: '',
-      registrationNumber: `S${(mockStudents.length + 1).toString().padStart(3, '0')}`,
+      registrationNumber: '',
       fullName: '',
       baptismalName: '',
       mothersName: '',
@@ -139,7 +139,7 @@ export function StudentRegistrationForm() {
                 <Separator />
                 <div className="grid md:grid-cols-3 gap-6">
                 <FormField control={form.control} name="registrationNumber" render={({ field }) => (
-                    <FormItem><FormLabel>ቁጥር</FormLabel><FormControl><Input {...field} readOnly className="text-muted-foreground" /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>ቁጥር</FormLabel><FormControl><Input placeholder="Enter registration number" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="fullName" render={({ field }) => (
                     <FormItem><FormLabel>ሙሉ ስም</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
