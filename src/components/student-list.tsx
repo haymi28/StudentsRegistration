@@ -15,16 +15,18 @@ import { mockStudents, Student, UserRole, roleToServiceDepartmentMap, ServiceDep
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { ArrowRightLeft } from 'lucide-react';
+import { ArrowRightLeft, Search } from 'lucide-react';
 import { TransferStudentsDialog } from './transfer-students-dialog';
 import { generateTransferReport } from '@/lib/reporting';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
 
 export function StudentList() {
   const [students, setStudents] = useState<Student[]>(mockStudents);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,20 +34,31 @@ export function StudentList() {
     setUserRole(role);
   }, []);
 
-  const displayedStudents = useMemo(() => {
-    if (!userRole) return [];
-    if (userRole === 'super_admin') return students;
-    
-    const userServiceDepartment = roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>];
-    return students.filter(s => s.serviceDepartment === userServiceDepartment);
-  }, [students, userRole]);
+  const filteredStudents = useMemo(() => {
+    let studentsToDisplay = students;
 
-  const isAllRowsSelected = selectedRowKeys.size > 0 && selectedRowKeys.size === displayedStudents.length;
+    if (userRole && userRole !== 'super_admin') {
+      const userServiceDepartment = roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>];
+      studentsToDisplay = students.filter(s => s.serviceDepartment === userServiceDepartment);
+    }
+
+    if (searchQuery) {
+      const lowercasedQuery = searchQuery.toLowerCase();
+      studentsToDisplay = studentsToDisplay.filter(student =>
+        student.fullName.toLowerCase().includes(lowercasedQuery) ||
+        student.registrationNumber.toLowerCase().includes(lowercasedQuery)
+      );
+    }
+    
+    return studentsToDisplay;
+  }, [students, userRole, searchQuery]);
+
+  const isAllRowsSelected = selectedRowKeys.size > 0 && selectedRowKeys.size === filteredStudents.length && filteredStudents.length > 0;
   const isSomeRowsSelected = selectedRowKeys.size > 0 && !isAllRowsSelected;
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedRowKeys(new Set(displayedStudents.map(s => s.registrationNumber)));
+      setSelectedRowKeys(new Set(filteredStudents.map(s => s.registrationNumber)));
     } else {
       setSelectedRowKeys(new Set());
     }
@@ -91,21 +104,32 @@ export function StudentList() {
   return (
     <>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-                <CardTitle>Registered Students</CardTitle>
-                <CardDescription>
-                {userRole === 'super_admin' 
-                    ? 'A list of all students in the system.' 
-                    : `A list of all students in the ${fromServiceDepartment} department.`}
-                </CardDescription>
+        <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex-grow">
+            <CardTitle>Registered Students</CardTitle>
+            <CardDescription>
+              {userRole === 'super_admin' 
+                ? 'A list of all students in the system.' 
+                : `A list of all students in the ${fromServiceDepartment} department.`}
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <div className="relative flex-grow md:flex-grow-0 md:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by name or number..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 w-full"
+              />
             </div>
             {selectedRowKeys.size > 0 && (userRole !== 'super_admin' ? canTransfer : true) && (
-                <Button onClick={() => setIsDialogOpen(true)}>
-                    <ArrowRightLeft className="mr-2 h-4 w-4" />
-                    Transfer ({selectedRowKeys.size})
-                </Button>
+              <Button onClick={() => setIsDialogOpen(true)} className="shrink-0">
+                <ArrowRightLeft className="mr-2 h-4 w-4" />
+                Transfer ({selectedRowKeys.size})
+              </Button>
             )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="border rounded-lg">
@@ -114,9 +138,10 @@ export function StudentList() {
                 <TableRow>
                   <TableHead className="w-[50px]">
                     <Checkbox
-                        checked={isAllRowsSelected}
-                        onCheckedChange={handleSelectAll}
-                        aria-label="Select all"
+                      checked={isAllRowsSelected}
+                      onCheckedChange={handleSelectAll}
+                      aria-label="Select all"
+                      disabled={filteredStudents.length === 0}
                     />
                   </TableHead>
                   <TableHead className="w-[80px]">Photo</TableHead>
@@ -128,32 +153,40 @@ export function StudentList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {displayedStudents.map((student) => (
-                  <TableRow key={student.registrationNumber} data-state={selectedRowKeys.has(student.registrationNumber) && "selected"}>
-                    <TableCell>
-                        <Checkbox
-                            checked={selectedRowKeys.has(student.registrationNumber)}
-                            onCheckedChange={(checked) => handleRowSelect(student.registrationNumber, !!checked)}
-                            aria-label={`Select row ${student.registrationNumber}`}
-                        />
-                    </TableCell>
-                    <TableCell>
-                      <Avatar>
-                        <AvatarImage src={student.photo} alt={student.fullName} data-ai-hint="student portrait" />
-                        <AvatarFallback>{student.fullName.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                    </TableCell>
-                    <TableCell className="font-medium">{student.registrationNumber}</TableCell>
-                    <TableCell>{student.fullName}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{student.serviceDepartment}</Badge>
-                    </TableCell>
-                    <TableCell>{student.gender}</TableCell>
-                    <TableCell className="text-right">
-                      <Badge variant="outline">{student.educationLevel}</Badge>
+                {filteredStudents.length > 0 ? (
+                  filteredStudents.map((student) => (
+                    <TableRow key={student.registrationNumber} data-state={selectedRowKeys.has(student.registrationNumber) && "selected"}>
+                      <TableCell>
+                          <Checkbox
+                              checked={selectedRowKeys.has(student.registrationNumber)}
+                              onCheckedChange={(checked) => handleRowSelect(student.registrationNumber, !!checked)}
+                              aria-label={`Select row ${student.registrationNumber}`}
+                          />
+                      </TableCell>
+                      <TableCell>
+                        <Avatar>
+                          <AvatarImage src={student.photo} alt={student.fullName} data-ai-hint="student portrait" />
+                          <AvatarFallback>{student.fullName.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                      </TableCell>
+                      <TableCell className="font-medium">{student.registrationNumber}</TableCell>
+                      <TableCell>{student.fullName}</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{student.serviceDepartment}</Badge>
+                      </TableCell>
+                      <TableCell>{student.gender}</TableCell>
+                      <TableCell className="text-right">
+                        <Badge variant="outline">{student.educationLevel}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-24 text-center">
+                      No students found.
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>
