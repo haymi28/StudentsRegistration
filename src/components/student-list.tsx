@@ -91,10 +91,19 @@ export function StudentList() {
 
   const handleTransferSuccess = (transferredStudentIds: string[], toServiceDepartment: ServiceDepartment) => {
     const transferredStudents: Student[] = [];
+
+    // Update mockStudents (the source of truth)
+    mockStudents.forEach(student => {
+      if (transferredStudentIds.includes(student.registrationNumber)) {
+        student.serviceDepartment = toServiceDepartment;
+      }
+    });
+    
+    // Update local state for immediate UI refresh
     const updatedStudents = students.map(student => {
       if (transferredStudentIds.includes(student.registrationNumber)) {
         const updatedStudent = { ...student, serviceDepartment: toServiceDepartment };
-        transferredStudents.push(updatedStudent);
+        transferredStudents.push(updatedStudent); // Collect for report
         return updatedStudent;
       }
       return student;
