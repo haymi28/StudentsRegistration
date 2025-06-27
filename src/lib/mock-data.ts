@@ -4,19 +4,19 @@ import type { studentRegistrationSchema } from '@/lib/validations/student';
 export type Student = z.infer<typeof studentRegistrationSchema>;
 
 export type UserRole = 'super_admin' | 'children_admin' | 'children_2_admin' | 'junior_admin' | 'senior_admin';
-export type ServiceDepartment = 'Children' | 'Children-2' | 'Junior' | 'Senior';
+export type ServiceDepartment = 'ቀዳማይ -1 ክፍል' | 'ቀዳማይ -2 ክፍል' | 'ካእላይ ክፍል' | 'ማእከላይ ክፍል';
 
 export const roleToServiceDepartmentMap: Record<Exclude<UserRole, 'super_admin'>, ServiceDepartment> = {
-  children_admin: 'Children',
-  children_2_admin: 'Children-2',
-  junior_admin: 'Junior',
-  senior_admin: 'Senior',
+  children_admin: 'ቀዳማይ -1 ክፍል',
+  children_2_admin: 'ቀዳማይ -2 ክፍል',
+  junior_admin: 'ካእላይ ክፍል',
+  senior_admin: 'ማእከላይ ክፍል',
 };
 
 export const serviceDepartmentTransferMap: Partial<Record<ServiceDepartment, ServiceDepartment>> = {
-  Children: 'Children-2',
-  'Children-2': 'Junior',
-  Junior: 'Senior',
+  'ቀዳማይ -1 ክፍል': 'ቀዳማይ -2 ክፍል',
+  'ቀዳማይ -2 ክፍል': 'ካእላይ ክፍል',
+  'ካእላይ ክፍል': 'ማእከላይ ክፍል',
 };
 
 export interface User {
@@ -39,7 +39,7 @@ export const mockStudents: Student[] = [
     registrationNumber: 'S001',
     fullName: 'Abebe Bikila',
     gender: 'ወንድ',
-    serviceDepartment: 'Children',
+    serviceDepartment: 'ቀዳማይ -1 ክፍል',
     baptismalName: 'Gebre Meskel',
     mothersName: 'Woizero Bekelech',
     dateOfBirth: new Date('2012-03-15'),
@@ -59,7 +59,7 @@ export const mockStudents: Student[] = [
     registrationNumber: 'S005',
     fullName: 'Meseret Defar',
     gender: 'ሴት',
-    serviceDepartment: 'Children-2',
+    serviceDepartment: 'ቀዳማይ -2 ክፍል',
     baptismalName: 'Kidus Yohannes',
     mothersName: 'Woizero Leteberhan',
     dateOfBirth: new Date('2010-09-01'),
@@ -79,7 +79,7 @@ export const mockStudents: Student[] = [
     registrationNumber: 'S002',
     fullName: 'Tirunesh Dibaba',
     gender: 'ሴት',
-    serviceDepartment: 'Junior',
+    serviceDepartment: 'ካእላይ ክፍል',
     baptismalName: 'Walatta Sellassie',
     mothersName: 'Woizero Desta',
     dateOfBirth: new Date('2008-07-20'),
@@ -99,7 +99,7 @@ export const mockStudents: Student[] = [
     registrationNumber: 'S003',
     fullName: 'Haile Gebrselassie',
     gender: 'ወንድ',
-    serviceDepartment: 'Senior',
+    serviceDepartment: 'ማእከላይ ክፍል',
     baptismalName: 'Fikre Mariam',
     mothersName: 'Woizero Ayelech',
     dateOfBirth: new Date('2004-01-01'),
@@ -119,7 +119,7 @@ export const mockStudents: Student[] = [
     registrationNumber: 'S004',
     fullName: 'Kenenisa Bekele',
     gender: 'ወንድ',
-    serviceDepartment: 'Children',
+    serviceDepartment: 'ቀዳማይ -1 ክፍል',
     baptismalName: 'Tekle Haymanot',
     mothersName: 'Woizero Almaz',
     dateOfBirth: new Date('2013-05-10'),

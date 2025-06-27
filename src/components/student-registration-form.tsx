@@ -25,7 +25,7 @@ import { mockStudents, roleToServiceDepartmentMap, UserRole, ServiceDepartment, 
 type StudentFormValues = z.infer<typeof studentRegistrationSchema>;
 
 const genders = ['ወንድ', 'ሴት'];
-const serviceDepartments: ServiceDepartment[] = ['Children', 'Children-2', 'Junior', 'Senior'];
+const serviceDepartments: ServiceDepartment[] = ['ቀዳማይ -1 ክፍል', 'ቀዳማይ -2 ክፍል', 'ካእላይ ክፍል', 'ማእከላይ ክፍል'];
 
 interface StudentRegistrationFormProps {
   studentToEdit?: Student;
