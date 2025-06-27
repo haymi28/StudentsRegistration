@@ -4,15 +4,15 @@ import type { studentRegistrationSchema } from '@/lib/validations/student';
 export type Student = z.infer<typeof studentRegistrationSchema>;
 
 export type UserRole = 'super_admin' | 'children_admin' | 'junior_admin' | 'senior_admin';
-export type StudentGroup = 'Children' | 'Junior' | 'Senior';
+export type ServiceDepartment = 'Children' | 'Junior' | 'Senior';
 
-export const roleToGroupMap: Record<Exclude<UserRole, 'super_admin'>, StudentGroup> = {
+export const roleToServiceDepartmentMap: Record<Exclude<UserRole, 'super_admin'>, ServiceDepartment> = {
   children_admin: 'Children',
   junior_admin: 'Junior',
   senior_admin: 'Senior',
 };
 
-export const groupTransferMap: Partial<Record<StudentGroup, StudentGroup>> = {
+export const serviceDepartmentTransferMap: Partial<Record<ServiceDepartment, ServiceDepartment>> = {
   Children: 'Junior',
   Junior: 'Senior',
 };
@@ -36,8 +36,7 @@ export const mockStudents: Student[] = [
     registrationNumber: 'S001',
     fullName: 'Abebe Bikila',
     gender: 'ወንድ',
-    group: 'Children',
-    serviceDepartment: 'Choir',
+    serviceDepartment: 'Children',
     baptismalName: 'Gebre Meskel',
     mothersName: 'Woizero Bekelech',
     dateOfBirth: new Date('2012-03-15'),
@@ -57,8 +56,7 @@ export const mockStudents: Student[] = [
     registrationNumber: 'S002',
     fullName: 'Tirunesh Dibaba',
     gender: 'ሴት',
-    group: 'Junior',
-    serviceDepartment: 'Sunday School',
+    serviceDepartment: 'Junior',
     baptismalName: 'Walatta Sellassie',
     mothersName: 'Woizero Desta',
     dateOfBirth: new Date('2008-07-20'),
@@ -78,8 +76,7 @@ export const mockStudents: Student[] = [
     registrationNumber: 'S003',
     fullName: 'Haile Gebrselassie',
     gender: 'ወንድ',
-    group: 'Senior',
-    serviceDepartment: 'Youth Association',
+    serviceDepartment: 'Senior',
     baptismalName: 'Fikre Mariam',
     mothersName: 'Woizero Ayelech',
     dateOfBirth: new Date('2004-01-01'),
@@ -99,8 +96,7 @@ export const mockStudents: Student[] = [
     registrationNumber: 'S004',
     fullName: 'Kenenisa Bekele',
     gender: 'ወንድ',
-    group: 'Children',
-    serviceDepartment: 'Altar Service',
+    serviceDepartment: 'Children',
     baptismalName: 'Tekle Haymanot',
     mothersName: 'Woizero Almaz',
     dateOfBirth: new Date('2013-05-10'),

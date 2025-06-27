@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { mockStudents, Student, UserRole, roleToGroupMap, StudentGroup, groupTransferMap } from '@/lib/mock-data';
+import { mockStudents, Student, UserRole, roleToServiceDepartmentMap, ServiceDepartment, serviceDepartmentTransferMap } from '@/lib/mock-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -36,8 +36,8 @@ export function StudentList() {
     if (!userRole) return [];
     if (userRole === 'super_admin') return students;
     
-    const userGroup = roleToGroupMap[userRole as Exclude<UserRole, 'super_admin'>];
-    return students.filter(s => s.group === userGroup);
+    const userServiceDepartment = roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>];
+    return students.filter(s => s.serviceDepartment === userServiceDepartment);
   }, [students, userRole]);
 
   const isAllRowsSelected = selectedRowKeys.size > 0 && selectedRowKeys.size === displayedStudents.length;
@@ -61,11 +61,11 @@ export function StudentList() {
     setSelectedRowKeys(newSelection);
   };
 
-  const handleTransferSuccess = (transferredStudentIds: string[], toGroup: StudentGroup) => {
+  const handleTransferSuccess = (transferredStudentIds: string[], toServiceDepartment: ServiceDepartment) => {
     const transferredStudents: Student[] = [];
     const updatedStudents = students.map(student => {
       if (transferredStudentIds.includes(student.registrationNumber)) {
-        const updatedStudent = { ...student, group: toGroup };
+        const updatedStudent = { ...student, serviceDepartment: toServiceDepartment };
         transferredStudents.push(updatedStudent);
         return updatedStudent;
       }
@@ -76,17 +76,17 @@ export function StudentList() {
     setSelectedRowKeys(new Set());
     
     if (transferredStudents.length > 0) {
-      const fromGroup = roleToGroupMap[userRole as Exclude<UserRole, 'super_admin'>] || 'multiple groups';
-      generateTransferReport(transferredStudents, fromGroup, toGroup);
+      const fromServiceDepartment = roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>] || 'multiple departments';
+      generateTransferReport(transferredStudents, fromServiceDepartment, toServiceDepartment);
       toast({
         title: 'Transfer Successful',
-        description: `${transferredStudents.length} student(s) transferred to ${toGroup}.`,
+        description: `${transferredStudents.length} student(s) transferred to ${toServiceDepartment}.`,
       });
     }
   };
 
-  const fromGroup = userRole && userRole !== 'super_admin' ? roleToGroupMap[userRole] : undefined;
-  const canTransfer = fromGroup && !!groupTransferMap[fromGroup];
+  const fromServiceDepartment = userRole && userRole !== 'super_admin' ? roleToServiceDepartmentMap[userRole] : undefined;
+  const canTransfer = fromServiceDepartment && !!serviceDepartmentTransferMap[fromServiceDepartment];
 
   return (
     <>
@@ -97,7 +97,7 @@ export function StudentList() {
                 <CardDescription>
                 {userRole === 'super_admin' 
                     ? 'A list of all students in the system.' 
-                    : `A list of all students in the ${fromGroup} group.`}
+                    : `A list of all students in the ${fromServiceDepartment} department.`}
                 </CardDescription>
             </div>
             {selectedRowKeys.size > 0 && (userRole !== 'super_admin' ? canTransfer : true) && (
@@ -122,7 +122,7 @@ export function StudentList() {
                   <TableHead className="w-[80px]">Photo</TableHead>
                   <TableHead className="w-[150px]">Reg. Number</TableHead>
                   <TableHead>Full Name</TableHead>
-                  <TableHead>Group</TableHead>
+                  <TableHead>የአገልግሎት ክፍል</TableHead>
                   <TableHead>Gender</TableHead>
                   <TableHead className="text-right">Education Level</TableHead>
                 </TableRow>
@@ -146,7 +146,7 @@ export function StudentList() {
                     <TableCell className="font-medium">{student.registrationNumber}</TableCell>
                     <TableCell>{student.fullName}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{student.group}</Badge>
+                      <Badge variant="secondary">{student.serviceDepartment}</Badge>
                     </TableCell>
                     <TableCell>{student.gender}</TableCell>
                     <TableCell className="text-right">

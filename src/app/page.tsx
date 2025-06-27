@@ -61,7 +61,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Capture comprehensive student details. Admins can register students directly into their assigned groups.
+                  Capture comprehensive student details. Admins can register students directly into their assigned service departments.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -74,7 +74,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Easily transfer students between groups (e.g., Children to Junior) and generate a PDF report of the transfer.
+                  Easily transfer students between service departments (e.g., Children to Junior) and generate a PDF report of the transfer.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -87,7 +87,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Secure authentication for admins, ensuring they only access and manage records for their specific student group.
+                  Secure authentication for admins, ensuring they only access and manage records for their specific service department.
                 </CardDescription>
               </CardContent>
             </Card>

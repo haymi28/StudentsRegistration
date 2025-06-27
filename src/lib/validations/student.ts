@@ -9,8 +9,7 @@ export const studentRegistrationSchema = z.object({
   registrationNumber: z.string().min(1, { message: "ቁጥር is required." }),
   fullName: z.string().min(2, { message: "ሙሉ ስም is required." }),
   gender: z.string({ required_error: "ጾታ is required." }).min(1, { message: "ጾታ is required." }),
-  group: z.string({ required_error: "Group is required." }).min(1, { message: "Group is required." }),
-  serviceDepartment: z.string().optional(),
+  serviceDepartment: z.string({ required_error: "የአገልግሎት ክፍል is required." }).min(1, { message: "የአገልግሎት ክፍል is required." }),
   baptismalName: z.string().min(2, { message: "የክርስትና ስም is required." }),
   mothersName: z.string().min(2, { message: "የእናት ስም is required." }),
   dateOfBirth: z.date({

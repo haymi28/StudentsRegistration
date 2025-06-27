@@ -13,8 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
-import type { Student, UserRole, StudentGroup } from '@/lib/mock-data';
-import { groupTransferMap, roleToGroupMap } from '@/lib/mock-data';
+import type { Student, UserRole, ServiceDepartment } from '@/lib/mock-data';
+import { serviceDepartmentTransferMap, roleToServiceDepartmentMap } from '@/lib/mock-data';
 
 interface TransferStudentsDialogProps {
   open: boolean;
@@ -22,7 +22,7 @@ interface TransferStudentsDialogProps {
   selectedStudentIds: string[];
   students: Student[];
   currentUserRole: UserRole;
-  onTransferSuccess: (transferredStudentIds: string[], toGroup: StudentGroup) => void;
+  onTransferSuccess: (transferredStudentIds: string[], toServiceDepartment: ServiceDepartment) => void;
 }
 
 export function TransferStudentsDialog({
@@ -33,7 +33,7 @@ export function TransferStudentsDialog({
   currentUserRole,
   onTransferSuccess,
 }: TransferStudentsDialogProps) {
-  const [targetGroup, setTargetGroup] = useState<StudentGroup | ''>('');
+  const [targetServiceDepartment, setTargetServiceDepartment] = useState<ServiceDepartment | ''>('');
   const [isLoading, setIsLoading] = useState(false);
 
   const selectedStudents = useMemo(
@@ -41,41 +41,41 @@ export function TransferStudentsDialog({
     [students, selectedStudentIds]
   );
   
-  const fromGroup = useMemo(() => {
+  const fromServiceDepartment = useMemo(() => {
     if (currentUserRole === 'super_admin') {
       if (selectedStudents.length > 0) {
-        const firstStudentGroup = selectedStudents[0].group;
-        if (selectedStudents.every(s => s.group === firstStudentGroup)) {
-          return firstStudentGroup;
+        const firstStudentDepartment = selectedStudents[0].serviceDepartment;
+        if (selectedStudents.every(s => s.serviceDepartment === firstStudentDepartment)) {
+          return firstStudentDepartment;
         }
       }
       return 'Multiple';
     }
-    return roleToGroupMap[currentUserRole as Exclude<UserRole, 'super_admin'>];
+    return roleToServiceDepartmentMap[currentUserRole as Exclude<UserRole, 'super_admin'>];
   }, [currentUserRole, selectedStudents]);
 
-  const transferOptions = useMemo<StudentGroup[]>(() => {
-    if (fromGroup === 'Multiple') return [];
-    const nextGroup = groupTransferMap[fromGroup as StudentGroup];
-    return nextGroup ? [nextGroup] : [];
-  }, [fromGroup]);
+  const transferOptions = useMemo<ServiceDepartment[]>(() => {
+    if (fromServiceDepartment === 'Multiple') return [];
+    const nextDepartment = serviceDepartmentTransferMap[fromServiceDepartment as ServiceDepartment];
+    return nextDepartment ? [nextDepartment] : [];
+  }, [fromServiceDepartment]);
 
   useEffect(() => {
     if (transferOptions.length === 1) {
-      setTargetGroup(transferOptions[0]);
+      setTargetServiceDepartment(transferOptions[0]);
     } else {
-      setTargetGroup('');
+      setTargetServiceDepartment('');
     }
   }, [transferOptions]);
 
   const handleTransfer = async () => {
-    if (!targetGroup) return;
+    if (!targetServiceDepartment) return;
     setIsLoading(true);
 
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    onTransferSuccess(selectedStudentIds, targetGroup);
+    onTransferSuccess(selectedStudentIds, targetServiceDepartment);
 
     setIsLoading(false);
     onOpenChange(false);
@@ -89,24 +89,24 @@ export function TransferStudentsDialog({
         <DialogHeader>
           <DialogTitle>Transfer Students</DialogTitle>
           <DialogDescription>
-            You are about to transfer {selectedStudentIds.length} student(s) from the <strong>{fromGroup}</strong> group.
+            You are about to transfer {selectedStudentIds.length} student(s) from the <strong>{fromServiceDepartment}</strong> department.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
             {canTransfer ? (
                 <div>
-                    <Label htmlFor="target-group">Transfer To</Label>
+                    <Label htmlFor="target-department">Transfer To</Label>
                     <Select
-                        value={targetGroup}
-                        onValueChange={(value) => setTargetGroup(value as StudentGroup)}
+                        value={targetServiceDepartment}
+                        onValueChange={(value) => setTargetServiceDepartment(value as ServiceDepartment)}
                     >
-                        <SelectTrigger id="target-group">
-                        <SelectValue placeholder="Select target group" />
+                        <SelectTrigger id="target-department">
+                        <SelectValue placeholder="Select target department" />
                         </SelectTrigger>
                         <SelectContent>
-                        {transferOptions.map((group) => (
-                            <SelectItem key={group} value={group}>
-                            {group}
+                        {transferOptions.map((dep) => (
+                            <SelectItem key={dep} value={dep}>
+                            {dep}
                             </SelectItem>
                         ))}
                         </SelectContent>
@@ -114,9 +114,9 @@ export function TransferStudentsDialog({
                 </div>
             ) : (
                 <div className="text-sm text-destructive p-3 bg-destructive/10 rounded-md">
-                    {fromGroup === 'Multiple'
-                        ? 'Cannot transfer students from multiple groups at once. Please select students from the same group.'
-                        : 'These students are in the highest group and cannot be transferred further.'
+                    {fromServiceDepartment === 'Multiple'
+                        ? 'Cannot transfer students from multiple departments at once. Please select students from the same department.'
+                        : 'These students are in the highest department and cannot be transferred further.'
                     }
                 </div>
             )}
@@ -125,7 +125,7 @@ export function TransferStudentsDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
             Cancel
           </Button>
-          <Button onClick={handleTransfer} disabled={isLoading || !targetGroup || !canTransfer}>
+          <Button onClick={handleTransfer} disabled={isLoading || !targetServiceDepartment || !canTransfer}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Confirm Transfer
           </Button>

@@ -20,13 +20,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Separator } from '@/components/ui/separator';
 import { ImageUpload } from './image-upload';
 import { useRouter } from 'next/navigation';
-import { mockStudents, roleToGroupMap, UserRole, StudentGroup } from '@/lib/mock-data';
+import { mockStudents, roleToServiceDepartmentMap, UserRole, ServiceDepartment } from '@/lib/mock-data';
 
 type StudentFormValues = z.infer<typeof studentRegistrationSchema>;
 
 const educationLevels = ['ከKG በታች', 'KG 1-3', '1ኛ-4ኛ ክፍል', '5ኛ-8ኛ ክፍል', '9ኛ-10ኛ ክፍል', '11ኛ-12ኛ ክፍል', 'TVET', 'ዲፕሎማ', 'ዲግሪ', 'ማስተርስ', 'ፒኤችዲ', 'ሌላ'];
 const genders = ['ወንድ', 'ሴት'];
-const studentGroups: StudentGroup[] = ['Children', 'Junior', 'Senior'];
+const serviceDepartments: ServiceDepartment[] = ['Children', 'Junior', 'Senior'];
 
 export function StudentRegistrationForm() {
   const { toast } = useToast();
@@ -39,7 +39,7 @@ export function StudentRegistrationForm() {
     setUserRole(role);
   }, []);
 
-  const defaultGroup = userRole && userRole !== 'super_admin' ? roleToGroupMap[userRole] : '';
+  const defaultServiceDepartment = userRole && userRole !== 'super_admin' ? roleToServiceDepartmentMap[userRole] : '';
 
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentRegistrationSchema),
@@ -48,8 +48,7 @@ export function StudentRegistrationForm() {
         registrationNumber: '',
         fullName: '',
         gender: '',
-        group: defaultGroup,
-        serviceDepartment: '',
+        serviceDepartment: defaultServiceDepartment,
         baptismalName: '',
         mothersName: '',
         educationLevel: '',
@@ -67,7 +66,7 @@ export function StudentRegistrationForm() {
 
   useEffect(() => {
     if (userRole && userRole !== 'super_admin') {
-      form.setValue('group', roleToGroupMap[userRole]);
+      form.setValue('serviceDepartment', roleToServiceDepartmentMap[userRole]);
     }
   }, [userRole, form]);
 
@@ -75,7 +74,7 @@ export function StudentRegistrationForm() {
     setIsLoading(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    mockStudents.push(data);
+    mockStudents.unshift(data);
     
     console.log(data);
     
@@ -168,17 +167,17 @@ export function StudentRegistrationForm() {
                 <FormField control={form.control} name="mothersName" render={({ field }) => (
                     <FormItem><FormLabel>የእናት ስም</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
-                 <FormField control={form.control} name="group" render={({ field }) => (
+                 <FormField control={form.control} name="serviceDepartment" render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Group</FormLabel>
+                    <FormLabel>የአገልግሎት ክፍል</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value} disabled={userRole !== 'super_admin'}>
                         <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder="Select Group" />
+                            <SelectValue placeholder="Select Service Department" />
                         </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                        {studentGroups.map(group => <SelectItem key={group} value={group}>{group}</SelectItem>)}
+                        {serviceDepartments.map(dep => <SelectItem key={dep} value={dep}>{dep}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     <FormMessage />
@@ -186,9 +185,6 @@ export function StudentRegistrationForm() {
                 )} />
                 </div>
                 <div className="grid md:grid-cols-3 gap-6">
-                    <FormField control={form.control} name="serviceDepartment" render={({ field }) => (
-                        <FormItem><FormLabel>የአገልግሎት ክፍል</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                    )} />
                     <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
                         <FormItem className="flex flex-col"><FormLabel>የትውልድ ቀን</FormLabel>
                         <Popover><PopoverTrigger asChild>
