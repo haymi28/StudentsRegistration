@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableHeader,
@@ -16,7 +17,15 @@ import { mockStudents, Student, UserRole, roleToServiceDepartmentMap, ServiceDep
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { ArrowRightLeft, Search, Eye, Edit, Trash2 } from 'lucide-react';
+import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { TransferStudentsDialog } from './transfer-students-dialog';
 import { StudentDetailsDialog } from './student-details-dialog';
 import { generateTransferReport } from '@/lib/reporting';
@@ -34,6 +43,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export function StudentList() {
+  const router = useRouter();
   const [students, setStudents] = useState<Student[]>([]);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
@@ -224,26 +234,34 @@ export function StudentList() {
                         <Badge variant="secondary">{student.serviceDepartment}</Badge>
                       </TableCell>
                       <TableCell>{student.phoneNumber}</TableCell>
-                      <TableCell className="text-right space-x-1">
-                        <Button asChild variant="ghost" size="icon">
-                            <Link href={`/students/edit/${student.registrationNumber}`}>
-                                <Edit className="h-4 w-4" />
-                                <span className="sr-only">Edit Student</span>
-                            </Link>
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleViewDetails(student)}>
-                            <Eye className="h-4 w-4" />
-                            <span className="sr-only">View Details</span>
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:text-destructive/80"
-                            onClick={() => setStudentToDelete(student)}
-                        >
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete Student</span>
-                        </Button>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => handleViewDetails(student)}>
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => router.push(`/students/edit/${student.registrationNumber}`)}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                              onClick={() => setStudentToDelete(student)}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
