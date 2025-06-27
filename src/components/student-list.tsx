@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export function StudentList() {
-  const [students, setStudents] = useState<Student[]>(mockStudents);
+  const [students, setStudents] = useState<Student[]>([]);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
@@ -47,6 +47,7 @@ export function StudentList() {
   useEffect(() => {
     const role = localStorage.getItem('user_role') as UserRole;
     setUserRole(role);
+    setStudents([...mockStudents]);
   }, []);
 
   const filteredStudents = useMemo(() => {
