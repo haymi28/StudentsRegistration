@@ -13,7 +13,7 @@ export default function Home() {
             <div className="flex flex-col justify-center space-y-4">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
-                  ተማሪ ሪኮርድ - Student Record System
+                  የተማሪዎች መመዝገቢያ ቅጽ - Student Record System
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
                   Efficiently manage student registrations with our secure, role-based platform.

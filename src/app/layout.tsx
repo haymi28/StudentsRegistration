@@ -12,7 +12,7 @@ const ptSans = PT_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "ተማሪ ሪኮርድ | Student Record",
+  title: "የተማሪዎች መመዝገቢያ ቅጽ | Student Record",
   description: "A student registration and attendance management system.",
 };
 

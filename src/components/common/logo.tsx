@@ -8,7 +8,7 @@ export function Logo() {
         <BookCopy className="h-6 w-6 text-primary-foreground" />
       </div>
       <span className="hidden sm:inline-block text-xl font-bold text-primary tracking-tight">
-        ተማሪ ሪኮርድ
+        የተማሪዎች መመዝገቢያ ቅጽ
       </span>
     </Link>
   );
