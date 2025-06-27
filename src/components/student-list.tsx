@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
+import Link from 'next/link';
 import {
   Table,
   TableHeader,
@@ -15,12 +16,22 @@ import { mockStudents, Student, UserRole, roleToServiceDepartmentMap, ServiceDep
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { ArrowRightLeft, Search, Eye } from 'lucide-react';
+import { ArrowRightLeft, Search, Eye, Edit, Trash2 } from 'lucide-react';
 import { TransferStudentsDialog } from './transfer-students-dialog';
 import { StudentDetailsDialog } from './student-details-dialog';
 import { generateTransferReport } from '@/lib/reporting';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export function StudentList() {
   const [students, setStudents] = useState<Student[]>(mockStudents);
@@ -30,6 +41,7 @@ export function StudentList() {
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -105,6 +117,25 @@ export function StudentList() {
     setSelectedStudent(student);
     setIsDetailsDialogOpen(true);
   };
+  
+  const handleDeleteStudent = () => {
+    if (!studentToDelete) return;
+
+    const studentIndex = mockStudents.findIndex(s => s.registrationNumber === studentToDelete.registrationNumber);
+    if (studentIndex > -1) {
+      mockStudents.splice(studentIndex, 1);
+    }
+
+    setStudents(prev => prev.filter(s => s.registrationNumber !== studentToDelete.registrationNumber));
+    
+    toast({
+      variant: "destructive",
+      title: "Student Deleted",
+      description: `Student ${studentToDelete.fullName} has been removed.`,
+    });
+    setStudentToDelete(null);
+  };
+
 
   const fromServiceDepartment = userRole && userRole !== 'super_admin' ? roleToServiceDepartmentMap[userRole] : undefined;
   const canTransfer = fromServiceDepartment && !!serviceDepartmentTransferMap[fromServiceDepartment];
@@ -183,10 +214,25 @@ export function StudentList() {
                         <Badge variant="secondary">{student.serviceDepartment}</Badge>
                       </TableCell>
                       <TableCell>{student.phoneNumber}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right space-x-1">
+                        <Button asChild variant="ghost" size="icon">
+                            <Link href={`/students/edit/${student.registrationNumber}`}>
+                                <Edit className="h-4 w-4" />
+                                <span className="sr-only">Edit Student</span>
+                            </Link>
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => handleViewDetails(student)}>
                             <Eye className="h-4 w-4" />
                             <span className="sr-only">View Details</span>
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:text-destructive/80"
+                            onClick={() => setStudentToDelete(student)}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete Student</span>
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -203,6 +249,7 @@ export function StudentList() {
           </div>
         </CardContent>
       </Card>
+
       {userRole && 
         <TransferStudentsDialog
             open={isTransferDialogOpen}
@@ -213,11 +260,31 @@ export function StudentList() {
             onTransferSuccess={handleTransferSuccess}
         />
       }
+
       <StudentDetailsDialog 
         student={selectedStudent}
         open={isDetailsDialogOpen}
         onOpenChange={setIsDetailsDialogOpen}
       />
+      
+      <AlertDialog open={!!studentToDelete} onOpenChange={(open) => !open && setStudentToDelete(null)}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the record for <strong>{studentToDelete?.fullName}</strong>.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setStudentToDelete(null)}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                    onClick={handleDeleteStudent}
+                >
+                    Delete
+                </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 }

@@ -20,18 +20,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Separator } from '@/components/ui/separator';
 import { ImageUpload } from './image-upload';
 import { useRouter } from 'next/navigation';
-import { mockStudents, roleToServiceDepartmentMap, UserRole, ServiceDepartment } from '@/lib/mock-data';
+import { mockStudents, roleToServiceDepartmentMap, UserRole, ServiceDepartment, Student } from '@/lib/mock-data';
 
 type StudentFormValues = z.infer<typeof studentRegistrationSchema>;
 
 const genders = ['ወንድ', 'ሴት'];
 const serviceDepartments: ServiceDepartment[] = ['Children', 'Children-2', 'Junior', 'Senior'];
 
-export function StudentRegistrationForm() {
+interface StudentRegistrationFormProps {
+  studentToEdit?: Student;
+}
+
+export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const router = useRouter();
+  const isEditMode = !!studentToEdit;
 
   useEffect(() => {
     const role = localStorage.getItem('user_role') as UserRole | null;
@@ -64,50 +69,50 @@ export function StudentRegistrationForm() {
   });
 
   useEffect(() => {
-    if (userRole && userRole !== 'super_admin') {
+    if (studentToEdit) {
+      form.reset({
+        ...studentToEdit,
+        dateOfBirth: studentToEdit.dateOfBirth ? new Date(studentToEdit.dateOfBirth) : undefined,
+        dateOfJoining: studentToEdit.dateOfJoining ? new Date(studentToEdit.dateOfJoining) : undefined,
+      });
+    }
+  }, [studentToEdit, form]);
+
+  useEffect(() => {
+    if (!isEditMode && userRole && userRole !== 'super_admin') {
       form.setValue('serviceDepartment', roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>]);
     }
-  }, [userRole, form]);
+  }, [userRole, form, isEditMode]);
 
   async function onSubmit(data: StudentFormValues) {
     setIsLoading(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    mockStudents.unshift(data);
+    if (isEditMode) {
+      const index = mockStudents.findIndex(s => s.registrationNumber === studentToEdit.registrationNumber);
+      if (index > -1) {
+        mockStudents[index] = data;
+      }
+       toast({
+        title: 'Update Successful',
+        description: `Student ${data.fullName} has been updated. Redirecting...`,
+      });
+    } else {
+      mockStudents.unshift(data);
+      toast({
+        title: 'Registration Successful',
+        description: `Student ${data.fullName} has been registered. Redirecting...`,
+      });
+    }
     
-    console.log(data);
-    
-    toast({
-      title: 'Registration Successful',
-      description: `Student ${data.fullName} has been registered. Redirecting...`,
-    });
-    
-    form.reset({
-      ...form.getValues(),
-      photo: '',
-      registrationNumber: '',
-      fullName: '',
-      baptismalName: '',
-      mothersName: '',
-      fathersPhoneNumber: '',
-      mothersPhoneNumber: '',
-      additionalPhoneNumber: '',
-      phoneNumber: '',
-      subcity: '',
-      kebele: '',
-      houseNumber: '',
-      specificAddress: '',
-      dateOfJoining: new Date(),
-    });
     setIsLoading(false);
-
     router.push('/students');
   }
 
   return (
     <Card className="w-full shadow-lg">
       <CardHeader>
-        <CardTitle className="font-headline">የተማሪ መረጃ</CardTitle>
+        <CardTitle className="font-headline">{isEditMode ? 'Edit Student Details' : 'የተማሪ መረጃ'}</CardTitle>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -138,7 +143,7 @@ export function StudentRegistrationForm() {
                 <Separator />
                 <div className="grid md:grid-cols-3 gap-6">
                 <FormField control={form.control} name="registrationNumber" render={({ field }) => (
-                    <FormItem><FormLabel>ቁጥር</FormLabel><FormControl><Input placeholder="Enter registration number" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>ቁጥር</FormLabel><FormControl><Input placeholder="Enter registration number" {...field} readOnly={isEditMode} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="fullName" render={({ field }) => (
                     <FormItem><FormLabel>ሙሉ ስም</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -286,7 +291,7 @@ export function StudentRegistrationForm() {
           <CardFooter>
             <Button type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Submit Registration
+              {isEditMode ? 'Save Changes' : 'Submit Registration'}
             </Button>
           </CardFooter>
         </form>
