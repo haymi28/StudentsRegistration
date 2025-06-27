@@ -167,22 +167,36 @@ export function StudentRegistrationForm() {
                 <FormField control={form.control} name="mothersName" render={({ field }) => (
                     <FormItem><FormLabel>የእናት ስም</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
-                 <FormField control={form.control} name="serviceDepartment" render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>የአገልግሎት ክፍል</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} disabled={userRole !== 'super_admin'}>
-                        <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select Service Department" />
-                        </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                        {serviceDepartments.map(dep => <SelectItem key={dep} value={dep}>{dep}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    </FormItem>
-                )} />
+                 <FormField
+                    control={form.control}
+                    name="serviceDepartment"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>የአገልግሎት ክፍል</FormLabel>
+                        {userRole === 'super_admin' ? (
+                            <Select onValueChange={field.onChange} value={field.value} disabled={isLoading}>
+                                <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Service Department" />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                {serviceDepartments.map(dep => <SelectItem key={dep} value={dep}>{dep}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        ) : (
+                           <FormControl>
+                             <Input
+                                readOnly
+                                value={field.value || 'Loading...'}
+                                className="bg-muted"
+                             />
+                           </FormControl>
+                        )}
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 </div>
                 <div className="grid md:grid-cols-3 gap-6">
                     <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
