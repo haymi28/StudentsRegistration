@@ -26,7 +26,7 @@ type StudentFormValues = z.infer<typeof studentRegistrationSchema>;
 
 const educationLevels = ['ከKG በታች', 'KG 1-3', '1ኛ-4ኛ ክፍል', '5ኛ-8ኛ ክፍል', '9ኛ-10ኛ ክፍል', '11ኛ-12ኛ ክፍል', 'TVET', 'ዲፕሎማ', 'ዲግሪ', 'ማስተርስ', 'ፒኤችዲ', 'ሌላ'];
 const genders = ['ወንድ', 'ሴት'];
-const serviceDepartments: ServiceDepartment[] = ['Children', 'Junior', 'Senior'];
+const serviceDepartments: ServiceDepartment[] = ['Children', 'Children-2', 'Junior', 'Senior'];
 
 export function StudentRegistrationForm() {
   const { toast } = useToast();
@@ -39,7 +39,7 @@ export function StudentRegistrationForm() {
     setUserRole(role);
   }, []);
 
-  const defaultServiceDepartment = userRole && userRole !== 'super_admin' ? roleToServiceDepartmentMap[userRole] : '';
+  const defaultServiceDepartment = userRole && userRole !== 'super_admin' ? roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>] : '';
 
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentRegistrationSchema),
@@ -66,7 +66,7 @@ export function StudentRegistrationForm() {
 
   useEffect(() => {
     if (userRole && userRole !== 'super_admin') {
-      form.setValue('serviceDepartment', roleToServiceDepartmentMap[userRole]);
+      form.setValue('serviceDepartment', roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>]);
     }
   }, [userRole, form]);
 

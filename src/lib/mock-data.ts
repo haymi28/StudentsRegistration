@@ -3,17 +3,19 @@ import type { studentRegistrationSchema } from '@/lib/validations/student';
 
 export type Student = z.infer<typeof studentRegistrationSchema>;
 
-export type UserRole = 'super_admin' | 'children_admin' | 'junior_admin' | 'senior_admin';
-export type ServiceDepartment = 'Children' | 'Junior' | 'Senior';
+export type UserRole = 'super_admin' | 'children_admin' | 'children_2_admin' | 'junior_admin' | 'senior_admin';
+export type ServiceDepartment = 'Children' | 'Children-2' | 'Junior' | 'Senior';
 
 export const roleToServiceDepartmentMap: Record<Exclude<UserRole, 'super_admin'>, ServiceDepartment> = {
   children_admin: 'Children',
+  children_2_admin: 'Children-2',
   junior_admin: 'Junior',
   senior_admin: 'Senior',
 };
 
 export const serviceDepartmentTransferMap: Partial<Record<ServiceDepartment, ServiceDepartment>> = {
-  Children: 'Junior',
+  Children: 'Children-2',
+  'Children-2': 'Junior',
   Junior: 'Senior',
 };
 
@@ -26,6 +28,7 @@ export interface User {
 export const mockUsers: User[] = [
     { username: 'superadmin', password: 'password', role: 'super_admin' },
     { username: 'childrenadmin', password: 'password', role: 'children_admin' },
+    { username: 'children2admin', password: 'password', role: 'children_2_admin' },
     { username: 'junioradmin', password: 'password', role: 'junior_admin' },
     { username: 'senioradmin', password: 'password', role: 'senior_admin' },
 ];
@@ -50,6 +53,26 @@ export const mockStudents: Student[] = [
     houseNumber: '123',
     specificAddress: 'Near St. George Church',
     formCompletionDate: new Date('2023-01-10'),
+  },
+  {
+    photo: 'https://placehold.co/100x100.png',
+    registrationNumber: 'S005',
+    fullName: 'Meseret Defar',
+    gender: 'ሴት',
+    serviceDepartment: 'Children-2',
+    baptismalName: 'Kidus Yohannes',
+    mothersName: 'Woizero Leteberhan',
+    dateOfBirth: new Date('2010-09-01'),
+    educationLevel: '5ኛ-8ኛ ክፍል',
+    fathersPhoneNumber: '0931123456',
+    mothersPhoneNumber: '0931234567',
+    additionalPhoneNumber: '',
+    phoneNumber: '0931234567',
+    subcity: 'Yeka',
+    kebele: '11',
+    houseNumber: '222',
+    specificAddress: 'Near Megenagna',
+    formCompletionDate: new Date('2023-03-20'),
   },
   {
     photo: 'https://placehold.co/100x100.png',
