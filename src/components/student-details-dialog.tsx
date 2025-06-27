@@ -26,7 +26,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
 
   const DetailItem = ({ label, value }: { label: string; value: React.ReactNode }) => (
     <div className="grid grid-cols-2 gap-2 text-sm">
-      <p className="font-medium text-muted-foreground">{label}</p>
+      <div className="font-medium text-muted-foreground">{label}</div>
       <div className="text-foreground">{value || 'N/A'}</div>
     </div>
   );
@@ -62,7 +62,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
             <DetailItem label="የእናት ስም" value={student.mothersName} />
             <DetailItem label="ጾታ" value={student.gender} />
             <DetailItem label="የትውልድ ቀን" value={student.dateOfBirth ? format(new Date(student.dateOfBirth), 'PPP') : 'N/A'} />
-            <DetailItem label="የትምህርት ደረጃ" value={<Badge variant="outline">{student.educationLevel}</Badge>} />
+            <DetailItem label="የትምህርት ደረጃ" value={student.educationLevel} />
           </div>
 
           <Separator />

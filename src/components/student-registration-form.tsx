@@ -24,7 +24,6 @@ import { mockStudents, roleToServiceDepartmentMap, UserRole, ServiceDepartment }
 
 type StudentFormValues = z.infer<typeof studentRegistrationSchema>;
 
-const educationLevels = ['ከKG በታች', 'KG 1-3', '1ኛ-4ኛ ክፍል', '5ኛ-8ኛ ክፍል', '9ኛ-10ኛ ክፍል', '11ኛ-12ኛ ክፍል', 'TVET', 'ዲፕሎማ', 'ዲግሪ', 'ማስተርስ', 'ፒኤችዲ', 'ሌላ'];
 const genders = ['ወንድ', 'ሴት'];
 const serviceDepartments: ServiceDepartment[] = ['Children', 'Children-2', 'Junior', 'Senior'];
 
@@ -217,18 +216,11 @@ export function StudentRegistrationForm() {
                     )} />
                     <FormField control={form.control} name="educationLevel" render={({ field }) => (
                         <FormItem>
-                        <FormLabel>የትምህርት ደረጃ</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                            <FormLabel>የትምህርት ደረጃ</FormLabel>
                             <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select Education Level" />
-                            </SelectTrigger>
+                                <Input placeholder="Enter education level" {...field} />
                             </FormControl>
-                            <SelectContent>
-                            {educationLevels.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
+                            <FormMessage />
                         </FormItem>
                     )} />
                 </div>
