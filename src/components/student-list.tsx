@@ -15,8 +15,9 @@ import { mockStudents, Student, UserRole, roleToServiceDepartmentMap, ServiceDep
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { ArrowRightLeft, Search } from 'lucide-react';
+import { ArrowRightLeft, Search, Eye } from 'lucide-react';
 import { TransferStudentsDialog } from './transfer-students-dialog';
+import { StudentDetailsDialog } from './student-details-dialog';
 import { generateTransferReport } from '@/lib/reporting';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
@@ -25,7 +26,9 @@ export function StudentList() {
   const [students, setStudents] = useState<Student[]>(mockStudents);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
 
@@ -98,6 +101,11 @@ export function StudentList() {
     }
   };
 
+  const handleViewDetails = (student: Student) => {
+    setSelectedStudent(student);
+    setIsDetailsDialogOpen(true);
+  };
+
   const fromServiceDepartment = userRole && userRole !== 'super_admin' ? roleToServiceDepartmentMap[userRole] : undefined;
   const canTransfer = fromServiceDepartment && !!serviceDepartmentTransferMap[fromServiceDepartment];
 
@@ -124,7 +132,7 @@ export function StudentList() {
               />
             </div>
             {selectedRowKeys.size > 0 && (userRole !== 'super_admin' ? canTransfer : true) && (
-              <Button onClick={() => setIsDialogOpen(true)} className="shrink-0">
+              <Button onClick={() => setIsTransferDialogOpen(true)} className="shrink-0">
                 <ArrowRightLeft className="mr-2 h-4 w-4" />
                 Transfer ({selectedRowKeys.size})
               </Button>
@@ -145,11 +153,11 @@ export function StudentList() {
                     />
                   </TableHead>
                   <TableHead className="w-[80px]">Photo</TableHead>
-                  <TableHead className="w-[150px]">Reg. Number</TableHead>
+                  <TableHead>Reg. Number</TableHead>
                   <TableHead>Full Name</TableHead>
                   <TableHead>የአገልግሎት ክፍል</TableHead>
-                  <TableHead>Gender</TableHead>
-                  <TableHead className="text-right">Education Level</TableHead>
+                  <TableHead>Phone Number</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -174,9 +182,12 @@ export function StudentList() {
                       <TableCell>
                         <Badge variant="secondary">{student.serviceDepartment}</Badge>
                       </TableCell>
-                      <TableCell>{student.gender}</TableCell>
+                      <TableCell>{student.phoneNumber}</TableCell>
                       <TableCell className="text-right">
-                        <Badge variant="outline">{student.educationLevel}</Badge>
+                        <Button variant="ghost" size="icon" onClick={() => handleViewDetails(student)}>
+                            <Eye className="h-4 w-4" />
+                            <span className="sr-only">View Details</span>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))
@@ -194,14 +205,19 @@ export function StudentList() {
       </Card>
       {userRole && 
         <TransferStudentsDialog
-            open={isDialogOpen}
-            onOpenChange={setIsDialogOpen}
+            open={isTransferDialogOpen}
+            onOpenChange={setIsTransferDialogOpen}
             selectedStudentIds={Array.from(selectedRowKeys)}
             students={students}
             currentUserRole={userRole}
             onTransferSuccess={handleTransferSuccess}
         />
       }
+      <StudentDetailsDialog 
+        student={selectedStudent}
+        open={isDetailsDialogOpen}
+        onOpenChange={setIsDetailsDialogOpen}
+      />
     </>
   );
 }
