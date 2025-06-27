@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Logo } from './logo';
-import { LogOut, LayoutDashboard, UserPlus, Menu, X, Users } from 'lucide-react';
+import { LogOut, UserPlus, Menu, X, Users } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -31,14 +31,15 @@ export function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_role');
+    localStorage.removeItem('username');
     window.dispatchEvent(new Event("storage"));
     router.push('/login');
   };
 
   const navLinks = [
-    { href: '/attendance', label: 'Attendance', icon: LayoutDashboard },
-    { href: '/register', label: 'New Student', icon: UserPlus },
     { href: '/students', label: 'Students', icon: Users },
+    { href: '/register', label: 'New Student', icon: UserPlus },
   ];
 
   if (isAuthenticated === null) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,17 +20,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Separator } from '@/components/ui/separator';
 import { ImageUpload } from './image-upload';
 import { useRouter } from 'next/navigation';
-import { mockStudents } from '@/lib/mock-data';
+import { mockStudents, roleToGroupMap, UserRole, StudentGroup } from '@/lib/mock-data';
 
 type StudentFormValues = z.infer<typeof studentRegistrationSchema>;
 
 const educationLevels = ['ከKG በታች', 'KG 1-3', '1ኛ-4ኛ ክፍል', '5ኛ-8ኛ ክፍል', '9ኛ-10ኛ ክፍል', '11ኛ-12ኛ ክፍል', 'TVET', 'ዲፕሎማ', 'ዲግሪ', 'ማስተርስ', 'ፒኤችዲ', 'ሌላ'];
 const genders = ['ወንድ', 'ሴት'];
+const studentGroups: StudentGroup[] = ['Children', 'Junior', 'Senior'];
 
 export function StudentRegistrationForm() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const role = localStorage.getItem('user_role') as UserRole | null;
+    setUserRole(role);
+  }, []);
+
+  const defaultGroup = userRole && userRole !== 'super_admin' ? roleToGroupMap[userRole] : '';
 
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentRegistrationSchema),
@@ -39,6 +48,7 @@ export function StudentRegistrationForm() {
         registrationNumber: `S${(mockStudents.length + 1).toString().padStart(3, '0')}`,
         fullName: '',
         gender: '',
+        group: defaultGroup,
         serviceDepartment: '',
         baptismalName: '',
         mothersName: '',
@@ -55,13 +65,16 @@ export function StudentRegistrationForm() {
     },
   });
 
+  useEffect(() => {
+    if (userRole && userRole !== 'super_admin') {
+      form.setValue('group', roleToGroupMap[userRole]);
+    }
+  }, [userRole, form]);
+
   async function onSubmit(data: StudentFormValues) {
     setIsLoading(true);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // In a real application, you would send this data to your backend.
-    // For this mock version, we'll add the new student to our in-memory array.
     mockStudents.push(data);
     
     console.log(data);
@@ -71,7 +84,22 @@ export function StudentRegistrationForm() {
       description: `Student ${data.fullName} has been registered. Redirecting...`,
     });
     
-    form.reset();
+    form.reset({
+      ...form.getValues(),
+      photo: '',
+      registrationNumber: `S${(mockStudents.length + 1).toString().padStart(3, '0')}`,
+      fullName: '',
+      baptismalName: '',
+      mothersName: '',
+      fathersPhoneNumber: '',
+      mothersPhoneNumber: '',
+      additionalPhoneNumber: '',
+      phoneNumber: '',
+      subcity: '',
+      kebele: '',
+      houseNumber: '',
+      specificAddress: '',
+    });
     setIsLoading(false);
 
     router.push('/students');
@@ -86,14 +114,14 @@ export function StudentRegistrationForm() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-8">
             <div className="space-y-6">
-                <h3 className="text-lg font-medium">የተማሪ ፎቶ</h3>
+                <h3 className="text-lg font-medium">Student Photo</h3>
                 <Separator />
                 <FormField
                     control={form.control}
                     name="photo"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Student Photo</FormLabel>
+                            <FormLabel>Photo</FormLabel>
                             <FormControl>
                                 <ImageUpload
                                     value={field.value}
@@ -107,7 +135,7 @@ export function StudentRegistrationForm() {
             </div>
             
             <div className="space-y-6">
-                <h3 className="text-lg font-medium">የግል መረጃ</h3>
+                <h3 className="text-lg font-medium">Personal Information</h3>
                 <Separator />
                 <div className="grid md:grid-cols-3 gap-6">
                 <FormField control={form.control} name="registrationNumber" render={({ field }) => (
@@ -122,7 +150,7 @@ export function StudentRegistrationForm() {
                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder="ጾታ ይምረጡ" />
+                            <SelectValue placeholder="Select Gender" />
                         </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -140,48 +168,64 @@ export function StudentRegistrationForm() {
                 <FormField control={form.control} name="mothersName" render={({ field }) => (
                     <FormItem><FormLabel>የእናት ስም</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
-                <FormField control={form.control} name="serviceDepartment" render={({ field }) => (
-                    <FormItem><FormLabel>የአገልግሎት ክፍል</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                </div>
-                <div className="grid md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
-                    <FormItem className="flex flex-col"><FormLabel>የትውልድ ቀን</FormLabel>
-                    <Popover><PopoverTrigger asChild>
-                        <FormControl>
-                            <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                            {field.value ? (format(field.value, "PPP")) : (<span>Pick a date</span>)}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                        </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date() || date < new Date("1930-01-01")} initialFocus />
-                        </PopoverContent>
-                    </Popover><FormMessage />
-                    </FormItem>
-                )} />
-                <FormField control={form.control} name="educationLevel" render={({ field }) => (
+                 <FormField control={form.control} name="group" render={({ field }) => (
                     <FormItem>
-                    <FormLabel>የትምህርት ደረጃ</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <FormLabel>Group</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value} disabled={userRole !== 'super_admin'}>
                         <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder="የትምህርት ደረጃ ይምረጡ" />
+                            <SelectValue placeholder="Select Group" />
                         </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                        {educationLevels.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}
+                        {studentGroups.map(group => <SelectItem key={group} value={group}>{group}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     <FormMessage />
                     </FormItem>
                 )} />
                 </div>
+                <div className="grid md:grid-cols-3 gap-6">
+                    <FormField control={form.control} name="serviceDepartment" render={({ field }) => (
+                        <FormItem><FormLabel>የአገልግሎት ክፍል</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
+                        <FormItem className="flex flex-col"><FormLabel>የትውልድ ቀን</FormLabel>
+                        <Popover><PopoverTrigger asChild>
+                            <FormControl>
+                                <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                {field.value ? (format(field.value, "PPP")) : (<span>Pick a date</span>)}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                            </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date() || date < new Date("1930-01-01")} initialFocus />
+                            </PopoverContent>
+                        </Popover><FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={form.control} name="educationLevel" render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>የትምህርት ደረጃ</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select Education Level" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            {educationLevels.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )} />
+                </div>
             </div>
             
             <div className="space-y-6">
-                <h3 className="text-lg font-medium">የግንኙነት መረጃ</h3>
+                <h3 className="text-lg font-medium">Contact Information</h3>
                 <Separator />
                 <div className="grid md:grid-cols-2 gap-6">
                 <FormField control={form.control} name="phoneNumber" render={({ field }) => (
@@ -202,7 +246,7 @@ export function StudentRegistrationForm() {
             </div>
 
             <div className="space-y-6">
-                <h3 className="text-lg font-medium">አድራሻ</h3>
+                <h3 className="text-lg font-medium">Address</h3>
                 <Separator />
                 <div className="grid md:grid-cols-3 gap-6">
                     <FormField control={form.control} name="subcity" render={({ field }) => (

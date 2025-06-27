@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, User, Lock } from 'lucide-react';
+import { mockUsers } from '@/lib/mock-data';
 
 const formSchema = z.object({
   username: z.string().min(2, { message: 'Username must be at least 2 characters.' }),
@@ -31,23 +32,31 @@ export function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // In a real app, you would verify credentials with a backend service.
-    // For this mock, we'll just assume success.
-    
-    localStorage.setItem('auth_token', 'mock_user_token');
-    window.dispatchEvent(new Event("storage"));
-    
-    toast({
-      title: 'Login Successful',
-      description: "Welcome back!",
-    });
+    const { username, password } = values;
+    const user = mockUsers.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
 
-    router.push('/attendance');
-    router.refresh(); // Important to re-render header
+    if (user) {
+        localStorage.setItem('auth_token', `mock_token_for_${user.username}`);
+        localStorage.setItem('user_role', user.role);
+        localStorage.setItem('username', user.username);
+        window.dispatchEvent(new Event("storage"));
+        
+        toast({
+          title: 'Login Successful',
+          description: `Welcome back, ${user.username}!`,
+        });
+
+        router.push('/students');
+        router.refresh();
+    } else {
+        toast({
+            variant: "destructive",
+            title: 'Login Failed',
+            description: "Invalid username or password.",
+        });
+    }
     
     setIsLoading(false);
   }
@@ -64,7 +73,7 @@ export function LoginForm() {
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <FormControl>
-                  <Input placeholder="your_username" {...field} className="pl-10" />
+                  <Input placeholder="e.g., superadmin" {...field} className="pl-10" />
                 </FormControl>
               </div>
               <FormMessage />

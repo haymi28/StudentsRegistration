@@ -22,7 +22,10 @@ export default function StudentsPage() {
     return (
       <div className="container py-8">
         <div className="space-y-4">
-            <Skeleton className="h-10 w-1/3" />
+            <div className="flex items-center justify-between">
+                <Skeleton className="h-10 w-1/3" />
+                <Skeleton className="h-10 w-32" />
+            </div>
             <Skeleton className="h-[400px] w-full" />
         </div>
       </div>

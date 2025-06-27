@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { FileText, CheckSquare, ShieldCheck } from "lucide-react";
+import { FileText, Users, ShieldCheck, ArrowRightLeft } from "lucide-react";
 import Image from "next/image";
 
 export default function Home() {
@@ -16,7 +16,7 @@ export default function Home() {
                   ተማሪ ሪኮርድ - Student Record System
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Efficiently manage student registrations and track attendance with our secure and easy-to-use platform.
+                  Efficiently manage student registrations with our secure, role-based platform.
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -47,7 +47,7 @@ export default function Home() {
                 Everything You Need in One Place
               </h2>
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Our platform provides all the essential tools for modern student management, from initial registration to daily attendance.
+                Our platform provides all the essential tools for modern student management, from role-based registration to seamless transfers.
               </p>
             </div>
           </div>
@@ -61,20 +61,20 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Capture comprehensive student details with our Amharic-first registration form. Securely store information from names to addresses.
+                  Capture comprehensive student details. Admins can register students directly into their assigned groups.
                 </CardDescription>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center gap-4">
                 <div className="bg-primary/10 p-3 rounded-full">
-                  <CheckSquare className="h-6 w-6 text-primary" />
+                  <ArrowRightLeft className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="font-headline">Attendance Tracking</CardTitle>
+                <CardTitle className="font-headline">Student Transfer</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  A simple interface to mark daily attendance. Select a student, pick a date, and record their status and times in an instant.
+                  Easily transfer students between groups (e.g., Children to Junior) and generate a PDF report of the transfer.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -83,11 +83,11 @@ export default function Home() {
                 <div className="bg-primary/10 p-3 rounded-full">
                   <ShieldCheck className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="font-headline">Secure Authentication</CardTitle>
+                <CardTitle className="font-headline">Role-Based Access</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Protect your data with a robust authentication system. Only authorized users can access and manage student records.
+                  Secure authentication for admins, ensuring they only access and manage records for their specific student group.
                 </CardDescription>
               </CardContent>
             </Card>
