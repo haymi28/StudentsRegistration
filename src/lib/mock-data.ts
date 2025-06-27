@@ -19,7 +19,7 @@ export const groupTransferMap: Partial<Record<StudentGroup, StudentGroup>> = {
 
 export interface User {
   username: string;
-  password?: string; 
+  password: string; 
   role: UserRole;
 }
 
