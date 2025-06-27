@@ -59,7 +59,7 @@ export function StudentRegistrationForm() {
         kebele: '',
         houseNumber: '',
         specificAddress: '',
-        formCompletionDate: new Date(),
+        dateOfJoining: new Date(),
     },
   });
 
@@ -97,6 +97,7 @@ export function StudentRegistrationForm() {
       kebele: '',
       houseNumber: '',
       specificAddress: '',
+      dateOfJoining: new Date(),
     });
     setIsLoading(false);
 
@@ -223,6 +224,22 @@ export function StudentRegistrationForm() {
                             <FormMessage />
                         </FormItem>
                     )} />
+                    <FormField control={form.control} name="dateOfJoining" render={({ field }) => (
+                        <FormItem className="flex flex-col"><FormLabel>የተመዘገቡበት ቀን</FormLabel>
+                        <Popover><PopoverTrigger asChild>
+                            <FormControl>
+                                <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                {field.value ? (format(field.value, "PPP")) : (<span>Pick a date</span>)}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                            </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date()} initialFocus />
+                            </PopoverContent>
+                        </Popover><FormMessage />
+                        </FormItem>
+                    )} />
                 </div>
             </div>
             
@@ -265,23 +282,6 @@ export function StudentRegistrationForm() {
                 <FormItem><FormLabel>የቤት ልዩ አድራሻ</FormLabel><FormControl><Textarea placeholder="Detailed address information..." {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
             </div>
-
-            <FormField control={form.control} name="formCompletionDate" render={({ field }) => (
-                <FormItem className="flex flex-col"><FormLabel>ቅፁ የተሞላበት ቀን</FormLabel>
-                  <Popover><PopoverTrigger asChild>
-                      <FormControl>
-                        <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                          {field.value ? (format(field.value, "PPP")) : (<span>Pick a date</span>)}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                    </PopoverContent>
-                  </Popover><FormMessage />
-                </FormItem>
-              )} />
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={isLoading}>

@@ -63,6 +63,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
             <DetailItem label="ጾታ" value={student.gender} />
             <DetailItem label="የትውልድ ቀን" value={student.dateOfBirth ? format(new Date(student.dateOfBirth), 'PPP') : 'N/A'} />
             <DetailItem label="የትምህርት ደረጃ" value={student.educationLevel} />
+            <DetailItem label="የተመዘገቡበት ቀን" value={student.dateOfJoining ? format(new Date(student.dateOfJoining), 'PPP') : 'N/A'} />
           </div>
 
           <Separator />
@@ -84,13 +85,6 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
             <DetailItem label="የቤት ቁጥር" value={student.houseNumber} />
             <DetailItem label="የቤት ልዩ አድራሻ" value={student.specificAddress} />
           </div>
-
-           <Separator />
-
-          <div className="grid grid-cols-1 gap-4">
-             <DetailItem label="ቅፁ የተሞላበት ቀን" value={student.formCompletionDate ? format(new Date(student.formCompletionDate), 'PPP') : 'N/A'} />
-          </div>
-
         </div>
       </DialogContent>
     </Dialog>

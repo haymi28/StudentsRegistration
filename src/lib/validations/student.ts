@@ -15,7 +15,7 @@ export const studentRegistrationSchema = z.object({
   dateOfBirth: z.date({
     required_error: "የትውልድ ቀን is required.",
   }),
-  educationLevel: z.string({ required_error: "የትምህርት ደረጃ is required." }).min(1, { message: "የትምህርት ደረጃ is required." }),
+  educationLevel: z.string().min(1, { message: "የትምህርት ደረጃ is required." }),
   fathersPhoneNumber: z.string().regex(phoneRegex, 'Invalid number').optional().or(z.literal('')),
   mothersPhoneNumber: z.string().regex(phoneRegex, 'Invalid number').optional().or(z.literal('')),
   additionalPhoneNumber: z.string().regex(phoneRegex, 'Invalid number').optional().or(z.literal('')),
@@ -24,7 +24,7 @@ export const studentRegistrationSchema = z.object({
   kebele: z.string().min(1, { message: "ቀበሌ is required." }),
   houseNumber: z.string().min(1, { message: "የቤት ቁጥር is required." }),
   specificAddress: z.string().min(5, { message: "የቤት ልዩ አድራሻ is required." }),
-  formCompletionDate: z.date({
-    required_error: "ቅፁ የተሞላበት ቀን is required.",
+  dateOfJoining: z.date({
+    required_error: "የተመዘገቡበት ቀን is required.",
   }),
 });
