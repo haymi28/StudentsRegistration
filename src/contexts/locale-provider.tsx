@@ -21,15 +21,19 @@ const getNestedTranslation = (translations: Translations, key: string): string |
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('am');
   const [translations, setTranslations] = useState<Translations>({});
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     const storedLocale = localStorage.getItem('locale') as Locale | null;
     if (storedLocale) {
       setLocaleState(storedLocale);
     }
+    setIsMounted(true);
   }, []);
 
   useEffect(() => {
+    if (!isMounted) return;
+
     const fetchTranslations = async () => {
       try {
         const res = await fetch(`/i18n/${locale}.json`);
@@ -52,7 +56,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       }
     };
     fetchTranslations();
-  }, [locale]);
+  }, [locale, isMounted]);
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
@@ -69,6 +73,10 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     return translation;
   }, [translations]);
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <LocaleContext.Provider value={{ locale, setLocale, t }}>
       {children}
@@ -83,5 +91,3 @@ export function useLocale() {
   }
   return context;
 }
-
-    
