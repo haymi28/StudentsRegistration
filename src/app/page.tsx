@@ -7,16 +7,14 @@ import { useLocale } from "@/contexts/locale-provider";
 export default function HomePage() {
   const { t } = useLocale();
   return (
-    <div className="container py-12">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-headline sm:text-3xl">{t('login.title')}</CardTitle>
-          <CardDescription>{t('login.description')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <LoginForm />
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="w-full max-w-md shadow-lg">
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl font-headline sm:text-3xl">{t('login.title')}</CardTitle>
+        <CardDescription>{t('login.description')}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <LoginForm />
+      </CardContent>
+    </Card>
   );
 }
