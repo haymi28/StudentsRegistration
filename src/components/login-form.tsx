@@ -9,12 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Lock } from 'lucide-react';
+import { Loader2, Lock } from 'lucide-react';
 import { mockUsers } from '@/lib/mock-data';
 import { useLocale } from '@/contexts/locale-provider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const getFormSchema = (t: (key: string) => string) => z.object({
-  username: z.string().min(2, { message: t('validation.min').replace('{field}', t('login.username')).replace('{length}', '2') }),
+  username: z.string({ required_error: t('validation.required').replace('{field}', t('login.username')) }),
   password: z.string().min(6, { message: t('validation.min').replace('{field}', t('login.password')).replace('{length}', '6') }),
 });
 
@@ -75,12 +76,18 @@ export function LoginForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('login.username')}</FormLabel>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <FormControl>
-                  <Input placeholder={t('login.usernamePlaceholder')} {...field} className="pl-10" />
-                </FormControl>
-              </div>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('login.usernamePlaceholder')} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {mockUsers.map(user => (
+                        <SelectItem key={user.username} value={user.username}>{user.username}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               <FormMessage />
             </FormItem>
           )}
