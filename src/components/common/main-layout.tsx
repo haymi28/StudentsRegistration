@@ -52,9 +52,9 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
   if (!isAuthenticated) {
     return (
-      <div className="relative flex min-h-screen flex-col">
+      <div className="relative flex min-h-screen flex-1 flex-col">
         <Header />
-        <main className="flex-1">{children}</main>
+        <main className="flex flex-1 items-center justify-center">{children}</main>
       </div>
     );
   }
