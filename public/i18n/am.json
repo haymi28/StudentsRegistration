@@ -1,179 +1,192 @@
 
 {
-  "nav": {
-    "students": "ተማሪዎች",
-    "newStudent": "አዲስ ተማሪ",
-    "import": "በጅምላ አስመጣ",
-    "logout": "ውጣ",
-    "login": "ግባ",
-    "language": "ቋንቋ"
-  },
-  "home": {
-    "title": "የተማሪዎች ሪከርድ አስተዳደር ስርዓት",
-    "description": "የተማሪ ምዝገባን፣ ክትትልን እና ዝውውርን ለማስተዳደር ቀልጣፋ እና አስተማማኝ መንገድ። የሚያስፈልግዎ ነገር ሁሉ በአንድ ቦታ።",
-    "getStarted": "ጀምር",
-    "features": {
-      "title": "ቁልፍ ባህሪያት",
-      "subtitle": "የአስተዳደር ስራዎችዎን ያቃልሉ",
-      "description": "የእኛ ስርዓት የተማሪ አስተዳደርን ለማቃለል፣ ጊዜዎን ለመቆጠብ እና ስህተቶችን ለመቀነስ የተነደፈ ነው።",
-      "registration": {
-        "title": "የአማርኛ ምዝገባ",
-        "description": "አዲስ ተማሪዎችን በአማርኛ መስኮች ባለው አጠቃላይ ቅጽ በቀላሉ ይመዝግቡ።"
-      },
-      "transfer": {
-        "title": "ቀላል ዝውውር",
-        "description": "በጥቂት ክሊኮች ብቻ ተማሪዎችን በአገልግሎት ክፍሎች መካከል ያስተላልፉ እና የፒዲኤፍ ሪፖርቶችን በራስ-ሰር ይፍጠሩ።"
-      },
-      "access": {
-        "title": "ሚና-ተኮር መዳረሻ",
-        "description": "ለዋና አስተዳዳሪዎች እና ለክፍል አስተዳዳሪዎች ደህንነቱ የተጠበቀ የመዳረሻ ደረጃዎች የመረጃ ግላዊነትን እና ታማኝነትን ያረጋግጣሉ።"
-      }
-    }
-  },
-  "login": {
-    "title": "ወደ አካውንትዎ ይግቡ",
-    "description": "ስርዓቱን ለመጠቀም የመግቢያ መረጃዎን ያስገቡ።",
-    "username": "የተጠቃሚ ስም",
-    "usernamePlaceholder": "የተጠቃሚ ስምዎን ያስገቡ",
-    "password": "የይለፍ ቃል",
-    "button": "ግባ",
-    "loadingButton": "እየገባ ነው...",
-    "success": "በተሳካ ሁኔታ ገብተዋል!",
-    "successDescription": "እንኳን ደህና መጡ፣ {username}!",
-    "fail": "መግባት አልተቻለም",
-    "failDescription": "የተሳሳተ የተጠቃሚ ስም ወይም የይለፍ ቃል። እባክዎ እንደገና ይሞክሩ።"
-  },
-  "register": {
-    "pageTitle": "የተማሪዎች መመዝገቢያ ቅጽ",
-    "pageDescription": "አዲስ ተማሪ ለመመዝገብ ከታች ያሉትን ዝርዝሮች ይሙሉ፡፡",
-    "editPageTitle": "የተማሪ መረጃ ማስተካከያ",
-    "editPageDescription": "የተማሪውን ዝርዝሮች ከዚህ በታች ያዘምኑ።"
-  },
-  "students": {
-    "title": "የተማሪዎች ዝርዝር",
-    "descriptionSuperAdmin": "በሁሉም ክፍሎች ያሉትን ሁሉንም ተማሪዎች ይመልከቱ እና ያስተዳድሩ።",
-    "descriptionAdmin": "በ{department} ውስጥ ያሉ ተማሪዎችን ይመልከቱ እና ያስተዳድሩ።",
-    "transferButton": "አስተላልፍ ({count})",
-    "noStudents": "ምንም ተማሪ አልተገኘም።",
-    "searchPlaceholder": "በስም ወይም በመለያ ቁጥር ይፈልጉ...",
-    "table": {
-      "photo": "ፎቶ",
-      "regNumber": "መለያ ቁ.",
-      "fullName": "ሙሉ ስም",
-      "department": "ክፍል",
-      "phone": "ስልክ",
-      "actions": "ድርጊቶች"
+    "nav": {
+        "students": "ተማሪዎች",
+        "newStudent": "አዲስ ተማሪ",
+        "bulkImport": "በጅምላ አስመጣ",
+        "attendance": "የ ಹಾజሪ ክትትል",
+        "logout": "ውጣ",
+        "login": "ግባ",
+        "language": "ቋንቋ"
     },
-    "actions": {
-      "view": "ዝርዝር እይ",
-      "edit": "አስተካክል",
-      "delete": "ሰርዝ"
+    "home": {
+        "title": "የተማሪዎች መመዝገቢያ እና መከታተያ ስርዓት",
+        "description": "ለተማሪዎች ምዝገባ፣ የክፍል ምደባ እና የ ಹಾజሪ ክትትል የተሟላ መፍትሔ።",
+        "getStarted": "አሁኑኑ ይጀምሩ",
+        "features": {
+            "title": "ቁልፍ ባህሪያት",
+            "subtitle": "ለአጠቃቀም ቀላል፣ አስተማማኝ እና ቀልጣፋ።",
+            "description": "ስርዓታችን የተማሪ መረጃን ለማስተዳደር ቀላል የሚያደርጉ ኃይለኛ ባህሪያትን ያቀርባል።",
+            "registration": {
+                "title": "ቀላል ምዝገባ",
+                "description": "ተማሪዎችን ለተለያዩ የአገልግሎት ክፍሎች በቀላሉ ይመዝግቡ።"
+            },
+            "transfer": {
+                "title": "ቀላል ዝውውር",
+                "description": "ተማሪዎችን ከአንድ የአገልግሎት ክፍል ወደ ሌላ ያለችግር ያስተላልፉ።"
+            },
+            "access": {
+                "title": "ደህንነቱ የተጠበቀ መዳረሻ",
+                "description": "በተጠቃሚ ሚና ላይ የተመሠረተ ቁጥጥር የተማሪን መረጃ ደህንነት ያረጋግጣል።"
+            }
+        }
     },
-    "deleteDialog": {
-        "title": "ይህንን ተማሪ ለመሰረዝ እርግጠኛ ነዎት?",
-        "description": "ይህ ድርጊት ሊቀለበስ አይችልም። የ{name}ን መረጃ እስከመጨረሻው ይሰርዛል።",
+    "login": {
+        "title": "ወደ መለያዎ ይግቡ",
+        "description": "የተጠቃሚ ስምዎን እና የይለፍ ቃልዎን ያስገቡ።",
+        "username": "የተጠቃሚ ስም",
+        "usernamePlaceholder": "የተጠቃሚ ስም ይምረጡ",
+        "password": "የይለፍ ቃል",
+        "button": "ግባ",
+        "loadingButton": "እየገባ ነው...",
+        "success": "በተሳካ ሁኔታ ገብተዋል!",
+        "successDescription": "እንኳን ደህና መጡ {username}።",
+        "fail": "የመግባት ሙከራ አልተሳካም።",
+        "failDescription": "የተጠቃሚ ስም ወይም የይለፍ ቃል ትክክል አይደለም።"
+    },
+    "register": {
+        "pageTitle": "አዲስ ተማሪ ይመዝግቡ",
+        "pageDescription": "የተማሪውን መረጃ ከዚህ በታች ባለው ቅጽ ይሙሉ።",
+        "editPageTitle": "የተማሪ መረጃ ያርትዑ",
+        "editPageDescription": "የተማሪውን መረጃ ከዚህ በታች ያዘምኑ።"
+    },
+    "form": {
+        "title": "የተማሪ መመዝገቢያ ቅጽ",
+        "editTitle": "የተማሪ መረጃ ማረሚያ",
+        "photoSection": "የተማሪ ፎቶ",
+        "photoLabel": "ፎቶ ስቀል",
+        "personalInfoSection": "የግል መረጃ",
+        "contactInfoSection": "የመገኛ መረጃ",
+        "addressSection": "የአድራሻ መረጃ",
+        "label": {
+            "regNumber": "ቁጥር",
+            "fullName": "ሙሉ ስም",
+            "gender": "ጾታ",
+            "department": "የአገልግሎት ክፍል",
+            "baptismalName": "የክርስትና ስም",
+            "mothersName": "የእናት ስም",
+            "dob": "የትውልድ ቀን",
+            "education": "የትምህርት ደረጃ",
+            "joinDate": "ቅፁ የተሞላበት ቀን",
+            "phone": "ስልክ ቁጥር",
+            "additionalPhone": "ተጨማሪ ስልክ",
+            "fathersPhone": "የአባት ስልክ ቁጥር",
+            "mothersPhone": "የእናት ስልክ ቁጥር",
+            "subcity": "ክፍለ ከተማ",
+            "kebele": "ቀበሌ",
+            "houseNumber": "የቤት ቁጥር",
+            "specificAddress": "የቤት ልዩ አድራሻ"
+        },
+        "placeholder": {
+            "regNumber": "የተማሪ መለያ ቁጥር",
+            "selectGender": "ጾታ ይምረጡ",
+            "selectDepartment": "የአገልግሎት ክፍል ይምረጡ",
+            "education": "ለምሳሌ 9ኛ-10ኛ ክፍል",
+            "address": "የቤቱን ዝርዝር አድራሻ ያስገቡ"
+        },
+        "pickDate": "ቀን ይምረጡ",
+        "loading": "እያስገባ ነው...",
+        "submit": "አስገባ",
+        "save": "አዘምን",
+        "registerSuccess": "ምዝገባ ተሳክቷል!",
+        "registerSuccessDescription": "{name} በተሳካ ሁኔታ ተመዝግቧል።",
+        "updateSuccess": "ማዘመን ተሳክቷል!",
+        "updateSuccessDescription": "የ {name} መረጃ በተሳካ ሁኔታ ተዘምኗል።"
+    },
+    "validation": {
+        "required": "{field} ያስፈልጋል።",
+        "dateRequired": "{field} ትክክለኛ ቀን መሆን አለበት።",
+        "min": "{field} ቢያንስ {length} ፊደላት መሆን አለበት።",
+        "invalidNumber": "ትክክለኛ ያልሆነ የስልክ ቁጥር።",
+        "gender": {
+            "male": "ወንድ",
+            "female": "ሴት"
+        }
+    },
+    "serviceDepartment": {
+        "children_1": "ቀዳማይ -1 ክፍል",
+        "children_2": "ቀዳማይ -2 ክፍል",
+        "junior": "ካእላይ ክፍል",
+        "senior": "ማእከላይ ክፍል"
+    },
+    "students": {
+        "title": "የተማሪዎች ዝርዝር",
+        "descriptionSuperAdmin": "ሁሉንም ተማሪዎች ከሁሉም ክፍሎች ይመልከቱ እና ያስተዳድሩ።",
+        "descriptionAdmin": "የ {department} ተማሪዎችን ይመልከቱ እና ያስተዳድሩ።",
+        "searchPlaceholder": "በስም ወይም በቁጥር ይፈልጉ...",
+        "transferButton": "{count} ተማሪዎችን አስተላልፍ",
+        "noStudents": "ምንም ተማሪዎች አልተገኙም።",
+        "table": {
+            "photo": "ፎቶ",
+            "regNumber": "ቁጥር",
+            "fullName": "ሙሉ ስም",
+            "department": "የአገልግሎት ክፍል",
+            "phone": "ስልክ ቁጥር",
+            "actions": "ድርጊቶች"
+        },
+        "actions": {
+            "view": "ተጨማሪ መረጃ",
+            "edit": "አስተካክል",
+            "delete": "ሰርዝ"
+        },
+        "deleteDialog": {
+            "title": "ተማሪን ለመሰረዝ እርግጠኛ ነዎት?",
+            "description": "ይህ ድርጊት {name}ን ከስርዓቱ በቋሚነት ያስወግዳል። ይህን መቀልበስ አይቻልም።",
+            "cancel": "ተመለስ",
+            "confirm": "አዎ፣ ሰርዝ"
+        },
+        "deleteSuccess": "ተማሪ ተሰርዟል!",
+        "deleteSuccessDescription": "{name} ከዝርዝሩ ተወግዷል።"
+    },
+    "studentDetails": {
+        "title": "የተማሪ ዝርዝር መረጃ",
+        "description": "የ {name} ሙሉ መረጃ ከዚህ በታች ቀርቧል።",
+        "personalInfo": "የግል መረጃ",
+        "contactInfo": "የመገኛ መረጃ",
+        "address": "የአድራሻ መረጃ",
+        "label": {
+            "fullName": "ሙሉ ስም",
+            "baptismalName": "የክርስትና ስም",
+            "mothersName": "የእናት ስም",
+            "gender": "ጾታ",
+            "dob": "የትውልድ ቀን",
+            "education": "የትምህርት ደረጃ",
+            "joinDate": "የተቀላቀለበት ቀን",
+            "phone": "ስልክ ቁጥር",
+            "additionalPhone": "ተጨማሪ ስልክ",
+            "fathersPhone": "የአባት ስልክ",
+            "mothersPhone": "የእናት ስልክ",
+            "subcity": "ክፍለ ከተማ",
+            "kebele": "ቀበሌ",
+            "houseNumber": "የቤት ቁጥር",
+            "specificAddress": "ልዩ አድራሻ"
+        }
+    },
+    "transfer": {
+        "title": "ተማሪዎችን አስተላልፍ",
+        "description": "{count} ተማሪዎችን ከ <strong>{from}</strong> ለማስተላለፍ ተመርጠዋል።",
+        "toLabel": "ወደ የትኛው ክፍል ይዛወሩ?",
+        "toPlaceholder": "ክፍል ይምረጡ",
         "cancel": "ተመለስ",
-        "confirm": "ሰርዝ"
+        "confirm": "አስተላልፍ",
+        "loading": "እያስተላለፈ ነው...",
+        "success": "ዝውውር ተሳክቷል!",
+        "successDescription": "{count} ተማሪዎች ወደ {department} ተዛውረዋል። ሪፖርቱ ወርዷል።",
+        "noOptionsMultiple": "ከተለያዩ ክፍሎች የተመረጡ ተማሪዎችን በአንድ ጊዜ ማስተላለፍ አይቻልም።",
+        "noOptionsHighest": "ይህ ከፍተኛው ክፍል ስለሆነ ከዚህ በላይ ማስተላለፍ አይቻልም።",
+        "multipleDepartments": "ከተለያዩ ክፍሎች"
     },
-    "deleteSuccess": "ተማሪ ተሰርዟል",
-    "deleteSuccessDescription": "የ{name} መረጃ በተሳካ ሁኔታ ተሰርዟል።"
-  },
-  "studentDetails": {
-    "title": "የተማሪ ዝርዝር መረጃ",
-    "description": "የ{name}ን ሙሉ መገለጫ በመመልከት ላይ።",
-    "personalInfo": "የግል መረጃ",
-    "contactInfo": "የመገኛ መረጃ",
-    "address": "የአድራሻ መረጃ",
-    "label": {
-        "fullName": "ሙሉ ስም",
-        "baptismalName": "የክርስትና ስም",
-        "mothersName": "የእናት ስም",
-        "gender": "ፆታ",
-        "dob": "የትውልድ ቀን",
-        "education": "የትምህርት ደረጃ",
-        "joinDate": "የተቀላቀለበት ቀን",
-        "phone": "የተማሪው ስልክ",
-        "additionalPhone": "ተጨማሪ ስልክ",
-        "fathersPhone": "የአባት ስልክ",
-        "mothersPhone": "የእናት ስልክ",
-        "subcity": "ክፍለ ከተማ",
-        "kebele": "ቀበሌ",
-        "houseNumber": "የቤት ቁ.",
-        "specificAddress": "የቤት ልዩ አድራሻ"
+    "pdf": {
+        "transfer": {
+            "title": "የተማሪ ዝውውር ሪፖርት",
+            "from": "ከ ክፍል:",
+            "to": "ወደ ክፍል:",
+            "date": "ቀን:",
+            "generatedBy": "ሪፖርቱ የተዘጋጀው በ:",
+            "regNumber": "ምዝገባ ቁጥር",
+            "fullName": "ሙሉ ስም",
+            "gender": "ጾታ",
+            "dob": "የትውልድ ቀን"
+        }
     }
-  },
-  "transfer": {
-    "title": "ተማሪዎችን ያስተላልፉ",
-    "description": "{count} ተማሪ(ዎች) ከ{from} ክፍል ሊያስተላልፉ ነው።",
-    "toLabel": "ወደ ክፍል",
-    "toPlaceholder": "የዒላማ ክፍል ይምረጡ",
-    "noOptionsMultiple": "ከተለያዩ ክፍሎች የተውጣጡ ተማሪዎችን በአንድ ጊዜ ማስተላለፍ አይቻልም። እባክዎ ከአንድ ክፍል ተማሪዎችን ይምረጡ።",
-    "noOptionsHighest": "እነዚህ ተማሪዎች በከፍተኛው ክፍል ውስጥ ስለሆኑ ሊተላለፉ አይችሉም።",
-    "cancel": "ተመለስ",
-    "confirm": "ዝውውሩን አረጋግጥ",
-    "loading": "በማስተላለፍ ላይ...",
-    "success": "ዝውውር ተሳክቷል",
-    "successDescription": "{count} ተማሪ(ዎች) ወደ {department} ክፍል ተላልፈዋል።"
-  },
-  "form": {
-    "title": "አዲስ ተማሪ ምዝገባ",
-    "editTitle": "የተማሪ ዝርዝሮችን ያርትዑ",
-    "photoSection": "የተማሪ ፎቶ",
-    "photoLabel": "የተማሪውን ፎቶ ይስቀሉ",
-    "personalInfoSection": "የግል መረጃ",
-    "contactInfoSection": "የመገኛ መረጃ",
-    "addressSection": "የአድራሻ መረጃ",
-    "pickDate": "ቀን ይምረጡ",
-    "submit": "ተማሪ ይመዝግቡ",
-    "save": "ለውጦችን ያስቀምጡ",
-    "loading": "በማስገባት ላይ...",
-    "registerSuccess": "ምዝገባው ተሳክቷል",
-    "registerSuccessDescription": "{name} በተሳካ ሁኔታ ተመዝግቧል።",
-    "updateSuccess": "ማሻሻያ ተሳክቷል",
-    "updateSuccessDescription": "የ{name} ዝርዝሮች ተዘምነዋል።",
-    "label": {
-      "regNumber": "የምዝገባ ቁጥር",
-      "fullName": "ሙሉ ስም",
-      "gender": "ፆታ",
-      "department": "የአገልግሎት ክፍል",
-      "baptismalName": "የክርስትና ስም",
-      "mothersName": "የእናት ስም",
-      "dob": "የትውልድ ቀን",
-      "education": "የትምህርት ደረጃ",
-      "joinDate": "የተቀላቀሉበት ቀን",
-      "phone": "ስልክ ቁጥር",
-      "additionalPhone": "ተጨማሪ ስልክ",
-      "fathersPhone": "የአባት ስልክ ቁጥር",
-      "mothersPhone": "የእናት ስልክ ቁጥር",
-      "subcity": "ክፍለ ከተማ",
-      "kebele": "ቀበሌ",
-      "houseNumber": "የቤት ቁጥር",
-      "specificAddress": "የቤት ልዩ አድራሻ"
-    },
-    "placeholder": {
-      "regNumber": "ምሳሌ S001",
-      "selectGender": "ፆታ ይምረጡ",
-      "selectDepartment": "ክፍል ይምረጡ",
-      "education": "ምሳሌ 5ኛ-8ኛ ክፍል",
-      "address": "ልዩ የአድራሻ ዝርዝሮችን ያስገቡ"
-    }
-  },
-  "validation": {
-    "required": "{field} ያስፈልጋል።",
-    "dateRequired": "{field} ያስፈልጋል።",
-    "min": "{field} ቢያንስ {length} ፊደላት መሆን አለበት።",
-    "invalidNumber": "የተሳሳተ ስልክ ቁጥር።",
-    "gender": {
-      "male": "ወንድ",
-      "female": "ሴት"
-    }
-  },
-  "serviceDepartment": {
-    "children_1": "ቀዳማይ -1 ክፍል",
-    "children_2": "ቀዳማይ -2 ክፍል",
-    "junior": "ካእላይ ክፍል",
-    "senior": "ማእከላይ ክፍል"
-  }
 }
-
-    

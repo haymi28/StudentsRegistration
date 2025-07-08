@@ -23,7 +23,7 @@ interface TransferStudentsDialogProps {
   selectedStudentIds: string[];
   students: Student[];
   currentUserRole: UserRole;
-  onTransferSuccess: (transferredStudentIds: string[], toServiceDepartment: ServiceDepartment) => void;
+  onTransferSuccess: (transferredStudentIds: string[], toServiceDepartment: ServiceDepartment, fromServiceDepartment: string) => void;
 }
 
 export function TransferStudentsDialog({
@@ -51,16 +51,16 @@ export function TransferStudentsDialog({
           return firstStudentDepartment;
         }
       }
-      return 'Multiple';
+      return t('transfer.multipleDepartments');
     }
     return roleToServiceDepartmentMap[currentUserRole as Exclude<UserRole, 'super_admin'>];
-  }, [currentUserRole, selectedStudents]);
+  }, [currentUserRole, selectedStudents, t]);
 
   const transferOptions = useMemo<ServiceDepartment[]>(() => {
-    if (fromServiceDepartment === 'Multiple') return [];
+    if (fromServiceDepartment === t('transfer.multipleDepartments')) return [];
     const nextDepartment = serviceDepartmentTransferMap[fromServiceDepartment as ServiceDepartment];
     return nextDepartment ? [nextDepartment] : [];
-  }, [fromServiceDepartment]);
+  }, [fromServiceDepartment, t]);
 
   useEffect(() => {
     if (transferOptions.length === 1) {
@@ -77,7 +77,7 @@ export function TransferStudentsDialog({
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    onTransferSuccess(selectedStudentIds, targetServiceDepartment);
+    onTransferSuccess(selectedStudentIds, targetServiceDepartment, fromServiceDepartment);
 
     setIsLoading(false);
     onOpenChange(false);
@@ -114,7 +114,7 @@ export function TransferStudentsDialog({
                 </div>
             ) : (
                 <div className="text-sm text-destructive p-3 bg-destructive/10 rounded-md">
-                    {fromServiceDepartment === 'Multiple'
+                    {fromServiceDepartment === t('transfer.multipleDepartments')
                         ? t('transfer.noOptionsMultiple')
                         : t('transfer.noOptionsHighest')
                     }

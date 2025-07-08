@@ -46,6 +46,7 @@ export function StudentList() {
   const router = useRouter();
   const [students, setStudents] = useState<Student[]>([]);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [username, setUsername] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
@@ -58,6 +59,10 @@ export function StudentList() {
   useEffect(() => {
     const role = localStorage.getItem('user_role') as UserRole;
     setUserRole(role);
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
     // Function to load students from localStorage or mock data
     const loadStudents = () => {
       const storedStudents = localStorage.getItem('students');
@@ -130,7 +135,7 @@ export function StudentList() {
     setSelectedRowKeys(newSelection);
   };
 
-  const handleTransferSuccess = (transferredStudentIds: string[], toServiceDepartment: ServiceDepartment) => {
+  const handleTransferSuccess = (transferredStudentIds: string[], toServiceDepartment: ServiceDepartment, fromServiceDepartment: string) => {
     const transferredStudents: Student[] = [];
 
     const updatedStudents = students.map(student => {
@@ -147,8 +152,18 @@ export function StudentList() {
     setSelectedRowKeys(new Set());
     
     if (transferredStudents.length > 0) {
-      const fromServiceDepartment = roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>] || 'multiple departments';
-      generateTransferReport(transferredStudents, fromServiceDepartment, toServiceDepartment);
+       const reportTranslations = {
+        title: t('pdf.transfer.title'),
+        from: t('pdf.transfer.from'),
+        to: t('pdf.transfer.to'),
+        date: t('pdf.transfer.date'),
+        generatedBy: t('pdf.transfer.generatedBy'),
+        regNumber: t('pdf.transfer.regNumber'),
+        fullName: t('pdf.transfer.fullName'),
+        gender: t('pdf.transfer.gender'),
+        dob: t('pdf.transfer.dob'),
+      };
+      generateTransferReport(transferredStudents, fromServiceDepartment, toServiceDepartment, reportTranslations, username);
       toast({
         title: t('transfer.success'),
         description: t('transfer.successDescription').replace('{count}', String(transferredStudents.length)).replace('{department}', toServiceDepartment),
