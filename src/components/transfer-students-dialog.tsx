@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import type { Student, UserRole, ServiceDepartment } from '@/lib/mock-data';
 import { serviceDepartmentTransferMap, roleToServiceDepartmentMap } from '@/lib/mock-data';
+import { useLocale } from '@/contexts/locale-provider';
 
 interface TransferStudentsDialogProps {
   open: boolean;
@@ -35,6 +36,7 @@ export function TransferStudentsDialog({
 }: TransferStudentsDialogProps) {
   const [targetServiceDepartment, setTargetServiceDepartment] = useState<ServiceDepartment | ''>('');
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useLocale();
 
   const selectedStudents = useMemo(
     () => students.filter(s => selectedStudentIds.includes(s.registrationNumber)),
@@ -87,21 +89,19 @@ export function TransferStudentsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Transfer Students</DialogTitle>
-          <DialogDescription>
-            You are about to transfer {selectedStudentIds.length} student(s) from the <strong>{fromServiceDepartment}</strong> department.
-          </DialogDescription>
+          <DialogTitle>{t('transfer.title')}</DialogTitle>
+          <DialogDescription dangerouslySetInnerHTML={{ __html: t('transfer.description').replace('{count}', String(selectedStudentIds.length)).replace('{from}', fromServiceDepartment) }} />
         </DialogHeader>
         <div className="py-4 space-y-4">
             {canTransfer ? (
                 <div>
-                    <Label htmlFor="target-department">Transfer To</Label>
+                    <Label htmlFor="target-department">{t('transfer.toLabel')}</Label>
                     <Select
                         value={targetServiceDepartment}
                         onValueChange={(value) => setTargetServiceDepartment(value as ServiceDepartment)}
                     >
                         <SelectTrigger id="target-department">
-                        <SelectValue placeholder="Select target department" />
+                        <SelectValue placeholder={t('transfer.toPlaceholder')} />
                         </SelectTrigger>
                         <SelectContent>
                         {transferOptions.map((dep) => (
@@ -115,19 +115,19 @@ export function TransferStudentsDialog({
             ) : (
                 <div className="text-sm text-destructive p-3 bg-destructive/10 rounded-md">
                     {fromServiceDepartment === 'Multiple'
-                        ? 'Cannot transfer students from multiple departments at once. Please select students from the same department.'
-                        : 'These students are in the highest department and cannot be transferred further.'
+                        ? t('transfer.noOptionsMultiple')
+                        : t('transfer.noOptionsHighest')
                     }
                 </div>
             )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            Cancel
+            {t('transfer.cancel')}
           </Button>
           <Button onClick={handleTransfer} disabled={isLoading || !targetServiceDepartment || !canTransfer}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Confirm Transfer
+            {isLoading ? t('transfer.loading') : t('transfer.confirm')}
           </Button>
         </DialogFooter>
       </DialogContent>

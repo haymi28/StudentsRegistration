@@ -1,14 +1,21 @@
 import type { Metadata } from "next";
-import { PT_Sans } from "next/font/google";
+import { PT_Sans, Noto_Sans_Ethiopic } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Header } from "@/components/common/header";
 import { cn } from "@/lib/utils";
+import { LocaleProvider } from "@/contexts/locale-provider";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-pt-sans",
+});
+
+const notoSansEthiopic = Noto_Sans_Ethiopic({
+  subsets: ["ethiopic"],
+  weight: ["400", "700"],
+  variable: "--font-noto-sans-ethiopic",
 });
 
 export const metadata: Metadata = {
@@ -23,12 +30,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable)}>
-        <div className="relative flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
-        </div>
-        <Toaster />
+      <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable, notoSansEthiopic.variable)}>
+        <LocaleProvider>
+          <div className="relative flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">{children}</main>
+          </div>
+          <Toaster />
+        </LocaleProvider>
       </body>
     </html>
   );

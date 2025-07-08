@@ -19,8 +19,8 @@ const config = {
     },
     extend: {
       fontFamily: {
-        body: ["var(--font-pt-sans)", "sans-serif"],
-        headline: ["var(--font-pt-sans)", "sans-serif"],
+        body: ["var(--font-noto-sans-ethiopic)", "var(--font-pt-sans)", "sans-serif"],
+        headline: ["var(--font-noto-sans-ethiopic)", "var(--font-pt-sans)", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

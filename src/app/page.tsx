@@ -1,10 +1,15 @@
+'use client';
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { FileText, Users, ShieldCheck, ArrowRightLeft } from "lucide-react";
+import { FileText, ArrowRightLeft, ShieldCheck } from "lucide-react";
 import Image from "next/image";
+import { useLocale } from "@/contexts/locale-provider";
 
 export default function Home() {
+  const { t } = useLocale();
+
   return (
     <div className="flex flex-col min-h-screen">
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800/20">
@@ -13,15 +18,15 @@ export default function Home() {
             <div className="flex flex-col justify-center space-y-4">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
-                  የተማሪዎች መመዝገቢያ ቅጽ - Student Record System
+                  {t('home.title')}
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Efficiently manage student registrations with our secure, role-based platform.
+                  {t('home.description')}
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Button asChild size="lg">
-                  <Link href="/login">Get Started</Link>
+                  <Link href="/login">{t('home.getStarted')}</Link>
                 </Button>
               </div>
             </div>
@@ -41,13 +46,13 @@ export default function Home() {
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
               <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
-                Core Features
+                {t('home.features.title')}
               </div>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">
-                Everything You Need in One Place
+                {t('home.features.subtitle')}
               </h2>
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Our platform provides all the essential tools for modern student management, from role-based registration to seamless transfers.
+                {t('home.features.description')}
               </p>
             </div>
           </div>
@@ -57,11 +62,11 @@ export default function Home() {
                 <div className="bg-primary/10 p-3 rounded-full">
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="font-headline">Student Registration</CardTitle>
+                <CardTitle className="font-headline">{t('home.features.registration.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Capture comprehensive student details. Admins can register students directly into their assigned service departments.
+                  {t('home.features.registration.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -70,11 +75,11 @@ export default function Home() {
                 <div className="bg-primary/10 p-3 rounded-full">
                   <ArrowRightLeft className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="font-headline">Student Transfer</CardTitle>
+                <CardTitle className="font-headline">{t('home.features.transfer.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Easily transfer students between service departments (e.g., Children to Junior) and generate a PDF report of the transfer.
+                  {t('home.features.transfer.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -83,11 +88,11 @@ export default function Home() {
                 <div className="bg-primary/10 p-3 rounded-full">
                   <ShieldCheck className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="font-headline">Role-Based Access</CardTitle>
+                <CardTitle className="font-headline">{t('home.features.access.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Secure authentication for admins, ensuring they only access and manage records for their specific service department.
+                  {t('home.features.access.description')}
                 </CardDescription>
               </CardContent>
             </Card>

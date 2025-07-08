@@ -11,16 +11,21 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, User, Lock } from 'lucide-react';
 import { mockUsers } from '@/lib/mock-data';
+import { useLocale } from '@/contexts/locale-provider';
 
-const formSchema = z.object({
-  username: z.string().min(2, { message: 'Username must be at least 2 characters.' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+const getFormSchema = (t: (key: string) => string) => z.object({
+  username: z.string().min(2, { message: t('validation.min').replace('{field}', t('login.username')).replace('{length}', '2') }),
+  password: z.string().min(6, { message: t('validation.min').replace('{field}', t('login.password')).replace('{length}', '6') }),
 });
+
 
 export function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useLocale();
+
+  const formSchema = getFormSchema(t);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,8 +49,8 @@ export function LoginForm() {
         window.dispatchEvent(new Event("storage"));
         
         toast({
-          title: 'Login Successful',
-          description: `Welcome back, ${user.username}!`,
+          title: t('login.success'),
+          description: t('login.successDescription').replace('{username}', user.username),
         });
 
         router.push('/students');
@@ -53,8 +58,8 @@ export function LoginForm() {
     } else {
         toast({
             variant: "destructive",
-            title: 'Login Failed',
-            description: "Invalid username or password.",
+            title: t('login.fail'),
+            description: t('login.failDescription'),
         });
     }
     
@@ -69,11 +74,11 @@ export function LoginForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>{t('login.username')}</FormLabel>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <FormControl>
-                  <Input placeholder="e.g., superadmin" {...field} className="pl-10" />
+                  <Input placeholder={t('login.usernamePlaceholder')} {...field} className="pl-10" />
                 </FormControl>
               </div>
               <FormMessage />
@@ -85,7 +90,7 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('login.password')}</FormLabel>
                <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <FormControl>
@@ -98,7 +103,7 @@ export function LoginForm() {
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Login
+          {isLoading ? t('login.loadingButton') : t('login.button')}
         </Button>
       </form>
     </Form>

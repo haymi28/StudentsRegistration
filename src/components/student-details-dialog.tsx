@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import type { Student } from '@/lib/mock-data';
 import { format } from 'date-fns';
+import { useLocale } from '@/contexts/locale-provider';
 
 interface StudentDetailsDialogProps {
   student: Student | null;
@@ -20,6 +21,8 @@ interface StudentDetailsDialogProps {
 }
 
 export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDetailsDialogProps) {
+  const { t } = useLocale();
+
   if (!student) {
     return null;
   }
@@ -35,9 +38,9 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Student Details</DialogTitle>
+          <DialogTitle>{t('studentDetails.title')}</DialogTitle>
           <DialogDescription>
-            Full information for {student.fullName}.
+            {t('studentDetails.description').replace('{name}', student.fullName)}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto pr-4">
@@ -56,34 +59,34 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
           <Separator />
 
           <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
-            <h3 className="text-lg font-semibold col-span-full">Personal Information</h3>
-            <DetailItem label="ሙሉ ስም" value={student.fullName} />
-            <DetailItem label="የክርስትና ስም" value={student.baptismalName} />
-            <DetailItem label="የእናት ስም" value={student.mothersName} />
-            <DetailItem label="ጾታ" value={student.gender} />
-            <DetailItem label="የትውልድ ቀን" value={student.dateOfBirth ? format(new Date(student.dateOfBirth), 'PPP') : 'N/A'} />
-            <DetailItem label="የትምህርት ደረጃ" value={student.educationLevel} />
-            <DetailItem label="የተመዘገቡበት ቀን" value={student.dateOfJoining ? format(new Date(student.dateOfJoining), 'PPP') : 'N/A'} />
+            <h3 className="text-lg font-semibold col-span-full">{t('studentDetails.personalInfo')}</h3>
+            <DetailItem label={t('studentDetails.label.fullName')} value={student.fullName} />
+            <DetailItem label={t('studentDetails.label.baptismalName')} value={student.baptismalName} />
+            <DetailItem label={t('studentDetails.label.mothersName')} value={student.mothersName} />
+            <DetailItem label={t('studentDetails.label.gender')} value={student.gender} />
+            <DetailItem label={t('studentDetails.label.dob')} value={student.dateOfBirth ? format(new Date(student.dateOfBirth), 'PPP') : 'N/A'} />
+            <DetailItem label={t('studentDetails.label.education')} value={student.educationLevel} />
+            <DetailItem label={t('studentDetails.label.joinDate')} value={student.dateOfJoining ? format(new Date(student.dateOfJoining), 'PPP') : 'N/A'} />
           </div>
 
           <Separator />
           
           <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
-            <h3 className="text-lg font-semibold col-span-full">Contact Information</h3>
-            <DetailItem label="ስልክ ቁጥር" value={student.phoneNumber} />
-            <DetailItem label="ተጨማሪ ስልክ" value={student.additionalPhoneNumber} />
-            <DetailItem label="የአባት ስልክ ቁጥር" value={student.fathersPhoneNumber} />
-            <DetailItem label="የእናት ስልክ ቁጥር" value={student.mothersPhoneNumber} />
+            <h3 className="text-lg font-semibold col-span-full">{t('studentDetails.contactInfo')}</h3>
+            <DetailItem label={t('studentDetails.label.phone')} value={student.phoneNumber} />
+            <DetailItem label={t('studentDetails.label.additionalPhone')} value={student.additionalPhoneNumber} />
+            <DetailItem label={t('studentDetails.label.fathersPhone')} value={student.fathersPhoneNumber} />
+            <DetailItem label={t('studentDetails.label.mothersPhone')} value={student.mothersPhoneNumber} />
           </div>
 
           <Separator />
 
           <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
-            <h3 className="text-lg font-semibold col-span-full">Address</h3>
-            <DetailItem label="ክፍለ ከተማ" value={student.subcity} />
-            <DetailItem label="ቀበሌ" value={student.kebele} />
-            <DetailItem label="የቤት ቁጥር" value={student.houseNumber} />
-            <DetailItem label="የቤት ልዩ አድራሻ" value={student.specificAddress} />
+            <h3 className="text-lg font-semibold col-span-full">{t('studentDetails.address')}</h3>
+            <DetailItem label={t('studentDetails.label.subcity')} value={student.subcity} />
+            <DetailItem label={t('studentDetails.label.kebele')} value={student.kebele} />
+            <DetailItem label={t('studentDetails.label.houseNumber')} value={student.houseNumber} />
+            <DetailItem label={t('studentDetails.label.specificAddress')} value={student.specificAddress} />
           </div>
         </div>
       </DialogContent>

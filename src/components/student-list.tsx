@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Table,
@@ -41,6 +40,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useLocale } from '@/contexts/locale-provider';
 
 export function StudentList() {
   const router = useRouter();
@@ -53,11 +53,41 @@ export function StudentList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
   const { toast } = useToast();
+  const { t } = useLocale();
 
   useEffect(() => {
     const role = localStorage.getItem('user_role') as UserRole;
     setUserRole(role);
-    setStudents([...mockStudents]);
+    // Function to load students from localStorage or mock data
+    const loadStudents = () => {
+      const storedStudents = localStorage.getItem('students');
+      if (storedStudents) {
+        // Parse dates correctly
+        const parsedStudents = JSON.parse(storedStudents).map((s: Student) => ({
+          ...s,
+          dateOfBirth: new Date(s.dateOfBirth),
+          dateOfJoining: new Date(s.dateOfJoining),
+        }));
+        setStudents(parsedStudents);
+      } else {
+        setStudents([...mockStudents]);
+      }
+    };
+
+    loadStudents();
+
+    // Listen for storage changes to update the list
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'students') {
+        loadStudents();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const filteredStudents = useMemo(() => {
@@ -103,32 +133,25 @@ export function StudentList() {
   const handleTransferSuccess = (transferredStudentIds: string[], toServiceDepartment: ServiceDepartment) => {
     const transferredStudents: Student[] = [];
 
-    // Update mockStudents (the source of truth)
-    mockStudents.forEach(student => {
-      if (transferredStudentIds.includes(student.registrationNumber)) {
-        student.serviceDepartment = toServiceDepartment;
-      }
-    });
-    
-    // Update local state for immediate UI refresh
     const updatedStudents = students.map(student => {
       if (transferredStudentIds.includes(student.registrationNumber)) {
         const updatedStudent = { ...student, serviceDepartment: toServiceDepartment };
-        transferredStudents.push(updatedStudent); // Collect for report
+        transferredStudents.push(updatedStudent);
         return updatedStudent;
       }
       return student;
     });
 
-    setStudents(updatedStudents);
+    localStorage.setItem('students', JSON.stringify(updatedStudents));
+    window.dispatchEvent(new Event('storage'));
     setSelectedRowKeys(new Set());
     
     if (transferredStudents.length > 0) {
       const fromServiceDepartment = roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>] || 'multiple departments';
       generateTransferReport(transferredStudents, fromServiceDepartment, toServiceDepartment);
       toast({
-        title: 'Transfer Successful',
-        description: `${transferredStudents.length} student(s) transferred to ${toServiceDepartment}.`,
+        title: t('transfer.success'),
+        description: t('transfer.successDescription').replace('{count}', String(transferredStudents.length)).replace('{department}', toServiceDepartment),
       });
     }
   };
@@ -141,17 +164,14 @@ export function StudentList() {
   const handleDeleteStudent = () => {
     if (!studentToDelete) return;
 
-    const studentIndex = mockStudents.findIndex(s => s.registrationNumber === studentToDelete.registrationNumber);
-    if (studentIndex > -1) {
-      mockStudents.splice(studentIndex, 1);
-    }
-
-    setStudents(prev => prev.filter(s => s.registrationNumber !== studentToDelete.registrationNumber));
+    const updatedStudents = students.filter(s => s.registrationNumber !== studentToDelete.registrationNumber);
+    localStorage.setItem('students', JSON.stringify(updatedStudents));
+    window.dispatchEvent(new Event('storage'));
     
     toast({
       variant: "destructive",
-      title: "Student Deleted",
-      description: `Student ${studentToDelete.fullName} has been removed.`,
+      title: t('students.deleteSuccess'),
+      description: t('students.deleteSuccessDescription').replace('{name}', studentToDelete.fullName),
     });
     setStudentToDelete(null);
   };
@@ -165,18 +185,18 @@ export function StudentList() {
       <Card>
         <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex-grow">
-            <CardTitle>Registered Students</CardTitle>
+            <CardTitle>{t('students.title')}</CardTitle>
             <CardDescription>
               {userRole === 'super_admin' 
-                ? 'A list of all students in the system.' 
-                : `A list of all students in the ${fromServiceDepartment} department.`}
+                ? t('students.descriptionSuperAdmin')
+                : t('students.descriptionAdmin').replace('{department}', fromServiceDepartment || '')}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2 w-full md:w-auto">
             <div className="relative flex-grow md:flex-grow-0 md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name or number..."
+                placeholder={t('students.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 w-full"
@@ -185,7 +205,7 @@ export function StudentList() {
             {selectedRowKeys.size > 0 && (userRole !== 'super_admin' ? canTransfer : true) && (
               <Button onClick={() => setIsTransferDialogOpen(true)} className="shrink-0">
                 <ArrowRightLeft className="mr-2 h-4 w-4" />
-                Transfer ({selectedRowKeys.size})
+                {t('students.transferButton').replace('{count}', String(selectedRowKeys.size))}
               </Button>
             )}
           </div>
@@ -203,12 +223,12 @@ export function StudentList() {
                       disabled={filteredStudents.length === 0}
                     />
                   </TableHead>
-                  <TableHead className="w-[80px]">Photo</TableHead>
-                  <TableHead>Reg. Number</TableHead>
-                  <TableHead>Full Name</TableHead>
-                  <TableHead>የአገልግሎት ክፍል</TableHead>
-                  <TableHead>Phone Number</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="w-[80px]">{t('students.table.photo')}</TableHead>
+                  <TableHead>{t('students.table.regNumber')}</TableHead>
+                  <TableHead>{t('students.table.fullName')}</TableHead>
+                  <TableHead>{t('students.table.department')}</TableHead>
+                  <TableHead>{t('students.table.phone')}</TableHead>
+                  <TableHead className="text-right">{t('students.table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -243,14 +263,14 @@ export function StudentList() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuLabel>{t('students.table.actions')}</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => handleViewDetails(student)}>
                               <Eye className="mr-2 h-4 w-4" />
-                              View Details
+                              {t('students.actions.view')}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => router.push(`/students/edit/${student.registrationNumber}`)}>
                               <Edit className="mr-2 h-4 w-4" />
-                              Edit
+                              {t('students.actions.edit')}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
@@ -258,7 +278,7 @@ export function StudentList() {
                               onClick={() => setStudentToDelete(student)}
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
+                              {t('students.actions.delete')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -268,7 +288,7 @@ export function StudentList() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={7} className="h-24 text-center">
-                      No students found.
+                      {t('students.noStudents')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -298,17 +318,13 @@ export function StudentList() {
       <AlertDialog open={!!studentToDelete} onOpenChange={(open) => !open && setStudentToDelete(null)}>
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the record for <strong>{studentToDelete?.fullName}</strong>.
-                </AlertDialogDescription>
+                <AlertDialogTitle>{t('students.deleteDialog.title')}</AlertDialogTitle>
+                <AlertDialogDescription dangerouslySetInnerHTML={{ __html: t('students.deleteDialog.description').replace('{name}', `<strong>${studentToDelete?.fullName}</strong>`) }} />
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setStudentToDelete(null)}>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                    onClick={handleDeleteStudent}
-                >
-                    Delete
+                <AlertDialogCancel onClick={() => setStudentToDelete(null)}>{t('students.deleteDialog.cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteStudent}>
+                  {t('students.deleteDialog.confirm')}
                 </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>

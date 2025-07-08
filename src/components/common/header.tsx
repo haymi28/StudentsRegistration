@@ -8,11 +8,14 @@ import { Logo } from './logo';
 import { LogOut, UserPlus, Menu, X, Users } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLocale } from '@/contexts/locale-provider';
+import { LanguageSwitcher } from './language-switcher';
 
 export function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useLocale();
 
   useEffect(() => {
     const checkAuth = () => {
@@ -38,8 +41,8 @@ export function Header() {
   };
 
   const navLinks = [
-    { href: '/students', label: 'Students', icon: Users },
-    { href: '/register', label: 'New Student', icon: UserPlus },
+    { href: '/students', label: t('nav.students'), icon: Users },
+    { href: '/register', label: t('nav.newStudent'), icon: UserPlus },
   ];
 
   if (isAuthenticated === null) {
@@ -57,7 +60,8 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Logo />
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex flex-1 items-center justify-end space-x-2">
+          <LanguageSwitcher />
           {isAuthenticated ? (
             <>
               <nav className="hidden md:flex items-center space-x-2 lg:space-x-4 text-sm font-medium">
@@ -71,9 +75,9 @@ export function Header() {
                 ))}
               </nav>
               <div className="hidden md:flex">
-                <Button variant="ghost" onClick={handleLogout} aria-label="Logout">
+                <Button variant="ghost" onClick={handleLogout} aria-label={t('nav.logout')}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  Logout
+                  {t('nav.logout')}
                 </Button>
               </div>
               <Sheet>
@@ -108,7 +112,7 @@ export function Header() {
                     </nav>
                     <div className="mt-auto border-t pt-4">
                       <Button variant="ghost" onClick={handleLogout} className="w-full justify-start text-base">
-                        <LogOut className="mr-2 h-4 w-4" /> Logout
+                        <LogOut className="mr-2 h-4 w-4" /> {t('nav.logout')}
                       </Button>
                     </div>
                   </div>
@@ -118,7 +122,7 @@ export function Header() {
           ) : (
             <nav className="flex items-center space-x-2 text-sm font-medium">
               <Link href="/login">
-                <Button>Login</Button>
+                <Button>{t('nav.login')}</Button>
               </Link>
             </nav>
           )}
