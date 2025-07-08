@@ -1,3 +1,4 @@
+
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
@@ -14,7 +15,7 @@ interface LocaleContextType {
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
 
 const getNestedTranslation = (translations: Translations, key: string): string | undefined => {
-  return key.split('.').reduce((obj, k) => (obj && obj[k] !== 'undefined') ? obj[k] : undefined, translations);
+  return key.split('.').reduce((obj, k) => (obj && typeof obj[k] !== 'undefined') ? obj[k] : undefined, translations);
 }
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
@@ -39,11 +40,14 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
         setTranslations(data);
       } catch (error) {
         console.error(error);
-        // Fallback to English if Amharic fails
         if (locale !== 'en') {
-          const res = await fetch(`/i18n/en.json`);
-          const data = await res.json();
-          setTranslations(data);
+          try {
+            const res = await fetch(`/i18n/en.json`);
+            const data = await res.json();
+            setTranslations(data);
+          } catch (e) {
+            console.error("Failed to load fallback translations", e)
+          }
         }
       }
     };
@@ -67,7 +71,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale, t }}>
-      {Object.keys(translations).length > 0 ? children : null}
+      {children}
     </LocaleContext.Provider>
   );
 }
@@ -79,3 +83,5 @@ export function useLocale() {
   }
   return context;
 }
+
+    
