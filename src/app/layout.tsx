@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { PT_Sans, Noto_Sans_Ethiopic } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { Header } from "@/components/common/header";
 import { cn } from "@/lib/utils";
 import { LocaleProvider } from "@/contexts/locale-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { MainLayout } from "@/components/common/main-layout";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -32,10 +33,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable, notoSansEthiopic.variable)}>
         <LocaleProvider>
-          <div className="relative flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-          </div>
+          <SidebarProvider>
+            <MainLayout>
+              {children}
+            </MainLayout>
+          </SidebarProvider>
           <Toaster />
         </LocaleProvider>
       </body>
