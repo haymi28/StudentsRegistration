@@ -23,14 +23,15 @@ export interface User {
   username: string;
   password: string; 
   role: UserRole;
+  displayName: string;
 }
 
 export const mockUsers: User[] = [
-    { username: 'superadmin', password: 'password', role: 'super_admin' },
-    { username: 'childrenadmin', password: 'password', role: 'children_admin' },
-    { username: 'children2admin', password: 'password', role: 'children_2_admin' },
-    { username: 'junioradmin', password: 'password', role: 'junior_admin' },
-    { username: 'senioradmin', password: 'password', role: 'senior_admin' },
+    { username: 'superadmin', password: 'password', role: 'super_admin', displayName: 'ዋና ኅላፊ' },
+    { username: 'childrenadmin', password: 'password', role: 'children_admin', displayName: 'ቀዳማይ -1 ክፍል' },
+    { username: 'children2admin', password: 'password', role: 'children_2_admin', displayName: 'ቀዳማይ -2 ክፍል' },
+    { username: 'junioradmin', password: 'password', role: 'junior_admin', displayName: 'ካእላይ ክፍል' },
+    { username: 'senioradmin', password: 'password', role: 'senior_admin', displayName: 'ማእከላይ ክፍል' },
 ];
 
 export const mockStudents: Student[] = [

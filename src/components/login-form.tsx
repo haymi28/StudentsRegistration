@@ -52,7 +52,7 @@ export function LoginForm() {
         
         toast({
           title: t('login.success'),
-          description: t('login.successDescription').replace('{username}', user.username),
+          description: t('login.successDescription').replace('{username}', user.displayName),
         });
 
         router.push('/students');
@@ -85,7 +85,7 @@ export function LoginForm() {
                   </FormControl>
                   <SelectContent>
                     {mockUsers.map(user => (
-                        <SelectItem key={user.username} value={user.username}>{user.username}</SelectItem>
+                        <SelectItem key={user.username} value={user.username}>{user.displayName}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
