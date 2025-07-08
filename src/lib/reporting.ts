@@ -5,6 +5,7 @@ import html2canvas from 'html2canvas';
 import type { Student, ServiceDepartment } from './mock-data';
 import { format } from 'date-fns';
 
+
 export interface ReportTranslations {
   title: string;
   from: string;
@@ -15,6 +16,13 @@ export interface ReportTranslations {
   fullName: string;
   gender: string;
   dob: string;
+}
+
+const formatDateForPdf = (date: Date | string | undefined): string => {
+  if (!date) return 'N/A';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return 'N/A';
+  return format(d, 'PPP');
 }
 
 export async function generateTransferReport(
@@ -40,9 +48,13 @@ export async function generateTransferReport(
       <td>${student.registrationNumber}</td>
       <td>${student.fullName}</td>
       <td>${student.gender}</td>
-      <td>${student.dateOfBirth ? format(new Date(student.dateOfBirth), 'PPP') : 'N/A'}</td>
+      <td>${student.dateOfBirth ? formatDateForPdf(student.dateOfBirth) : 'N/A'}</td>
     </tr>
   `).join('');
+
+  const today = new Date();
+  const dateToday = formatDateForPdf(today);
+
 
   reportElement.innerHTML = `
     <style>
@@ -56,7 +68,7 @@ export async function generateTransferReport(
     <h1>${translations.title}</h1>
     <p><strong>${translations.from}</strong> ${fromDepartment}</p>
     <p><strong>${translations.to}</strong> ${toDepartment}</p>
-    <p><strong>${translations.date}</strong> ${new Date().toLocaleDateString()}</p>
+    <p><strong>${translations.date}</strong> ${dateToday}</p>
     <p><strong>${translations.generatedBy}</strong> ${generatedByUsername}</p>
     <table>
       <thead>

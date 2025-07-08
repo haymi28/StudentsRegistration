@@ -11,8 +11,17 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import type { Student } from '@/lib/mock-data';
-import { format } from 'date-fns';
 import { useLocale } from '@/contexts/locale-provider';
+import { format } from 'date-fns';
+
+const formatDateDisplay = (date: Date | string | undefined, locale: string): string => {
+  if (!date) return 'N/A';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return 'N/A';
+  // Use a simple date format that works across locales
+  return format(d, 'PPP');
+};
+
 
 interface StudentDetailsDialogProps {
   student: Student | null;
@@ -21,7 +30,7 @@ interface StudentDetailsDialogProps {
 }
 
 export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDetailsDialogProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
 
   if (!student) {
     return null;
@@ -64,9 +73,9 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
             <DetailItem label={t('studentDetails.label.baptismalName')} value={student.baptismalName} />
             <DetailItem label={t('studentDetails.label.mothersName')} value={student.mothersName} />
             <DetailItem label={t('studentDetails.label.gender')} value={student.gender} />
-            <DetailItem label={t('studentDetails.label.dob')} value={student.dateOfBirth ? format(new Date(student.dateOfBirth), 'PPP') : 'N/A'} />
+            <DetailItem label={t('studentDetails.label.dob')} value={formatDateDisplay(student.dateOfBirth, locale)} />
             <DetailItem label={t('studentDetails.label.education')} value={student.educationLevel} />
-            <DetailItem label={t('studentDetails.label.joinDate')} value={student.dateOfJoining ? format(new Date(student.dateOfJoining), 'PPP') : 'N/A'} />
+            <DetailItem label={t('studentDetails.label.joinDate')} value={formatDateDisplay(student.dateOfJoining, locale)} />
           </div>
 
           <Separator />
