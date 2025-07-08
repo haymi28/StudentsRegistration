@@ -37,7 +37,7 @@ export function Header() {
     localStorage.removeItem('user_role');
     localStorage.removeItem('username');
     window.dispatchEvent(new Event("storage"));
-    router.push('/login');
+    router.push('/');
   };
 
   const navLinks = [
@@ -62,7 +62,7 @@ export function Header() {
         <Logo />
         <div className="flex flex-1 items-center justify-end space-x-2">
           <LanguageSwitcher />
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <>
               <nav className="hidden md:flex items-center space-x-2 lg:space-x-4 text-sm font-medium">
                 {navLinks.map((link) => (
@@ -119,12 +119,6 @@ export function Header() {
                 </SheetContent>
               </Sheet>
             </>
-          ) : (
-            <nav className="flex items-center space-x-2 text-sm font-medium">
-              <Link href="/login">
-                <Button>{t('nav.login')}</Button>
-              </Link>
-            </nav>
           )}
         </div>
       </div>
