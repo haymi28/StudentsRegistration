@@ -4,7 +4,6 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { LocaleProvider } from "@/contexts/locale-provider";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { MainLayout } from "@/components/common/main-layout";
 
 const ptSans = PT_Sans({
@@ -33,11 +32,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable, notoSansEthiopic.variable)}>
         <LocaleProvider>
-          <SidebarProvider>
             <MainLayout>
               {children}
             </MainLayout>
-          </SidebarProvider>
           <Toaster />
         </LocaleProvider>
       </body>

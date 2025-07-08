@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import {
   Sidebar,
+  SidebarProvider,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
@@ -49,18 +50,25 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     { href: '/students', label: t('nav.students'), icon: Users },
     { href: '/register', label: t('nav.newStudent'), icon: UserPlus },
   ];
+  
+  if (isAuthenticated === null) {
+    // Return null or a loader to prevent hydration mismatch while we check auth status.
+    return null;
+  }
 
   if (!isAuthenticated) {
     return (
-      <div className="relative flex min-h-screen flex-1 flex-col">
+      <div className="relative flex min-h-screen flex-col">
         <Header />
-        <main className="flex flex-1 items-center justify-center">{children}</main>
+        <main className="flex flex-1 items-center justify-center p-4">
+            {children}
+        </main>
       </div>
     );
   }
 
   return (
-    <>
+    <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
           <Logo />
@@ -94,6 +102,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <Header />
         <main className="flex-1 overflow-auto bg-muted/30">{children}</main>
       </SidebarInset>
-    </>
+    </SidebarProvider>
   );
 }
