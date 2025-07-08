@@ -19,7 +19,7 @@ export default function EditStudentPage() {
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     if (!token) {
-      router.replace('/login');
+      router.replace('/');
     } else {
       setIsCheckingAuth(false);
     }

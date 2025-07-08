@@ -14,7 +14,7 @@ export default function RegisterPage() {
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     if (!token) {
-      router.replace('/login');
+      router.replace('/');
     } else {
       setIsCheckingAuth(false);
     }
