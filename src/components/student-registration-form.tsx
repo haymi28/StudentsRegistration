@@ -42,6 +42,10 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
   const [joinMonth, setJoinMonth] = useState('');
   const [joinYear, setJoinYear] = useState('');
 
+  const [birthDay, setBirthDay] = useState('');
+  const [birthMonth, setBirthMonth] = useState('');
+  const [birthYear, setBirthYear] = useState('');
+
   const studentRegistrationSchema = useMemo(() => getStudentRegistrationSchema(t), [t]);
   
   const serviceDepartments: { value: ServiceDepartment; label: string }[] = useMemo(() => [
@@ -104,11 +108,26 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
         setJoinMonth('');
         setJoinYear('');
       }
+      if (studentToEdit.dateOfBirth) {
+          const parts = studentToEdit.dateOfBirth.split(' ');
+          if (parts.length === 3) {
+              setBirthDay(parts[0]);
+              setBirthMonth(parts[1]);
+              setBirthYear(parts[2]);
+          }
+      } else {
+        setBirthDay('');
+        setBirthMonth('');
+        setBirthYear('');
+      }
     } else {
       form.reset(defaultFormValues);
       setJoinDay('');
       setJoinMonth('');
       setJoinYear('');
+      setBirthDay('');
+      setBirthMonth('');
+      setBirthYear('');
     }
   }, [studentToEdit, form, defaultFormValues]);
 
@@ -120,6 +139,15 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
       form.setValue('dateOfJoining', '', { shouldValidate: true });
     }
   }, [joinDay, joinMonth, joinYear, form]);
+
+  useEffect(() => {
+    if (birthDay && birthMonth && birthYear) {
+      const fullDate = `${birthDay} ${birthMonth} ${birthYear}`;
+      form.setValue('dateOfBirth', fullDate, { shouldValidate: true });
+    } else {
+      form.setValue('dateOfBirth', '', { shouldValidate: true });
+    }
+  }, [birthDay, birthMonth, birthYear, form]);
 
   useEffect(() => {
     if (!isEditMode && userRole && userRole !== 'super_admin') {
@@ -251,15 +279,55 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                 />
                 </div>
                 <div className="grid md:grid-cols-3 gap-6">
-                    <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{t('form.label.dob')}</FormLabel>
-                            <FormControl>
-                                <Input placeholder="YYYY-MM-DD" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
+                    <FormField
+                      control={form.control}
+                      name="dateOfBirth"
+                      render={({ field }) => (
+                          <FormItem className="flex flex-col pt-2">
+                              <FormLabel>{t('form.label.dob')}</FormLabel>
+                              <FormControl>
+                                  <Input type="hidden" {...field} />
+                              </FormControl>
+                              <div className="grid grid-cols-3 gap-2 items-start">
+                                  <div className="space-y-1">
+                                      <Label htmlFor="birthDay" className="text-xs text-muted-foreground">ቀን</Label>
+                                      <Input
+                                          id="birthDay"
+                                          type="number"
+                                          placeholder="DD"
+                                          value={birthDay}
+                                          onChange={(e) => setBirthDay(e.target.value)}
+                                          min="1" max="30"
+                                      />
+                                  </div>
+                                  <div className="space-y-1">
+                                      <Label htmlFor="birthMonth" className="text-xs text-muted-foreground">ወር</Label>
+                                      <Select value={birthMonth} onValueChange={setBirthMonth}>
+                                      <FormControl>
+                                          <SelectTrigger id="birthMonth">
+                                          <SelectValue placeholder="ወር" />
+                                          </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                          {amharicMonths.map(month => <SelectItem key={month} value={month}>{month}</SelectItem>)}
+                                      </SelectContent>
+                                      </Select>
+                                  </div>
+                                  <div className="space-y-1">
+                                      <Label htmlFor="birthYear" className="text-xs text-muted-foreground">ዓመት</Label>
+                                      <Input
+                                          id="birthYear"
+                                          type="number"
+                                          placeholder="YYYY"
+                                          value={birthYear}
+                                          onChange={(e) => setBirthYear(e.target.value)}
+                                      />
+                                  </div>
+                              </div>
+                              <FormMessage />
+                          </FormItem>
+                      )}
+                    />
                     <FormField control={form.control} name="educationLevel" render={({ field }) => (
                         <FormItem>
                             <FormLabel>{t('form.label.education')}</FormLabel>
