@@ -1,4 +1,3 @@
-
 {
   "nav": {
     "students": "Students",
@@ -9,18 +8,18 @@
   },
   "login": {
     "title": "Login",
-    "description": "Enter your credentials to access the system.",
+    "description": "Enter your credentials to access your account",
     "username": "Username",
-    "usernamePlaceholder": "Select a user",
     "password": "Password",
-    "showPassword": "Show password",
-    "hidePassword": "Hide password",
+    "usernamePlaceholder": "Select Username",
     "button": "Login",
     "loadingButton": "Logging in...",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "success": "Login Successful",
     "successDescription": "Welcome back, {username}!",
     "fail": "Login Failed",
-    "failDescription": "Invalid username or password."
+    "failDescription": "Invalid username or password. Please try again."
   },
   "register": {
     "pageTitle": "New Student Registration",
@@ -28,33 +27,21 @@
     "editPageTitle": "Edit Student Information",
     "editPageDescription": "Update the student's details below."
   },
-  "account": {
-    "pageTitle": "Manage Account",
-    "pageDescription": "Update your profile information and change your password.",
-    "updateProfileTitle": "Update Profile",
-    "updateProfileDescription": "Change your display name.",
-    "displayName": "Display Name",
-    "displayNamePlaceholder": "Enter your new display name",
-    "updateProfileSuccessTitle": "Profile Updated",
-    "updateProfileSuccessDescription": "Your display name has been successfully updated.",
-    "changePasswordTitle": "Change Password",
-    "changePasswordDescription": "Update your account password. It is recommended to use a strong password.",
-    "currentPassword": "Current Password",
-    "newPassword": "New Password",
-    "confirmPassword": "Confirm New Password",
-    "changePasswordButton": "Change Password",
-    "changePasswordSuccessTitle": "Password Changed",
-    "changePasswordSuccessDescription": "Your password has been changed successfully."
-  },
   "students": {
     "title": "Student List",
-    "descriptionSuperAdmin": "View and manage all students in the system.",
+    "descriptionSuperAdmin": "View and manage all students across all departments.",
     "descriptionAdmin": "View and manage students in the {department} department.",
     "searchPlaceholder": "Search by name or ID...",
     "transferButton": "Transfer ({count})",
     "noStudents": "No students found.",
     "deleteSuccess": "Student Deleted",
-    "deleteSuccessDescription": "{name} has been removed from the system.",
+    "deleteSuccessDescription": "{name} has been successfully deleted.",
+    "deleteDialog": {
+      "title": "Are you sure?",
+      "description": "This will permanently delete the student {name}. This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
     "table": {
       "photo": "Photo",
       "regNumber": "Reg. Number",
@@ -67,69 +54,41 @@
       "view": "View Details",
       "edit": "Edit",
       "delete": "Delete"
-    },
-    "deleteDialog": {
-      "title": "Are you sure?",
-      "description": "This will permanently delete the record for {name}. This action cannot be undone.",
-      "cancel": "Cancel",
-      "confirm": "Delete"
     }
   },
-  "studentDetails": {
-    "title": "Student Details",
-    "description": "Detailed information for {name}.",
-    "personalInfo": "Personal Information",
-    "contactInfo": "Contact Information",
-    "address": "Address Information",
-    "label": {
-      "fullName": "Full Name",
-      "baptismalName": "Baptismal Name",
-      "mothersName": "Mother's Name",
-      "gender": "Gender",
-      "dob": "Date of Birth (E.C.)",
-      "education": "Education Level",
-      "joinDate": "Date of Joining (E.C.)",
-      "phone": "Phone Number",
-      "additionalPhone": "Additional Phone",
-      "fathersPhone": "Father's Phone",
-      "mothersPhone": "Mother's Phone",
-      "subcity": "Subcity",
-      "kebele": "Kebele",
-      "houseNumber": "House No.",
-      "specificAddress": "Specific Address"
-    }
-  },
-  "transfer": {
-    "title": "Transfer Students",
-    "description": "Transfer {count} selected student(s) from {from}.",
-    "from": "From Department:",
-    "to": "To Department:",
-    "toLabel": "Select target department",
-    "toPlaceholder": "Choose a department",
-    "multipleDepartments": "Multiple Departments",
-    "noOptionsMultiple": "Cannot transfer students from multiple departments at once. Please select students from the same department.",
-    "noOptionsHighest": "These students are in the highest department and cannot be transferred.",
-    "cancel": "Cancel",
-    "confirm": "Confirm Transfer",
-    "loading": "Transferring...",
-    "success": "Transfer Successful",
-    "successDescription": "{count} student(s) have been transferred to {department}."
+  "account": {
+    "pageTitle": "Manage Account",
+    "pageDescription": "Update your profile and change your password.",
+    "updateProfileTitle": "Update Profile",
+    "updateProfileDescription": "Change your display name.",
+    "changePasswordTitle": "Change Password",
+    "changePasswordDescription": "Choose a new, secure password.",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "Enter your full name",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "changePasswordButton": "Change Password",
+    "updateProfileSuccessTitle": "Profile Updated",
+    "updateProfileSuccessDescription": "Your display name has been changed successfully.",
+    "changePasswordSuccessTitle": "Password Changed",
+    "changePasswordSuccessDescription": "Your password has been changed successfully."
   },
   "form": {
-    "title": "Student Registration Form",
-    "editTitle": "Edit Student Information",
-    "photoSection": "Photo",
-    "photoLabel": "Student Photo",
+    "title": "Registration Form",
+    "editTitle": "Edit Student",
+    "photoSection": "Student Photo",
+    "photoLabel": "Photo",
     "personalInfoSection": "Personal Information",
     "contactInfoSection": "Contact Information",
     "addressSection": "Address Information",
     "label": {
       "regNumber": "Registration Number",
-      "fullName": "Full Name",
+      "fullName": "Full Name (Amharic)",
       "gender": "Gender",
+      "department": "Service Department",
       "baptismalName": "Baptismal Name",
       "mothersName": "Mother's Name",
-      "department": "Service Department",
       "dob": "Date of Birth (E.C.)",
       "education": "Education Level",
       "joinDate": "Date of Joining (E.C.)",
@@ -146,15 +105,64 @@
       "regNumber": "e.g., S001",
       "selectGender": "Select Gender",
       "selectDepartment": "Select Department",
-      "address": "Enter the specific address"
+      "address": "Enter specific address details",
+      "day": "Day",
+      "month": "Month",
+      "year": "Year"
     },
-    "loading": "Submitting...",
-    "save": "Save Changes",
     "submit": "Register Student",
-    "registerSuccess": "Registration Successful",
+    "save": "Save Changes",
+    "loading": "Submitting...",
+    "registerSuccess": "Student Registered",
     "registerSuccessDescription": "{name} has been successfully registered.",
-    "updateSuccess": "Update Successful",
-    "updateSuccessDescription": "The information for {name} has been updated."
+    "updateSuccess": "Student Updated",
+    "updateSuccessDescription": "{name}'s information has been updated."
+  },
+  "studentDetails": {
+    "title": "Student Details",
+    "description": "Viewing details for {name}.",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information",
+    "address": "Address",
+    "label": {
+      "fullName": "Full Name",
+      "baptismalName": "Baptismal Name",
+      "mothersName": "Mother's Name",
+      "gender": "Gender",
+      "dob": "Date of Birth",
+      "education": "Education Level",
+      "joinDate": "Date of Joining",
+      "phone": "Phone",
+      "additionalPhone": "Additional Phone",
+      "fathersPhone": "Father's Phone",
+      "mothersPhone": "Mother's Phone",
+      "subcity": "Subcity",
+      "kebele": "Kebele",
+      "houseNumber": "House No.",
+      "specificAddress": "Specific Address"
+    }
+  },
+  "transfer": {
+    "title": "Transfer Students",
+    "description": "You are about to transfer {count} student(s) from {from}.",
+    "fromLabel": "From",
+    "toLabel": "To",
+    "toPlaceholder": "Select destination department",
+    "cancel": "Cancel",
+    "confirm": "Transfer",
+    "loading": "Transferring...",
+    "success": "Transfer Successful",
+    "successDescription": "{count} students have been transferred to {department}.",
+    "multipleDepartments": "Multiple Departments",
+    "noOptionsMultiple": "Cannot transfer students from multiple departments at once. Please select students from the same department.",
+    "noOptionsHighest": "These students are already in the highest department and cannot be transferred."
+  },
+  "serviceDepartment": {
+    "children_1": "Children Section 1",
+    "children_2": "Children Section 2",
+    "junior": "Junior Section",
+    "senior": "Senior Section",
+    "youth": "Youth Section"
   },
   "pdf": {
     "transfer": {
@@ -169,26 +177,20 @@
       "dob": "Date of Birth"
     }
   },
-  "serviceDepartment": {
-    "children_1": "Children's Class 1",
-    "children_2": "Children's Class 2",
-    "junior": "Junior Class",
-    "senior": "Senior Class"
+  "common": {
+    "error": "Error",
+    "errorDescription": "An unexpected error occurred. Please try again.",
+    "userNotFound": "User could not be found. Please log out and log in again."
   },
   "validation": {
-    "required": "{field} is required.",
-    "min": "{field} must be at least {length} characters.",
-    "invalidNumber": "Invalid phone number format.",
-    "passwordMismatch": "Passwords do not match.",
-    "currentPasswordIncorrect": "The current password you entered is incorrect.",
+    "required": "{field} is required",
+    "min": "{field} must be at least {length} characters",
+    "invalidNumber": "Invalid phone number",
+    "currentPasswordIncorrect": "Current password is not correct",
+    "passwordMismatch": "Passwords do not match",
     "gender": {
       "male": "Male",
       "female": "Female"
     }
-  },
-  "common": {
-    "error": "An Error Occurred",
-    "errorDescription": "Something went wrong. Please try again.",
-    "userNotFound": "User not found. Please log in again."
   }
 }

@@ -52,6 +52,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     { value: 'ቀዳማይ -2 ክፍል', label: t('serviceDepartment.children_2') },
     { value: 'ካእላይ ክፍል', label: t('serviceDepartment.junior') },
     { value: 'ማእከላይ ክፍል', label: t('serviceDepartment.senior') },
+    { value: 'የወጣት ክፍል', label: t('serviceDepartment.youth') },
   ], [t]);
 
   const genders = useMemo(() => [
@@ -291,14 +292,14 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                                   <Input
                                       id="birthDay"
                                       type="number"
-                                      placeholder="ቀን"
+                                      placeholder={t('form.placeholder.day')}
                                       value={birthDay}
                                       onChange={(e) => setBirthDay(e.target.value)}
                                       min="1" max="30"
                                   />
                                   <Select value={birthMonth} onValueChange={setBirthMonth}>
                                       <SelectTrigger id="birthMonth">
-                                      <SelectValue placeholder="ወር" />
+                                      <SelectValue placeholder={t('form.placeholder.month')} />
                                       </SelectTrigger>
                                       <SelectContent>
                                           {amharicMonths.map(month => <SelectItem key={month} value={month}>{month}</SelectItem>)}
@@ -307,7 +308,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                                   <Input
                                       id="birthYear"
                                       type="number"
-                                      placeholder="ዓመት"
+                                      placeholder={t('form.placeholder.year')}
                                       value={birthYear}
                                       onChange={(e) => setBirthYear(e.target.value)}
                                   />
@@ -338,14 +339,14 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                                     <Input
                                         id="joinDay"
                                         type="number"
-                                        placeholder="ቀን"
+                                        placeholder={t('form.placeholder.day')}
                                         value={joinDay}
                                         onChange={(e) => setJoinDay(e.target.value)}
                                         min="1" max="30"
                                     />
                                     <Select value={joinMonth} onValueChange={setJoinMonth}>
                                         <SelectTrigger id="joinMonth">
-                                        <SelectValue placeholder="ወር" />
+                                        <SelectValue placeholder={t('form.placeholder.month')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {amharicMonths.map(month => <SelectItem key={month} value={month}>{month}</SelectItem>)}
@@ -354,7 +355,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                                     <Input
                                         id="joinYear"
                                         type="number"
-                                        placeholder="ዓመት"
+                                        placeholder={t('form.placeholder.year')}
                                         value={joinYear}
                                         onChange={(e) => setJoinYear(e.target.value)}
                                     />

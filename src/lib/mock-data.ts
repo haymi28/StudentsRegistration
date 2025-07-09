@@ -4,7 +4,7 @@ import type { getStudentRegistrationSchema } from '@/lib/validations/student';
 export type Student = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
 export type UserRole = 'super_admin' | 'children_admin' | 'children_2_admin' | 'junior_admin' | 'senior_admin';
-export type ServiceDepartment = 'ቀዳማይ -1 ክፍል' | 'ቀዳማይ -2 ክፍል' | 'ካእላይ ክፍል' | 'ማእከላይ ክፍል';
+export type ServiceDepartment = 'ቀዳማይ -1 ክፍል' | 'ቀዳማይ -2 ክፍል' | 'ካእላይ ክፍል' | 'ማእከላይ ክፍል' | 'የወጣት ክፍል';
 
 export const roleToServiceDepartmentMap: Record<Exclude<UserRole, 'super_admin'>, ServiceDepartment> = {
   children_admin: 'ቀዳማይ -1 ክፍል',
@@ -17,6 +17,7 @@ export const serviceDepartmentTransferMap: Partial<Record<ServiceDepartment, Ser
   'ቀዳማይ -1 ክፍል': 'ቀዳማይ -2 ክፍል',
   'ቀዳማይ -2 ክፍል': 'ካእላይ ክፍል',
   'ካእላይ ክፍል': 'ማእከላይ ክፍል',
+  'ማእከላይ ክፍል': 'የወጣት ክፍል',
 };
 
 export interface User {
