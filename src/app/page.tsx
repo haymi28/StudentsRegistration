@@ -9,7 +9,7 @@ export default function HomePage() {
   return (
     <Card className="w-full max-w-md shadow-lg">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-headline sm:text-3xl">{t('login.title')}</CardTitle>
+        <CardTitle className="text-2xl font-bold font-headline sm:text-3xl">{t('login.title')}</CardTitle>
         <CardDescription>{t('login.description')}</CardDescription>
       </CardHeader>
       <CardContent>
