@@ -36,8 +36,8 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex flex-row items-center justify-between">
-        <Logo />
+      <SidebarHeader className="flex flex-row items-center justify-between group-data-[state=collapsed]:justify-center">
+        <Logo className="group-data-[state=collapsed]:hidden" />
         <SidebarTrigger className="hidden md:flex" />
       </SidebarHeader>
       <SidebarContent>

@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { BookCopy } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export function Logo() {
+export function Logo({ className }: { className?: string }) {
   return (
-    <Link href="/" className="flex items-center gap-2" aria-label="Back to homepage">
+    <Link href="/" className={cn("flex items-center gap-2", className)} aria-label="Back to homepage">
       <div className="p-2 bg-primary rounded-lg">
         <BookCopy className="h-6 w-6 text-primary-foreground" />
       </div>
