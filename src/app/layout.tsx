@@ -19,7 +19,7 @@ const notoSansEthiopic = Noto_Sans_Ethiopic({
 });
 
 export const metadata: Metadata = {
-  title: "የተማሪዎች መመዝገቢያ ቅጽ | Student Record",
+  title: "የደብረ ገሊላ ቅዱስ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት የተማሪዎች መመዝገቢያ ቅጽ",
   description: "A student registration and attendance management system.",
 };
 

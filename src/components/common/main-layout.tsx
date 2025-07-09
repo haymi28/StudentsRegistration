@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
-import { Logo } from './logo';
 import { LanguageSwitcher } from './language-switcher';
 
 const protectedRoutes = ['/students', '/register', '/attendance'];
@@ -64,11 +63,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     return (
       <div className="relative flex min-h-screen flex-col">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-16 items-center">
-            <Logo />
-            <div className="flex flex-1 items-center justify-end space-x-2">
-              <LanguageSwitcher />
-            </div>
+          <div className="container flex h-16 items-center justify-end">
+            <LanguageSwitcher />
           </div>
         </header>
         <main className="flex flex-1 items-center justify-center p-4">

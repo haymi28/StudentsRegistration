@@ -3,18 +3,31 @@
 import { LoginForm } from "@/components/login-form";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { useLocale } from "@/contexts/locale-provider";
+import Image from "next/image";
 
 export default function HomePage() {
   const { t } = useLocale();
   return (
-    <Card className="w-full max-w-md shadow-lg">
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold font-headline sm:text-3xl">{t('login.title')}</CardTitle>
-        <CardDescription>{t('login.description')}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <LoginForm />
-      </CardContent>
-    </Card>
+    <div className="flex flex-col items-center justify-center gap-6 text-center">
+        <Image 
+            src="https://placehold.co/120x120.png" 
+            alt="Debre Gelila St. Amanuel Cathedral Logo" 
+            width={120} 
+            height={120}
+            data-ai-hint="church seal"
+        />
+        <h1 className="text-xl font-bold text-primary font-headline sm:text-2xl px-4">
+            የደብረ ገሊላ ቅዱስ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት የተማሪዎች መመዝገቢያ ቅጽ
+        </h1>
+        <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold font-headline sm:text-3xl">{t('login.title')}</CardTitle>
+            <CardDescription>{t('login.description')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <LoginForm />
+        </CardContent>
+        </Card>
+    </div>
   );
 }
