@@ -259,7 +259,6 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                             <PopoverContent className="w-auto p-0" align="start">
                               <Calendar
                                 mode="single"
-                                captionLayout="dropdown-buttons"
                                 fromDate={new Date(new Date().setFullYear(new Date().getFullYear() - 20))}
                                 toDate={new Date()}
                                 selected={field.value}
