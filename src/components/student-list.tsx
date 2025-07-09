@@ -226,7 +226,7 @@ export function StudentList() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="border rounded-lg">
+          <div className="border rounded-lg overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -263,12 +263,12 @@ export function StudentList() {
                           <AvatarFallback>{student.fullName.charAt(0)}</AvatarFallback>
                         </Avatar>
                       </TableCell>
-                      <TableCell className="font-medium">{student.registrationNumber}</TableCell>
-                      <TableCell>{student.fullName}</TableCell>
+                      <TableCell className="font-medium whitespace-nowrap">{student.registrationNumber}</TableCell>
+                      <TableCell className="whitespace-nowrap">{student.fullName}</TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{student.serviceDepartment}</Badge>
+                        <Badge variant="secondary" className="whitespace-nowrap">{student.serviceDepartment}</Badge>
                       </TableCell>
-                      <TableCell>{student.phoneNumber}</TableCell>
+                      <TableCell className="whitespace-nowrap">{student.phoneNumber}</TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
