@@ -8,10 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getStudentRegistrationSchema } from '@/lib/validations/student';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -20,8 +18,7 @@ import { ImageUpload } from './image-upload';
 import { useRouter } from 'next/navigation';
 import { mockStudents, roleToServiceDepartmentMap, UserRole, ServiceDepartment, Student } from '@/lib/mock-data';
 import { useLocale } from '@/contexts/locale-provider';
-import { Calendar } from '@/components/ui/calendar';
-import { format } from 'date-fns';
+import { Label } from './ui/label';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -29,20 +26,21 @@ interface StudentRegistrationFormProps {
   studentToEdit?: Student;
 }
 
-const formatDateDisplay = (date: Date | undefined, placeholder: string) => {
-  if (!date) return placeholder;
-  return format(date, "PPP");
-};
-
 export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const router = useRouter();
   const isEditMode = !!studentToEdit;
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
   
-  const [isJoinDatePickerOpen, setIsJoinDatePickerOpen] = useState(false);
+  const amharicMonths = useMemo(() => [
+    'መስከረም', 'ጥቅምት', 'ኅዳር', 'ታኅሣሥ', 'ጥር', 'የካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜን'
+  ], []);
+  
+  const [joinDay, setJoinDay] = useState('');
+  const [joinMonth, setJoinMonth] = useState('');
+  const [joinYear, setJoinYear] = useState('');
 
   const studentRegistrationSchema = useMemo(() => getStudentRegistrationSchema(t), [t]);
   
@@ -65,38 +63,63 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
 
   const defaultServiceDepartment = userRole && userRole !== 'super_admin' ? roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>] : '';
 
+  const defaultFormValues = useMemo(() => ({
+    photo: '',
+    registrationNumber: '',
+    fullName: '',
+    gender: '',
+    serviceDepartment: defaultServiceDepartment,
+    baptismalName: '',
+    mothersName: '',
+    dateOfBirth: '',
+    educationLevel: '',
+    fathersPhoneNumber: '',
+    mothersPhoneNumber: '',
+    additionalPhoneNumber: '',
+    phoneNumber: '',
+    subcity: '',
+    kebele: '',
+    houseNumber: '',
+    specificAddress: '',
+    dateOfJoining: '',
+  }), [defaultServiceDepartment]);
+
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentRegistrationSchema),
-    defaultValues: {
-        photo: '',
-        registrationNumber: '',
-        fullName: '',
-        gender: '',
-        serviceDepartment: defaultServiceDepartment,
-        baptismalName: '',
-        mothersName: '',
-        dateOfBirth: '',
-        educationLevel: '',
-        fathersPhoneNumber: '',
-        mothersPhoneNumber: '',
-        additionalPhoneNumber: '',
-        phoneNumber: '',
-        subcity: '',
-        kebele: '',
-        houseNumber: '',
-        specificAddress: '',
-        dateOfJoining: new Date(),
-    },
+    defaultValues: defaultFormValues,
   });
 
   useEffect(() => {
     if (studentToEdit) {
-      form.reset({
-        ...studentToEdit,
-        dateOfJoining: studentToEdit.dateOfJoining ? new Date(studentToEdit.dateOfJoining) : undefined,
-      });
+      form.reset(studentToEdit);
+      if (studentToEdit.dateOfJoining) {
+          const parts = studentToEdit.dateOfJoining.split(' ');
+          if (parts.length === 3) {
+              setJoinDay(parts[0]);
+              setJoinMonth(parts[1]);
+              setJoinYear(parts[2]);
+          }
+      } else {
+        setJoinDay('');
+        setJoinMonth('');
+        setJoinYear('');
+      }
+    } else {
+      form.reset(defaultFormValues);
+      setJoinDay('');
+      setJoinMonth('');
+      setJoinYear('');
     }
-  }, [studentToEdit, form]);
+  }, [studentToEdit, form, defaultFormValues]);
+
+  useEffect(() => {
+    if (joinDay && joinMonth && joinYear) {
+      const fullDate = `${joinDay} ${joinMonth} ${joinYear}`;
+      form.setValue('dateOfJoining', fullDate, { shouldValidate: true });
+    } else {
+      form.setValue('dateOfJoining', '', { shouldValidate: true });
+    }
+  }, [joinDay, joinMonth, joinYear, form]);
 
   useEffect(() => {
     if (!isEditMode && userRole && userRole !== 'super_admin') {
@@ -246,32 +269,46 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                             <FormMessage />
                         </FormItem>
                     )} />
-                    <FormField control={form.control} name="dateOfJoining" render={({ field }) => (
-                        <FormItem className="flex flex-col"><FormLabel>{t('form.label.joinDate')}</FormLabel>
-                        <Popover open={isJoinDatePickerOpen} onOpenChange={setIsJoinDatePickerOpen}><PopoverTrigger asChild>
-                            <FormControl>
-                                <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                  {formatDateDisplay(field.value, t('form.pickDate'))}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                            </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                fromDate={new Date(new Date().setFullYear(new Date().getFullYear() - 20))}
-                                toDate={new Date()}
-                                selected={field.value}
-                                onSelect={(date) => {
-                                  field.onChange(date);
-                                  setIsJoinDatePickerOpen(false);
-                                }}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                        </Popover><FormMessage />
-                        </FormItem>
-                    )} />
+                    <FormItem className="flex flex-col pt-2">
+                        <FormLabel>{t('form.label.joinDate')}</FormLabel>
+                        <div className="grid grid-cols-3 gap-2 items-start">
+                            <div className="space-y-1">
+                                <Label htmlFor="joinDay" className="text-xs text-muted-foreground">ቀን</Label>
+                                <Input
+                                    id="joinDay"
+                                    type="number"
+                                    placeholder="DD"
+                                    value={joinDay}
+                                    onChange={(e) => setJoinDay(e.target.value)}
+                                    min="1" max="30"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="joinMonth" className="text-xs text-muted-foreground">ወር</Label>
+                                <Select value={joinMonth} onValueChange={setJoinMonth}>
+                                <FormControl>
+                                    <SelectTrigger id="joinMonth">
+                                    <SelectValue placeholder={t('form.placeholder.selectMonth')} />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {amharicMonths.map(month => <SelectItem key={month} value={month}>{month}</SelectItem>)}
+                                </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="joinYear" className="text-xs text-muted-foreground">ዓመት</Label>
+                                <Input
+                                    id="joinYear"
+                                    type="number"
+                                    placeholder="YYYY"
+                                    value={joinYear}
+                                    onChange={(e) => setJoinYear(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <FormMessage>{form.formState.errors.dateOfJoining?.message}</FormMessage>
+                    </FormItem>
                 </div>
             </div>
             

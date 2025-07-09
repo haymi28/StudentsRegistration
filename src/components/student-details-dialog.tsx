@@ -14,11 +14,12 @@ import type { Student } from '@/lib/mock-data';
 import { useLocale } from '@/contexts/locale-provider';
 import { format } from 'date-fns';
 
-const formatDateDisplay = (date: Date | string | undefined, locale: string): string => {
+const formatDateDisplay = (date: Date | string | undefined): string => {
   if (!date) return 'N/A';
   const d = new Date(date);
-  if (isNaN(d.getTime())) return 'N/A';
-  // Use a simple date format that works across locales
+  // Check if it's a valid date string that can be parsed
+  if (isNaN(d.getTime())) return date.toString();
+  // If it is a valid date, format it
   return format(d, 'PPP');
 };
 
@@ -30,7 +31,7 @@ interface StudentDetailsDialogProps {
 }
 
 export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDetailsDialogProps) {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
 
   if (!student) {
     return null;
@@ -73,9 +74,9 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
             <DetailItem label={t('studentDetails.label.baptismalName')} value={student.baptismalName} />
             <DetailItem label={t('studentDetails.label.mothersName')} value={student.mothersName} />
             <DetailItem label={t('studentDetails.label.gender')} value={student.gender} />
-            <DetailItem label={t('studentDetails.label.dob')} value={formatDateDisplay(student.dateOfBirth, locale)} />
+            <DetailItem label={t('studentDetails.label.dob')} value={formatDateDisplay(student.dateOfBirth)} />
             <DetailItem label={t('studentDetails.label.education')} value={student.educationLevel} />
-            <DetailItem label={t('studentDetails.label.joinDate')} value={formatDateDisplay(student.dateOfJoining, locale)} />
+            <DetailItem label={t('studentDetails.label.joinDate')} value={student.dateOfJoining || 'N/A'} />
           </div>
 
           <Separator />

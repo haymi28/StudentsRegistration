@@ -24,7 +24,7 @@ export const getStudentRegistrationSchema = (t: TFunction) => z.object({
   kebele: z.string().min(1, { message: t('validation.required').replace('{field}', t('form.label.kebele')) }),
   houseNumber: z.string().min(1, { message: t('validation.required').replace('{field}', t('form.label.houseNumber')) }),
   specificAddress: z.string().min(5, { message: t('validation.required').replace('{field}', t('form.label.specificAddress')) }),
-  dateOfJoining: z.date({
+  dateOfJoining: z.string({
     required_error: t('validation.dateRequired').replace('{field}', t('form.label.joinDate')),
-  }),
+  }).min(1, { message: t('validation.dateRequired').replace('{field}', t('form.label.joinDate')) }),
 });

@@ -67,12 +67,7 @@ export function StudentList() {
     const loadStudents = () => {
       const storedStudents = localStorage.getItem('students');
       if (storedStudents) {
-        // Parse dates correctly
-        const parsedStudents = JSON.parse(storedStudents).map((s: Student) => ({
-          ...s,
-          dateOfJoining: new Date(s.dateOfJoining),
-        }));
-        setStudents(parsedStudents);
+        setStudents(JSON.parse(storedStudents));
       } else {
         setStudents([...mockStudents]);
       }

@@ -53,7 +53,7 @@ export const mockStudents: Student[] = [
     kebele: '08',
     houseNumber: '123',
     specificAddress: 'Near St. George Church',
-    dateOfJoining: new Date('2023-01-10'),
+    dateOfJoining: '2 ጥር 2015',
   },
   {
     photo: 'https://placehold.co/100x100.png',
@@ -73,7 +73,7 @@ export const mockStudents: Student[] = [
     kebele: '11',
     houseNumber: '222',
     specificAddress: 'Near Megenagna',
-    dateOfJoining: new Date('2023-03-20'),
+    dateOfJoining: '11 መጋቢት 2015',
   },
   {
     photo: 'https://placehold.co/100x100.png',
@@ -93,7 +93,7 @@ export const mockStudents: Student[] = [
     kebele: '03',
     houseNumber: '456',
     specificAddress: 'Around Edna Mall',
-    dateOfJoining: new Date('2023-01-11'),
+    dateOfJoining: '3 ጥር 2015',
   },
   {
     photo: 'https://placehold.co/100x100.png',
@@ -113,7 +113,7 @@ export const mockStudents: Student[] = [
     kebele: '10',
     houseNumber: '789',
     specificAddress: 'Piazza area',
-    dateOfJoining: new Date('2023-01-12'),
+    dateOfJoining: '4 ጥር 2015',
   },
   {
     photo: 'https://placehold.co/100x100.png',
@@ -133,6 +133,6 @@ export const mockStudents: Student[] = [
     kebele: '05',
     houseNumber: '101',
     specificAddress: 'Near Lideta Church',
-    dateOfJoining: new Date('2023-02-15'),
+    dateOfJoining: '8 የካቲት 2015',
   },
 ];
