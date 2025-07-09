@@ -282,7 +282,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                       control={form.control}
                       name="dateOfBirth"
                       render={({ field }) => (
-                          <FormItem className="flex flex-col pt-2">
+                          <FormItem className="flex flex-col">
                               <FormLabel>{t('form.label.dob')}</FormLabel>
                               <FormControl>
                                   <Input type="hidden" {...field} />
@@ -320,7 +320,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                         <FormItem>
                             <FormLabel>{t('form.label.education')}</FormLabel>
                             <FormControl>
-                                <Input placeholder={t('form.placeholder.education')} {...field} />
+                                <Input {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -329,7 +329,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                         control={form.control}
                         name="dateOfJoining"
                         render={({ field }) => (
-                            <FormItem className="flex flex-col pt-2">
+                            <FormItem className="flex flex-col">
                                 <FormLabel>{t('form.label.joinDate')}</FormLabel>
                                 <FormControl>
                                     <Input type="hidden" {...field} />
