@@ -14,7 +14,7 @@ export default function HomePage() {
             alt="Debre Gelila St. Amanuel Cathedral Logo" 
             width={120} 
             height={120}
-            className="rounded-full object-cover border-2 border-white shadow-md"
+            className="rounded-md shadow-md"
         />
         <h1 className="text-xl font-bold text-primary font-headline sm:text-2xl px-4">
             የደብረ ገሊላ ቅዱስ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት የተማሪዎች መመዝገቢያ ቅጽ
