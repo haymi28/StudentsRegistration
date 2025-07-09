@@ -288,7 +288,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                                 <Select value={joinMonth} onValueChange={setJoinMonth}>
                                 <FormControl>
                                     <SelectTrigger id="joinMonth">
-                                    <SelectValue placeholder={t('form.placeholder.selectMonth')} />
+                                    <SelectValue placeholder="ወር" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
