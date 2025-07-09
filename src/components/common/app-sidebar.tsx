@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, UserPlus, Users } from 'lucide-react';
+import { LogOut, User, UserPlus, Users } from 'lucide-react';
 import { useLocale } from '@/contexts/locale-provider';
 import { Logo } from './logo';
 import {
@@ -56,6 +56,14 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={pathname === '/account'} tooltip={t('nav.account')}>
+              <Link href="/account">
+                <User className="h-5 w-5" />
+                <span>{t('nav.account')}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
               <SidebarMenuButton onClick={handleLogout} tooltip={t('nav.logout')}>
                   <LogOut className="h-5 w-5" />

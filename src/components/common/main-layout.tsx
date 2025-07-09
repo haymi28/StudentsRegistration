@@ -7,7 +7,7 @@ import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
 import { LanguageSwitcher } from './language-switcher';
 
-const protectedRoutes = ['/students', '/register', '/attendance'];
+const protectedRoutes = ['/students', '/register', '/attendance', '/account'];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

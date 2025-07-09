@@ -42,7 +42,8 @@ export function LoginForm() {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     const { username, password } = values;
-    const user = mockUsers.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+    const storedUsers = JSON.parse(localStorage.getItem('users') || 'null') || mockUsers;
+    const user = storedUsers.find((u: { username: string; password: any; }) => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
 
     if (user) {
         localStorage.setItem('auth_token', `mock_token_for_${user.username}`);
