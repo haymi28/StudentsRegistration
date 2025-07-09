@@ -42,7 +42,6 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
   const isEditMode = !!studentToEdit;
   const { t, locale } = useLocale();
   
-  const [isDobPickerOpen, setIsDobPickerOpen] = useState(false);
   const [isJoinDatePickerOpen, setIsJoinDatePickerOpen] = useState(false);
 
   const studentRegistrationSchema = useMemo(() => getStudentRegistrationSchema(t), [t]);
@@ -76,6 +75,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
         serviceDepartment: defaultServiceDepartment,
         baptismalName: '',
         mothersName: '',
+        dateOfBirth: '',
         educationLevel: '',
         fathersPhoneNumber: '',
         mothersPhoneNumber: '',
@@ -93,7 +93,6 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     if (studentToEdit) {
       form.reset({
         ...studentToEdit,
-        dateOfBirth: studentToEdit.dateOfBirth ? new Date(studentToEdit.dateOfBirth) : undefined,
         dateOfJoining: studentToEdit.dateOfJoining ? new Date(studentToEdit.dateOfJoining) : undefined,
       });
     }
@@ -230,30 +229,12 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                 </div>
                 <div className="grid md:grid-cols-3 gap-6">
                     <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
-                        <FormItem className="flex flex-col"><FormLabel>{t('form.label.dob')}</FormLabel>
-                        <Popover open={isDobPickerOpen} onOpenChange={setIsDobPickerOpen}><PopoverTrigger asChild>
+                        <FormItem>
+                            <FormLabel>{t('form.label.dob')}</FormLabel>
                             <FormControl>
-                                <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                {formatDateDisplay(field.value, t('form.pickDate'))}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
+                                <Input placeholder="YYYY-MM-DD" {...field} />
                             </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                captionLayout="dropdown-buttons"
-                                fromDate={new Date("1930-01-01")}
-                                toDate={new Date()}
-                                selected={field.value}
-                                onSelect={(date) => {
-                                  field.onChange(date);
-                                  setIsDobPickerOpen(false);
-                                }}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                        </Popover><FormMessage />
+                            <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="educationLevel" render={({ field }) => (

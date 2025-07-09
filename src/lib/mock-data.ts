@@ -1,7 +1,7 @@
 import type { z } from 'zod';
-import type { studentRegistrationSchema } from '@/lib/validations/student';
+import type { getStudentRegistrationSchema } from '@/lib/validations/student';
 
-export type Student = z.infer<typeof studentRegistrationSchema>;
+export type Student = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
 export type UserRole = 'super_admin' | 'children_admin' | 'children_2_admin' | 'junior_admin' | 'senior_admin';
 export type ServiceDepartment = 'ቀዳማይ -1 ክፍል' | 'ቀዳማይ -2 ክፍል' | 'ካእላይ ክፍል' | 'ማእከላይ ክፍል';
@@ -43,7 +43,7 @@ export const mockStudents: Student[] = [
     serviceDepartment: 'ቀዳማይ -1 ክፍል',
     baptismalName: 'Gebre Meskel',
     mothersName: 'Woizero Bekelech',
-    dateOfBirth: new Date('2012-03-15'),
+    dateOfBirth: '2012-03-15',
     educationLevel: '5ኛ-8ኛ ክፍል',
     fathersPhoneNumber: '0911123456',
     mothersPhoneNumber: '0911234567',
@@ -63,7 +63,7 @@ export const mockStudents: Student[] = [
     serviceDepartment: 'ቀዳማይ -2 ክፍል',
     baptismalName: 'Kidus Yohannes',
     mothersName: 'Woizero Leteberhan',
-    dateOfBirth: new Date('2010-09-01'),
+    dateOfBirth: '2010-09-01',
     educationLevel: '5ኛ-8ኛ ክፍል',
     fathersPhoneNumber: '0931123456',
     mothersPhoneNumber: '0931234567',
@@ -83,7 +83,7 @@ export const mockStudents: Student[] = [
     serviceDepartment: 'ካእላይ ክፍል',
     baptismalName: 'Walatta Sellassie',
     mothersName: 'Woizero Desta',
-    dateOfBirth: new Date('2008-07-20'),
+    dateOfBirth: '2008-07-20',
     educationLevel: '9ኛ-10ኛ ክፍል',
     fathersPhoneNumber: '0912345678',
     mothersPhoneNumber: '0912456789',
@@ -103,7 +103,7 @@ export const mockStudents: Student[] = [
     serviceDepartment: 'ማእከላይ ክፍል',
     baptismalName: 'Fikre Mariam',
     mothersName: 'Woizero Ayelech',
-    dateOfBirth: new Date('2004-01-01'),
+    dateOfBirth: '2004-01-01',
     educationLevel: 'ዲግሪ',
     fathersPhoneNumber: '',
     mothersPhoneNumber: '0913123456',
@@ -123,7 +123,7 @@ export const mockStudents: Student[] = [
     serviceDepartment: 'ቀዳማይ -1 ክፍል',
     baptismalName: 'Tekle Haymanot',
     mothersName: 'Woizero Almaz',
-    dateOfBirth: new Date('2013-05-10'),
+    dateOfBirth: '2013-05-10',
     educationLevel: '1ኛ-4ኛ ክፍል',
     fathersPhoneNumber: '0921123456',
     mothersPhoneNumber: '0921234567',

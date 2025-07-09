@@ -14,9 +14,7 @@ export const getStudentRegistrationSchema = (t: TFunction) => z.object({
   serviceDepartment: z.string({ required_error: t('validation.required').replace('{field}', t('form.label.department')) }).min(1, { message: t('validation.required').replace('{field}', t('form.label.department')) }),
   baptismalName: z.string().min(2, { message: t('validation.required').replace('{field}', t('form.label.baptismalName')) }),
   mothersName: z.string().min(2, { message: t('validation.required').replace('{field}', t('form.label.mothersName')) }),
-  dateOfBirth: z.date({
-    required_error: t('validation.dateRequired').replace('{field}', t('form.label.dob')),
-  }),
+  dateOfBirth: z.string().min(1, { message: t('validation.dateRequired').replace('{field}', t('form.label.dob')) }),
   educationLevel: z.string().min(1, { message: t('validation.required').replace('{field}', t('form.label.education')) }),
   fathersPhoneNumber: z.string().regex(phoneRegex, t('validation.invalidNumber')).optional().or(z.literal('')),
   mothersPhoneNumber: z.string().regex(phoneRegex, t('validation.invalidNumber')).optional().or(z.literal('')),

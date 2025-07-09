@@ -70,7 +70,6 @@ export function StudentList() {
         // Parse dates correctly
         const parsedStudents = JSON.parse(storedStudents).map((s: Student) => ({
           ...s,
-          dateOfBirth: new Date(s.dateOfBirth),
           dateOfJoining: new Date(s.dateOfJoining),
         }));
         setStudents(parsedStudents);
