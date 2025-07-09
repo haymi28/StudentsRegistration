@@ -18,7 +18,6 @@ import { ImageUpload } from './image-upload';
 import { useRouter } from 'next/navigation';
 import { mockStudents, roleToServiceDepartmentMap, UserRole, ServiceDepartment, Student } from '@/lib/mock-data';
 import { useLocale } from '@/contexts/locale-provider';
-import { Label } from './ui/label';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -132,18 +131,18 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
   }, [studentToEdit, form, defaultFormValues]);
 
   useEffect(() => {
-    if (joinDay && joinMonth && joinYear) {
-      const fullDate = `${joinDay} ${joinMonth} ${joinYear}`;
-      form.setValue('dateOfJoining', fullDate, { shouldValidate: true });
+    if (joinDay || joinMonth || joinYear) {
+      const fullDate = `${joinDay || ''} ${joinMonth || ''} ${joinYear || ''}`.trim();
+      form.setValue('dateOfJoining', fullDate || '', { shouldValidate: true });
     } else {
       form.setValue('dateOfJoining', '', { shouldValidate: true });
     }
   }, [joinDay, joinMonth, joinYear, form]);
 
   useEffect(() => {
-    if (birthDay && birthMonth && birthYear) {
-      const fullDate = `${birthDay} ${birthMonth} ${birthYear}`;
-      form.setValue('dateOfBirth', fullDate, { shouldValidate: true });
+    if (birthDay || birthMonth || birthYear) {
+      const fullDate = `${birthDay || ''} ${birthMonth || ''} ${birthYear || ''}`.trim();
+      form.setValue('dateOfBirth', fullDate || '', { shouldValidate: true });
     } else {
       form.setValue('dateOfBirth', '', { shouldValidate: true });
     }
@@ -289,40 +288,29 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                                   <Input type="hidden" {...field} />
                               </FormControl>
                               <div className="grid grid-cols-3 gap-2 items-start">
-                                  <div className="space-y-1">
-                                      <Label htmlFor="birthDay" className="text-xs text-muted-foreground">ቀን</Label>
-                                      <Input
-                                          id="birthDay"
-                                          type="number"
-                                          placeholder="DD"
-                                          value={birthDay}
-                                          onChange={(e) => setBirthDay(e.target.value)}
-                                          min="1" max="30"
-                                      />
-                                  </div>
-                                  <div className="space-y-1">
-                                      <Label htmlFor="birthMonth" className="text-xs text-muted-foreground">ወር</Label>
-                                      <Select value={birthMonth} onValueChange={setBirthMonth}>
-                                      <FormControl>
-                                          <SelectTrigger id="birthMonth">
-                                          <SelectValue placeholder="ወር" />
-                                          </SelectTrigger>
-                                      </FormControl>
+                                  <Input
+                                      id="birthDay"
+                                      type="number"
+                                      placeholder="ቀን"
+                                      value={birthDay}
+                                      onChange={(e) => setBirthDay(e.target.value)}
+                                      min="1" max="30"
+                                  />
+                                  <Select value={birthMonth} onValueChange={setBirthMonth}>
+                                      <SelectTrigger id="birthMonth">
+                                      <SelectValue placeholder="ወር" />
+                                      </SelectTrigger>
                                       <SelectContent>
                                           {amharicMonths.map(month => <SelectItem key={month} value={month}>{month}</SelectItem>)}
                                       </SelectContent>
-                                      </Select>
-                                  </div>
-                                  <div className="space-y-1">
-                                      <Label htmlFor="birthYear" className="text-xs text-muted-foreground">ዓመት</Label>
-                                      <Input
-                                          id="birthYear"
-                                          type="number"
-                                          placeholder="YYYY"
-                                          value={birthYear}
-                                          onChange={(e) => setBirthYear(e.target.value)}
-                                      />
-                                  </div>
+                                  </Select>
+                                  <Input
+                                      id="birthYear"
+                                      type="number"
+                                      placeholder="ዓመት"
+                                      value={birthYear}
+                                      onChange={(e) => setBirthYear(e.target.value)}
+                                  />
                               </div>
                               <FormMessage />
                           </FormItem>
@@ -337,46 +325,44 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                             <FormMessage />
                         </FormItem>
                     )} />
-                    <FormItem className="flex flex-col pt-2">
-                        <FormLabel>{t('form.label.joinDate')}</FormLabel>
-                        <div className="grid grid-cols-3 gap-2 items-start">
-                            <div className="space-y-1">
-                                <Label htmlFor="joinDay" className="text-xs text-muted-foreground">ቀን</Label>
-                                <Input
-                                    id="joinDay"
-                                    type="number"
-                                    placeholder="DD"
-                                    value={joinDay}
-                                    onChange={(e) => setJoinDay(e.target.value)}
-                                    min="1" max="30"
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label htmlFor="joinMonth" className="text-xs text-muted-foreground">ወር</Label>
-                                <Select value={joinMonth} onValueChange={setJoinMonth}>
+                    <FormField
+                        control={form.control}
+                        name="dateOfJoining"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col pt-2">
+                                <FormLabel>{t('form.label.joinDate')}</FormLabel>
                                 <FormControl>
-                                    <SelectTrigger id="joinMonth">
-                                    <SelectValue placeholder="ወር" />
-                                    </SelectTrigger>
+                                    <Input type="hidden" {...field} />
                                 </FormControl>
-                                <SelectContent>
-                                    {amharicMonths.map(month => <SelectItem key={month} value={month}>{month}</SelectItem>)}
-                                </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-1">
-                                <Label htmlFor="joinYear" className="text-xs text-muted-foreground">ዓመት</Label>
-                                <Input
-                                    id="joinYear"
-                                    type="number"
-                                    placeholder="YYYY"
-                                    value={joinYear}
-                                    onChange={(e) => setJoinYear(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <FormMessage>{form.formState.errors.dateOfJoining?.message}</FormMessage>
-                    </FormItem>
+                                <div className="grid grid-cols-3 gap-2 items-start">
+                                    <Input
+                                        id="joinDay"
+                                        type="number"
+                                        placeholder="ቀን"
+                                        value={joinDay}
+                                        onChange={(e) => setJoinDay(e.target.value)}
+                                        min="1" max="30"
+                                    />
+                                    <Select value={joinMonth} onValueChange={setJoinMonth}>
+                                        <SelectTrigger id="joinMonth">
+                                        <SelectValue placeholder="ወር" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {amharicMonths.map(month => <SelectItem key={month} value={month}>{month}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                    <Input
+                                        id="joinYear"
+                                        type="number"
+                                        placeholder="ዓመት"
+                                        value={joinYear}
+                                        onChange={(e) => setJoinYear(e.target.value)}
+                                    />
+                                </div>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 </div>
             </div>
             
