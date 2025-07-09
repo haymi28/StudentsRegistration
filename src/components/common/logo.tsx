@@ -7,7 +7,7 @@ export function Logo() {
       <div className="p-2 bg-primary rounded-lg">
         <BookCopy className="h-6 w-6 text-primary-foreground" />
       </div>
-      <span className="hidden sm:inline-block text-xl font-bold text-primary tracking-tight">
+      <span className="hidden sm:inline-block text-xl font-bold text-primary tracking-tight group-data-[state=collapsed]:hidden">
         የተማሪዎች መመዝገቢያ ቅጽ
       </span>
     </Link>
