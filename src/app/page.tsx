@@ -10,11 +10,11 @@ export default function HomePage() {
   return (
     <div className="flex flex-col items-center justify-center gap-6 text-center">
         <Image 
-            src="https://placehold.co/120x120.png" 
+            src="https://debregelila.org/wp-content/uploads/2024/10/cropped-IMG_20240909_155141_966-scaled-1.jpg" 
             alt="Debre Gelila St. Amanuel Cathedral Logo" 
             width={120} 
             height={120}
-            data-ai-hint="church seal"
+            className="rounded-full"
         />
         <h1 className="text-xl font-bold text-primary font-headline sm:text-2xl px-4">
             የደብረ ገሊላ ቅዱስ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት የተማሪዎች መመዝገቢያ ቅጽ
