@@ -109,7 +109,6 @@ export function StudentList() {
   }, [students, userRole, searchQuery]);
 
   const isAllRowsSelected = selectedRowKeys.size > 0 && selectedRowKeys.size === filteredStudents.length && filteredStudents.length > 0;
-  const isSomeRowsSelected = selectedRowKeys.size > 0 && !isAllRowsSelected;
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -220,7 +219,8 @@ export function StudentList() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="border rounded-lg overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="border rounded-lg overflow-x-auto hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -303,6 +303,70 @@ export function StudentList() {
                 )}
               </TableBody>
             </Table>
+          </div>
+          
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredStudents.length > 0 ? (
+                filteredStudents.map((student) => (
+                    <Card key={student.registrationNumber} data-state={selectedRowKeys.has(student.registrationNumber) ? 'selected' : 'unselected'} className="data-[state=selected]:bg-muted/50">
+                        <div className="flex items-start p-4 gap-4">
+                            <div className="flex-shrink-0 pt-1">
+                                <Checkbox
+                                    checked={selectedRowKeys.has(student.registrationNumber)}
+                                    onCheckedChange={(checked) => handleRowSelect(student.registrationNumber, !!checked)}
+                                    aria-label={`Select ${student.fullName}`}
+                                />
+                            </div>
+                            <Avatar className="w-12 h-12 flex-shrink-0">
+                                <AvatarImage src={student.photo} alt={student.fullName} data-ai-hint="student portrait" />
+                                <AvatarFallback>{student.fullName.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-grow space-y-1">
+                                <p className="font-semibold leading-tight">{student.fullName}</p>
+                                <p className="text-sm text-muted-foreground">{student.registrationNumber}</p>
+                                <div className="pt-1">
+                                    <Badge variant="secondary">{student.serviceDepartment}</Badge>
+                                </div>
+                                <p className="text-sm text-muted-foreground pt-1">{student.phoneNumber}</p>
+                            </div>
+                            <div className="flex-shrink-0 -mr-2">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" className="h-8 w-8 p-0">
+                                            <span className="sr-only">Open menu</span>
+                                            <MoreHorizontal className="h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuLabel>{t('students.table.actions')}</DropdownMenuLabel>
+                                        <DropdownMenuItem onClick={() => handleViewDetails(student)}>
+                                            <Eye className="mr-2 h-4 w-4" />
+                                            {t('students.actions.view')}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => router.push(`/students/edit/${student.registrationNumber}`)}>
+                                            <Edit className="mr-2 h-4 w-4" />
+                                            {t('students.actions.edit')}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                                            onClick={() => setStudentToDelete(student)}
+                                        >
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            {t('students.actions.delete')}
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        </div>
+                    </Card>
+                ))
+            ) : (
+                <div className="text-center text-muted-foreground py-12">
+                    {t('students.noStudents')}
+                </div>
+            )}
           </div>
         </CardContent>
       </Card>
