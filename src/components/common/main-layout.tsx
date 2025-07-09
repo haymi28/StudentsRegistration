@@ -2,12 +2,11 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import {
-  SidebarProvider,
-  SidebarInset,
-} from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
+import { Logo } from './logo';
+import { LanguageSwitcher } from './language-switcher';
 
 const protectedRoutes = ['/students', '/register', '/attendance'];
 
@@ -19,14 +18,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem('auth_token');
-      const authenticated = !!token;
-      setIsAuthenticated(authenticated);
-
-      const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-      
-      if (!authenticated && isProtectedRoute) {
-        router.replace('/');
-      }
+      setIsAuthenticated(!!token);
     };
 
     checkAuth();
@@ -35,29 +27,46 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [pathname, router]);
+  }, []);
 
   if (isAuthenticated === null) {
     return null; // Don't render anything until auth state is determined
   }
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+
+  // Not logged in and trying to access a protected page -> redirect
   if (!isAuthenticated && isProtectedRoute) {
-      // While redirecting, it's best to show nothing to avoid flashing content.
-      return null;
+    router.replace('/');
+    return null;
   }
-  
+
+  // Logged in and trying to access login page -> redirect
+  if (isAuthenticated && pathname === '/') {
+    router.replace('/students');
+    return null;
+  }
+
+  // Unauthenticated layout (Login page)
   if (!isAuthenticated) {
     return (
       <div className="relative flex min-h-screen flex-col">
-        <Header />
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container flex h-16 items-center">
+            <Logo />
+            <div className="flex flex-1 items-center justify-end space-x-2">
+              <LanguageSwitcher />
+            </div>
+          </div>
+        </header>
         <main className="flex flex-1 items-center justify-center p-4">
-            {children}
+          {children}
         </main>
       </div>
     );
   }
 
+  // Authenticated layout
   return (
     <SidebarProvider>
       <AppSidebar />
