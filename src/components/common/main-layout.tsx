@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import {
   SidebarProvider,
@@ -9,28 +9,44 @@ import {
 import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
 
+const protectedRoutes = ['/students', '/register', '/attendance'];
+
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem('auth_token');
-      setIsAuthenticated(!!token);
+      const authenticated = !!token;
+      setIsAuthenticated(authenticated);
+
+      const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+      
+      if (!authenticated && isProtectedRoute) {
+        router.replace('/');
+      }
     };
 
     checkAuth();
-    window.addEventListener('storage', checkAuth);
+    const handleStorageChange = () => checkAuth();
+    window.addEventListener('storage', handleStorageChange);
     return () => {
-      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('storage', handleStorageChange);
     };
-  }, [pathname]);
+  }, [pathname, router]);
 
   if (isAuthenticated === null) {
-    // Return null or a loader to prevent hydration mismatch while we check auth status.
-    return null;
+    return null; // Don't render anything until auth state is determined
   }
 
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  if (!isAuthenticated && isProtectedRoute) {
+      // While redirecting, it's best to show nothing to avoid flashing content.
+      return null;
+  }
+  
   if (!isAuthenticated) {
     return (
       <div className="relative flex min-h-screen flex-col">

@@ -1,38 +1,28 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { StudentRegistrationForm } from '@/components/student-registration-form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { mockStudents, Student } from '@/lib/mock-data';
 import { useLocale } from '@/contexts/locale-provider';
 
 export default function EditStudentPage() {
-  const router = useRouter();
   const params = useParams();
   const { id } = params;
   const { t } = useLocale();
   
   const [student, setStudent] = useState<Student | null | undefined>(undefined);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-      router.replace('/');
-    } else {
-      setIsCheckingAuth(false);
-    }
-  }, [router]);
 
   useEffect(() => {
     if (id) {
-      const studentData = mockStudents.find(s => s.registrationNumber === id);
+      const storedStudents = JSON.parse(localStorage.getItem('students') || 'null') || mockStudents;
+      const studentData = storedStudents.find((s: Student) => s.registrationNumber === id);
       setStudent(studentData || null);
     }
   }, [id]);
 
-  if (isCheckingAuth || student === undefined) {
+  if (student === undefined) {
     return (
       <div className="container py-8">
         <div className="space-y-4 max-w-4xl mx-auto">
