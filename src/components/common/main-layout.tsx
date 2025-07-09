@@ -29,21 +29,33 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (isAuthenticated === null) {
+      return; // Wait until authentication status is determined
+    }
+
+    const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+
+    // Not logged in and trying to access a protected page -> redirect
+    if (!isAuthenticated && isProtectedRoute) {
+      router.replace('/');
+    }
+
+    // Logged in and trying to access login page -> redirect
+    if (isAuthenticated && pathname === '/') {
+      router.replace('/students');
+    }
+  }, [isAuthenticated, pathname, router]);
+
+
   if (isAuthenticated === null) {
-    return null; // Don't render anything until auth state is determined
+    return null; // Render nothing until auth state is known to prevent layout flashing
   }
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-
-  // Not logged in and trying to access a protected page -> redirect
-  if (!isAuthenticated && isProtectedRoute) {
-    router.replace('/');
-    return null;
-  }
-
-  // Logged in and trying to access login page -> redirect
-  if (isAuthenticated && pathname === '/') {
-    router.replace('/students');
+  
+  // Return null while redirecting to prevent rendering the old page content
+  if ((!isAuthenticated && isProtectedRoute) || (isAuthenticated && pathname === '/')) {
     return null;
   }
 
