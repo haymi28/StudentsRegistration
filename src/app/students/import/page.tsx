@@ -7,7 +7,7 @@ import { UserRole } from '@/lib/mock-data';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function BulkImportPage() {
+export default function ImportPage() {
   const router = useRouter();
   const { t } = useLocale();
   const [userRole, setUserRole] = useState<UserRole | null>(null);
