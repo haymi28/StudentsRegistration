@@ -10,7 +10,7 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { mockStudents, Student, UserRole, roleToServiceDepartmentMap, ServiceDepartment, serviceDepartmentTransferMap, mockUsers } from '@/lib/mock-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -42,6 +42,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useLocale } from '@/contexts/locale-provider';
 
+const STUDENTS_PER_PAGE = 10;
+
 export function StudentList() {
   const router = useRouter();
   const [students, setStudents] = useState<Student[]>([]);
@@ -53,6 +55,7 @@ export function StudentList() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
   const { t } = useLocale();
 
@@ -115,15 +118,36 @@ export function StudentList() {
     
     return studentsToDisplay;
   }, [students, userRole, searchQuery]);
+  
+  const totalPages = Math.ceil(filteredStudents.length / STUDENTS_PER_PAGE);
 
-  const isAllRowsSelected = selectedRowKeys.size > 0 && selectedRowKeys.size === filteredStudents.length && filteredStudents.length > 0;
+  const paginatedStudents = useMemo(() => {
+    const startIndex = (currentPage - 1) * STUDENTS_PER_PAGE;
+    const endIndex = startIndex + STUDENTS_PER_PAGE;
+    return filteredStudents.slice(startIndex, endIndex);
+  }, [filteredStudents, currentPage]);
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedRowKeys(new Set(filteredStudents.map(s => s.registrationNumber)));
-    } else {
-      setSelectedRowKeys(new Set());
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    } else if (totalPages === 0) {
+      setCurrentPage(1);
     }
+  }, [totalPages, currentPage]);
+
+  const currentPageStudentIds = useMemo(() => new Set(paginatedStudents.map(s => s.registrationNumber)), [paginatedStudents]);
+  const selectedOnCurrentPage = new Set([...selectedRowKeys].filter(id => currentPageStudentIds.has(id)));
+
+  const isAllOnPageSelected = paginatedStudents.length > 0 && selectedOnCurrentPage.size === paginatedStudents.length;
+
+  const handleSelectAllOnPage = (checked: boolean) => {
+    const newSelection = new Set(selectedRowKeys);
+    if (checked) {
+      paginatedStudents.forEach(student => newSelection.add(student.registrationNumber));
+    } else {
+      paginatedStudents.forEach(student => newSelection.delete(student.registrationNumber));
+    }
+    setSelectedRowKeys(newSelection);
   };
 
   const handleRowSelect = (rowKey: string, checked: boolean) => {
@@ -194,6 +218,30 @@ export function StudentList() {
 
   const fromServiceDepartment = userRole && userRole !== 'super_admin' ? roleToServiceDepartmentMap[userRole] : undefined;
   const canTransfer = fromServiceDepartment && !!serviceDepartmentTransferMap[fromServiceDepartment];
+  
+  const PaginationControls = () => (
+    <div className="flex items-center justify-center space-x-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+      >
+        {t('pagination.previous')}
+      </Button>
+      <span className="text-sm text-muted-foreground">
+        {t('pagination.page').replace('{currentPage}', String(currentPage)).replace('{totalPages}', String(totalPages))}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+        disabled={currentPage === totalPages}
+      >
+        {t('pagination.next')}
+      </Button>
+    </div>
+  );
 
   return (
     <>
@@ -233,10 +281,10 @@ export function StudentList() {
                 <TableRow>
                   <TableHead className="w-[50px]">
                     <Checkbox
-                      checked={isAllRowsSelected}
-                      onCheckedChange={handleSelectAll}
-                      aria-label="Select all"
-                      disabled={filteredStudents.length === 0}
+                      checked={isAllOnPageSelected}
+                      onCheckedChange={(checked) => handleSelectAllOnPage(!!checked)}
+                      aria-label="Select all on this page"
+                      disabled={paginatedStudents.length === 0}
                     />
                   </TableHead>
                   <TableHead className="w-[80px]">{t('students.table.photo')}</TableHead>
@@ -248,8 +296,8 @@ export function StudentList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredStudents.length > 0 ? (
-                  filteredStudents.map((student) => (
+                {paginatedStudents.length > 0 ? (
+                  paginatedStudents.map((student) => (
                     <TableRow key={student.registrationNumber} data-state={selectedRowKeys.has(student.registrationNumber) && "selected"}>
                       <TableCell>
                           <Checkbox
@@ -314,8 +362,8 @@ export function StudentList() {
           
           {/* Mobile Card View */}
           <div className="md:hidden space-y-4">
-            {filteredStudents.length > 0 ? (
-                filteredStudents.map((student) => (
+            {paginatedStudents.length > 0 ? (
+                paginatedStudents.map((student) => (
                     <Card key={student.registrationNumber} data-state={selectedRowKeys.has(student.registrationNumber) ? 'selected' : 'unselected'} className="data-[state=selected]:bg-muted/50">
                         <div className="flex items-start p-4 gap-4">
                             <div className="flex-shrink-0 pt-1">
@@ -376,6 +424,11 @@ export function StudentList() {
             )}
           </div>
         </CardContent>
+        {totalPages > 1 && (
+          <CardFooter>
+            <PaginationControls />
+          </CardFooter>
+        )}
       </Card>
 
       {userRole && 
@@ -412,3 +465,5 @@ export function StudentList() {
     </>
   );
 }
+
+    
