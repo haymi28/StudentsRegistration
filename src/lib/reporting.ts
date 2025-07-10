@@ -3,8 +3,6 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import type { Student, ServiceDepartment } from './mock-data';
-import { format } from 'date-fns';
-
 
 export interface ReportTranslations {
   title: string;
@@ -18,12 +16,9 @@ export interface ReportTranslations {
   dob: string;
 }
 
-const formatDateForPdf = (date: Date | string | undefined): string => {
-  if (!date) return 'N/A';
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return 'N/A';
-  return format(d, 'PPP');
-}
+const formatDateForPdf = (date: string | undefined): string => {
+  return date || 'N/A';
+};
 
 export async function generateTransferReport(
   students: Student[],
@@ -48,12 +43,11 @@ export async function generateTransferReport(
       <td>${student.registrationNumber}</td>
       <td>${student.fullName}</td>
       <td>${student.gender}</td>
-      <td>${student.dateOfBirth ? formatDateForPdf(student.dateOfBirth) : 'N/A'}</td>
+      <td>${formatDateForPdf(student.dateOfBirth)}</td>
     </tr>
   `).join('');
 
-  const today = new Date();
-  const dateToday = formatDateForPdf(today);
+  const dateToday = 'ዛሬ';
 
 
   reportElement.innerHTML = `
