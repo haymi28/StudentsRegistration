@@ -1,196 +1,198 @@
 {
-  "nav": {
-    "students": "Students",
-    "newStudent": "New Student",
-    "account": "Account",
-    "logout": "Logout",
-    "language": "Language"
-  },
-  "login": {
-    "title": "Login",
-    "description": "Enter your credentials to access your account",
-    "username": "Username",
-    "password": "Password",
-    "usernamePlaceholder": "Select Username",
-    "button": "Login",
-    "loadingButton": "Logging in...",
-    "showPassword": "Show password",
-    "hidePassword": "Hide password",
-    "success": "Login Successful",
-    "successDescription": "Welcome back, {username}!",
-    "fail": "Login Failed",
-    "failDescription": "Invalid username or password. Please try again."
-  },
-  "register": {
-    "pageTitle": "New Student Registration",
-    "pageDescription": "Fill out the form below to register a new student.",
-    "editPageTitle": "Edit Student Information",
-    "editPageDescription": "Update the student's details below."
-  },
-  "students": {
-    "title": "Student List",
-    "descriptionSuperAdmin": "View and manage all students across all departments.",
-    "descriptionAdmin": "View and manage students in the {department} department.",
-    "searchPlaceholder": "Search by name or ID...",
-    "transferButton": "Transfer ({count})",
-    "noStudents": "No students found.",
-    "deleteSuccess": "Student Deleted",
-    "deleteSuccessDescription": "{name} has been successfully deleted.",
-    "deleteDialog": {
-      "title": "Are you sure?",
-      "description": "This will permanently delete the student {name}. This action cannot be undone.",
-      "cancel": "Cancel",
-      "confirm": "Delete"
+    "nav": {
+      "students": "Students",
+      "newStudent": "New Student",
+      "import": "Bulk Import",
+      "attendance": "Attendance",
+      "account": "Manage Account",
+      "language": "Language",
+      "logout": "Logout"
     },
-    "table": {
-      "photo": "Photo",
-      "regNumber": "Reg. Number",
-      "fullName": "Full Name",
-      "department": "Department",
-      "phone": "Phone",
-      "actions": "Actions"
+    "login": {
+      "title": "Login",
+      "description": "Please sign in to your account to continue",
+      "username": "Username",
+      "usernamePlaceholder": "Select a username",
+      "password": "Password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "button": "Login",
+      "loadingButton": "Loading...",
+      "success": "Login Successful!",
+      "successDescription": "Welcome back, {username}!",
+      "fail": "Login Failed",
+      "failDescription": "Incorrect username or password. Please try again."
     },
-    "actions": {
-      "view": "View Details",
-      "edit": "Edit",
-      "delete": "Delete"
-    }
-  },
-  "account": {
-    "pageTitle": "Manage Account",
-    "pageDescription": "Update your profile and change your password.",
-    "updateProfileTitle": "Update Profile",
-    "updateProfileDescription": "Change your display name.",
-    "changePasswordTitle": "Change Password",
-    "changePasswordDescription": "Choose a new, secure password.",
-    "displayName": "Display Name",
-    "displayNamePlaceholder": "Enter your full name",
-    "currentPassword": "Current Password",
-    "newPassword": "New Password",
-    "confirmPassword": "Confirm New Password",
-    "changePasswordButton": "Change Password",
-    "updateProfileSuccessTitle": "Profile Updated",
-    "updateProfileSuccessDescription": "Your display name has been changed successfully.",
-    "changePasswordSuccessTitle": "Password Changed",
-    "changePasswordSuccessDescription": "Your password has been changed successfully."
-  },
-  "form": {
-    "title": "Registration Form",
-    "editTitle": "Edit Student",
-    "photoSection": "Student Photo",
-    "photoLabel": "Photo",
-    "personalInfoSection": "Personal Information",
-    "contactInfoSection": "Contact Information",
-    "addressSection": "Address Information",
-    "label": {
-      "regNumber": "Registration Number",
-      "fullName": "Full Name (Amharic)",
-      "gender": "Gender",
-      "department": "Service Department",
-      "baptismalName": "Baptismal Name",
-      "mothersName": "Mother's Name",
-      "dob": "Date of Birth (E.C.)",
-      "education": "Education Level",
-      "joinDate": "Date of Joining (E.C.)",
-      "phone": "Phone Number",
-      "additionalPhone": "Additional Phone",
-      "fathersPhone": "Father's Phone",
-      "mothersPhone": "Mother's Phone",
-      "subcity": "Subcity",
-      "kebele": "Kebele",
-      "houseNumber": "House Number",
-      "specificAddress": "Specific Address"
+    "register": {
+      "pageTitle": "Student Registration Form",
+      "pageDescription": "Fill out the student's information in the form below",
+      "editPageTitle": "Edit Student Information",
+      "editPageDescription": "Update the student's information below"
     },
-    "placeholder": {
-      "regNumber": "e.g., S001",
-      "selectGender": "Select Gender",
-      "selectDepartment": "Select Department",
-      "address": "Enter specific address details",
-      "day": "Day",
-      "month": "Month",
-      "year": "Year"
+    "students": {
+      "title": "Student List",
+      "descriptionSuperAdmin": "View and manage students across all departments.",
+      "descriptionAdmin": "View and manage students in the {department}",
+      "searchPlaceholder": "Search by name or registration number...",
+      "transferButton": "Transfer {count} Students",
+      "table": {
+        "photo": "Photo",
+        "regNumber": "Reg. Number",
+        "fullName": "Full Name",
+        "department": "Department",
+        "phone": "Phone Number",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view": "View Details",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "noStudents": "No students found.",
+      "deleteSuccess": "Student Deleted",
+      "deleteSuccessDescription": "{name} has been successfully deleted.",
+      "deleteDialog": {
+        "title": "Are you sure you want to delete this student?",
+        "description": "This action will permanently remove {name} from the system. You cannot undo this.",
+        "cancel": "Cancel",
+        "confirm": "Yes, Delete"
+      }
     },
-    "submit": "Register Student",
-    "save": "Save Changes",
-    "loading": "Submitting...",
-    "registerSuccess": "Student Registered",
-    "registerSuccessDescription": "{name} has been successfully registered.",
-    "updateSuccess": "Student Updated",
-    "updateSuccessDescription": "{name}'s information has been updated."
-  },
-  "studentDetails": {
-    "title": "Student Details",
-    "description": "Viewing details for {name}.",
-    "personalInfo": "Personal Information",
-    "contactInfo": "Contact Information",
-    "address": "Address",
-    "label": {
-      "fullName": "Full Name",
-      "baptismalName": "Baptismal Name",
-      "mothersName": "Mother's Name",
-      "gender": "Gender",
-      "dob": "Date of Birth",
-      "education": "Education Level",
-      "joinDate": "Date of Joining",
-      "phone": "Phone",
-      "additionalPhone": "Additional Phone",
-      "fathersPhone": "Father's Phone",
-      "mothersPhone": "Mother's Phone",
-      "subcity": "Subcity",
-      "kebele": "Kebele",
-      "houseNumber": "House No.",
-      "specificAddress": "Specific Address"
-    }
-  },
-  "transfer": {
-    "title": "Transfer Students",
-    "description": "You are about to transfer {count} student(s) from {from}.",
-    "fromLabel": "From",
-    "toLabel": "To",
-    "toPlaceholder": "Select destination department",
-    "cancel": "Cancel",
-    "confirm": "Transfer",
-    "loading": "Transferring...",
-    "success": "Transfer Successful",
-    "successDescription": "{count} students have been transferred to {department}.",
-    "multipleDepartments": "Multiple Departments",
-    "noOptionsMultiple": "Cannot transfer students from multiple departments at once. Please select students from the same department.",
-    "noOptionsHighest": "These students are already in the highest department and cannot be transferred."
-  },
-  "serviceDepartment": {
-    "children_1": "Children Section 1",
-    "children_2": "Children Section 2",
-    "junior": "Junior Section",
-    "senior": "Senior Section",
-    "youth": "Youth Section"
-  },
-  "pdf": {
+    "studentDetails": {
+      "title": "Student Details",
+      "description": "Full information for {name} is detailed below.",
+      "personalInfo": "Personal Information",
+      "contactInfo": "Contact Information",
+      "address": "Address Information",
+      "label": {
+        "fullName": "Full Name",
+        "baptismalName": "Baptismal Name",
+        "mothersName": "Mother's Name",
+        "gender": "Gender",
+        "dob": "Date of Birth",
+        "education": "Education Level",
+        "joinDate": "Date of Joining",
+        "phone": "Phone Number",
+        "additionalPhone": "Additional Phone",
+        "fathersPhone": "Father's Phone",
+        "mothersPhone": "Mother's Phone",
+        "subcity": "Subcity",
+        "kebele": "Kebele",
+        "houseNumber": "House Number",
+        "specificAddress": "Specific Address"
+      }
+    },
     "transfer": {
-      "title": "Student Transfer Report",
-      "from": "From Department:",
-      "to": "To Department:",
-      "date": "Date:",
-      "generatedBy": "Generated By:",
-      "regNumber": "Reg. Number",
-      "fullName": "Full Name",
-      "gender": "Gender",
-      "dob": "Date of Birth"
-    }
-  },
-  "common": {
-    "error": "Error",
-    "errorDescription": "An unexpected error occurred. Please try again.",
-    "userNotFound": "User could not be found. Please log out and log in again."
-  },
-  "validation": {
-    "required": "{field} is required",
-    "min": "{field} must be at least {length} characters",
-    "invalidNumber": "Invalid phone number",
-    "currentPasswordIncorrect": "Current password is not correct",
-    "passwordMismatch": "Passwords do not match",
-    "gender": {
-      "male": "Male",
-      "female": "Female"
+      "title": "Transfer Students",
+      "description": "You have selected {count} students to transfer from {from}.",
+      "from": "From:",
+      "multipleDepartments": "Multiple Departments",
+      "toLabel": "To:",
+      "toPlaceholder": "Select a service department",
+      "noOptionsMultiple": "Cannot transfer students from different departments at the same time.",
+      "noOptionsHighest": "No transfer option available for this department.",
+      "cancel": "Cancel",
+      "confirm": "Transfer",
+      "loading": "Transferring...",
+      "success": "Transfer Successful!",
+      "successDescription": "{count} students have been successfully transferred to {department}."
+    },
+    "pdf": {
+      "transfer": {
+        "title": "Student Transfer Report",
+        "from": "From:",
+        "to": "To:",
+        "date": "Date:",
+        "generatedBy": "Generated By:",
+        "regNumber": "Reg. Number",
+        "fullName": "Full Name",
+        "gender": "Gender"
+      }
+    },
+    "form": {
+      "title": "Student Registration Form",
+      "editTitle": "Edit Student Information",
+      "photoSection": "Photo",
+      "photoLabel": "Student's Photo",
+      "personalInfoSection": "Personal Information",
+      "contactInfoSection": "Contact Information",
+      "addressSection": "Address Information",
+      "label": {
+        "regNumber": "Registration No.",
+        "fullName": "Full Name",
+        "gender": "Gender",
+        "baptismalName": "Baptismal Name",
+        "mothersName": "Mother's Name",
+        "department": "Service Department",
+        "dob": "Date of Birth",
+        "education": "Education Level",
+        "joinDate": "Date of Joining",
+        "phone": "Student's Phone Number",
+        "additionalPhone": "Additional Phone Number",
+        "fathersPhone": "Father's Phone Number",
+        "mothersPhone": "Mother's Phone Number",
+        "subcity": "Subcity",
+        "kebele": "Kebele",
+        "houseNumber": "House Number",
+        "specificAddress": "Specific Address"
+      },
+      "placeholder": {
+        "regNumber": "e.g., S001",
+        "selectGender": "Select Gender",
+        "selectDepartment": "Select Department",
+        "day": "Day",
+        "month": "Month",
+        "year": "Year",
+        "address": "Enter specific address details"
+      },
+      "submit": "Submit",
+      "save": "Save Changes",
+      "loading": "Loading...",
+      "registerSuccess": "Registration Successful!",
+      "registerSuccessDescription": "{name} has been successfully registered.",
+      "updateSuccess": "Update Successful!",
+      "updateSuccessDescription": "Information for {name} has been updated."
+    },
+    "account": {
+      "pageTitle": "Manage Account",
+      "pageDescription": "View and manage your account details.",
+      "updateProfileTitle": "Update Profile",
+      "updateProfileDescription": "You can change your display name here.",
+      "displayName": "Display Name",
+      "displayNamePlaceholder": "Enter your display name",
+      "updateProfileSuccessTitle": "Profile Updated!",
+      "updateProfileSuccessDescription": "Your display name has been successfully changed.",
+      "changePasswordTitle": "Change Password",
+      "changePasswordDescription": "Change your password regularly for security.",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "changePasswordButton": "Change Password",
+      "changePasswordSuccessTitle": "Password Changed!",
+      "changePasswordSuccessDescription": "Your password has been changed successfully."
+    },
+    "common": {
+      "error": "Error",
+      "errorDescription": "Something went wrong. Please try again later.",
+      "userNotFound": "User not found. Please log in again."
+    },
+    "validation": {
+      "required": "{field} is required.",
+      "min": "{field} must be at least {length} characters.",
+      "invalidNumber": "Invalid phone number format.",
+      "passwordMismatch": "Passwords do not match.",
+      "currentPasswordIncorrect": "Current password is not correct.",
+      "gender": {
+        "male": "Male",
+        "female": "Female"
+      }
+    },
+    "serviceDepartment": {
+      "children_1": "Children Section 1",
+      "children_2": "Children Section 2",
+      "junior": "Junior Section",
+      "senior": "Senior Section",
+      "youth": "Youth Section"
     }
   }
-}
+  

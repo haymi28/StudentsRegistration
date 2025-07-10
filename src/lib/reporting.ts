@@ -13,7 +13,6 @@ export interface ReportTranslations {
   regNumber: string;
   fullName: string;
   gender: string;
-  dob: string;
 }
 
 const getEthiopianDate = (): string => {
@@ -22,42 +21,46 @@ const getEthiopianDate = (): string => {
     const month = now.getMonth() + 1;
     const day = now.getDate();
 
-    // Ethiopian new year starts on September 11th (or 12th in a leap year)
-    const ethiopianNewYearOffset = (year % 4 === 3) ? 12 : 11;
+    const isGregorianLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+    const ethiopianNewYearDayInSeptember = isGregorianLeap ? 12 : 11;
     
     let ethiopianYear = year - 8;
-    if (month < 9 || (month === 9 && day < ethiopianNewYearOffset)) {
+    if (month < 9 || (month === 9 && day < ethiopianNewYearDayInSeptember)) {
         ethiopianYear = year - 8;
     } else {
         ethiopianYear = year - 7;
     }
     
-    // Simple approximation, for a more accurate conversion a dedicated library is needed.
-    // This example will use a simplified placeholder as full conversion is complex.
     const amharicMonths = ['መስከረም', 'ጥቅምት', 'ኅዳር', 'ታኅሣሥ', 'ጥር', 'የካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜን'];
     
-    // Create a date object for the start of the Gregorian year
-    const startOfYear = new Date(year, 0, 1);
-    // Calculate the number of days passed since the start of the year
-    const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+    const startOfGregorianYear = new Date(year, 0, 1);
+    const dayOfYear = Math.floor((now.getTime() - startOfGregorianYear.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     
-    // Offset for Ethiopian New Year (Meskerem 1)
-    let ethiopianDayOfYear = dayOfYear - 253; // Approx days from Jan 1 to Sep 11
-    if (ethiopianDayOfYear < 0) {
-        ethiopianDayOfYear += 365;
-        if ((year-1) % 4 === 0) ethiopianDayOfYear++; // Leap year adjustment
-    }
+    let ethioDayOfYear;
+    const dayOfEthioNewYear = isGregorianLeap ? 255 : 254;
 
-    const ethiopianMonthIndex = Math.floor((ethiopianDayOfYear -1) / 30);
-    const ethiopianDay = ((ethiopianDayOfYear - 1) % 30) + 1;
+    if (dayOfYear > dayOfEthioNewYear) {
+      ethioDayOfYear = dayOfYear - dayOfEthioNewYear;
+    } else {
+      const prevGregorianYearIsLeap = ((year - 1) % 4 === 0 && (year - 1) % 100 !== 0) || (year - 1) % 400 === 0;
+      ethioDayOfYear = dayOfYear + (prevGregorianYearIsLeap ? 112 : 111);
+    }
+    
+    let ethiopianMonthIndex = Math.floor((ethioDayOfYear - 1) / 30);
+    let ethiopianDay = ((ethioDayOfYear - 1) % 30) + 1;
+
+    // Pagume has 5 or 6 days
+    if (ethiopianMonthIndex === 12) {
+      const isEthiopianLeap = (ethiopianYear + 1) % 4 === 0;
+      if (ethiopianDay > (isEthiopianLeap ? 6 : 5) ) {
+        ethiopianDay = 1;
+        ethiopianMonthIndex = 0; // Back to Meskerem
+      }
+    }
+    
     const ethiopianMonth = amharicMonths[ethiopianMonthIndex];
 
     return `${ethiopianDay} ${ethiopianMonth} ${ethiopianYear}`;
-};
-
-
-const formatDateForPdf = (date: string | undefined): string => {
-  return date || 'N/A';
 };
 
 export async function generateTransferReport(
@@ -83,7 +86,6 @@ export async function generateTransferReport(
       <td>${student.registrationNumber}</td>
       <td>${student.fullName}</td>
       <td>${student.gender}</td>
-      <td>${formatDateForPdf(student.dateOfBirth)}</td>
     </tr>
   `).join('');
 
@@ -110,7 +112,6 @@ export async function generateTransferReport(
           <th>${translations.regNumber}</th>
           <th>${translations.fullName}</th>
           <th>${translations.gender}</th>
-          <th>${translations.dob}</th>
         </tr>
       </thead>
       <tbody>

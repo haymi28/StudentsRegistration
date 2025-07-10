@@ -154,7 +154,6 @@ export function StudentList() {
         regNumber: t('pdf.transfer.regNumber'),
         fullName: t('pdf.transfer.fullName'),
         gender: t('pdf.transfer.gender'),
-        dob: t('pdf.transfer.dob'),
       };
       generateTransferReport(transferredStudents, fromServiceDepartment, toServiceDepartment, reportTranslations, username);
       toast({
