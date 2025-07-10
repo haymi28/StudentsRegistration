@@ -1,8 +1,9 @@
+
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, User, UserPlus, Users } from 'lucide-react';
+import { LogOut, User, UserPlus, Users, Upload, Download } from 'lucide-react';
 import { useLocale } from '@/contexts/locale-provider';
 import { Logo } from './logo';
 import {
@@ -14,12 +15,21 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger,
+  SidebarSeparator,
 } from '@/components/ui/sidebar';
+import { useEffect, useState } from 'react';
+import { UserRole } from '@/lib/mock-data';
 
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useLocale();
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('user_role') as UserRole | null;
+    setUserRole(role);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
@@ -32,6 +42,11 @@ export function AppSidebar() {
   const navLinks = [
     { href: '/students', label: t('nav.students'), icon: Users },
     { href: '/register', label: t('nav.newStudent'), icon: UserPlus },
+  ];
+
+  const adminLinks = [
+    { href: '/students/import', label: t('nav.import'), icon: Upload },
+    { href: '/students/export', label: t('nav.export'), icon: Download },
   ];
 
   return (
@@ -52,6 +67,21 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+          {userRole === 'super_admin' && (
+            <>
+              <SidebarSeparator />
+              {adminLinks.map((link) => (
+                <SidebarMenuItem key={link.href}>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith(link.href)} tooltip={link.label}>
+                      <Link href={link.href}>
+                          <link.icon className="h-5 w-5" />
+                          <span>{link.label}</span>
+                      </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </>
+          )}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>

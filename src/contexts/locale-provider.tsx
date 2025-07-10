@@ -3,13 +3,15 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 
-type Locale = 'en' | 'am';
-type Translations = Record<string, any>;
+export type Locale = 'en' | 'am';
+export type Translations = Record<string, any>;
+export type TFunction = (key: string, params?: Record<string, string | number>) => string;
+
 
 interface LocaleContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string, params?: Record<string, string | number>) => string;
+  t: TFunction;
 }
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
@@ -63,7 +65,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('locale', newLocale);
   };
 
-  const t = useCallback((key: string, params?: Record<string, string | number>): string => {
+  const t: TFunction = useCallback((key: string, params?: Record<string, string | number>): string => {
     let translation = getNestedTranslation(translations, key) || key;
     if (params) {
       Object.keys(params).forEach((paramKey) => {
