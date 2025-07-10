@@ -68,7 +68,7 @@ export async function generateTransferReport(
   fromDepartment: string,
   toDepartment: ServiceDepartment,
   translations: ReportTranslations,
-  generatedByUsername: string
+  generatedByDisplayName: string
 ) {
   const reportElement = document.createElement('div');
   // Styling for the off-screen element that will be rendered to PDF
@@ -105,7 +105,7 @@ export async function generateTransferReport(
     <p><strong>${translations.from}</strong> ${fromDepartment}</p>
     <p><strong>${translations.to}</strong> ${toDepartment}</p>
     <p><strong>${translations.date}</strong> ${dateToday}</p>
-    <p><strong>${translations.generatedBy}</strong> ${generatedByUsername}</p>
+    <p><strong>${translations.generatedBy}</strong> ${generatedByDisplayName}</p>
     <table>
       <thead>
         <tr>

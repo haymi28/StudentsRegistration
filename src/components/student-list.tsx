@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { mockStudents, Student, UserRole, roleToServiceDepartmentMap, ServiceDepartment, serviceDepartmentTransferMap } from '@/lib/mock-data';
+import { mockStudents, Student, UserRole, roleToServiceDepartmentMap, ServiceDepartment, serviceDepartmentTransferMap, mockUsers } from '@/lib/mock-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -46,7 +46,7 @@ export function StudentList() {
   const router = useRouter();
   const [students, setStudents] = useState<Student[]>([]);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
-  const [username, setUsername] = useState('');
+  const [userDisplayName, setUserDisplayName] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
@@ -58,11 +58,19 @@ export function StudentList() {
 
   useEffect(() => {
     const role = localStorage.getItem('user_role') as UserRole;
+    const username = localStorage.getItem('username');
     setUserRole(role);
-    const storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
-      setUsername(storedUsername);
+
+    if (username) {
+      const users = JSON.parse(localStorage.getItem('users') || 'null') || mockUsers;
+      const currentUser = users.find((u: { username: string; }) => u.username === username);
+      if (currentUser) {
+        setUserDisplayName(currentUser.displayName);
+      } else {
+        setUserDisplayName(username);
+      }
     }
+
     // Function to load students from localStorage or mock data
     const loadStudents = () => {
       const storedStudents = localStorage.getItem('students');
@@ -155,7 +163,7 @@ export function StudentList() {
         fullName: t('pdf.transfer.fullName'),
         gender: t('pdf.transfer.gender'),
       };
-      generateTransferReport(transferredStudents, fromServiceDepartment, toServiceDepartment, reportTranslations, username);
+      generateTransferReport(transferredStudents, fromServiceDepartment, toServiceDepartment, reportTranslations, userDisplayName);
       toast({
         title: t('transfer.success'),
         description: t('transfer.successDescription').replace('{count}', String(transferredStudents.length)).replace('{department}', toServiceDepartment),
