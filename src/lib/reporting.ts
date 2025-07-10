@@ -16,6 +16,46 @@ export interface ReportTranslations {
   dob: string;
 }
 
+const getEthiopianDate = (): string => {
+    const now = new Date();
+    let year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+
+    // Ethiopian new year starts on September 11th (or 12th in a leap year)
+    const ethiopianNewYearOffset = (year % 4 === 3) ? 12 : 11;
+    
+    let ethiopianYear = year - 8;
+    if (month < 9 || (month === 9 && day < ethiopianNewYearOffset)) {
+        ethiopianYear = year - 8;
+    } else {
+        ethiopianYear = year - 7;
+    }
+    
+    // Simple approximation, for a more accurate conversion a dedicated library is needed.
+    // This example will use a simplified placeholder as full conversion is complex.
+    const amharicMonths = ['መስከረም', 'ጥቅምት', 'ኅዳር', 'ታኅሣሥ', 'ጥር', 'የካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜን'];
+    
+    // Create a date object for the start of the Gregorian year
+    const startOfYear = new Date(year, 0, 1);
+    // Calculate the number of days passed since the start of the year
+    const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Offset for Ethiopian New Year (Meskerem 1)
+    let ethiopianDayOfYear = dayOfYear - 253; // Approx days from Jan 1 to Sep 11
+    if (ethiopianDayOfYear < 0) {
+        ethiopianDayOfYear += 365;
+        if ((year-1) % 4 === 0) ethiopianDayOfYear++; // Leap year adjustment
+    }
+
+    const ethiopianMonthIndex = Math.floor((ethiopianDayOfYear -1) / 30);
+    const ethiopianDay = ((ethiopianDayOfYear - 1) % 30) + 1;
+    const ethiopianMonth = amharicMonths[ethiopianMonthIndex];
+
+    return `${ethiopianDay} ${ethiopianMonth} ${ethiopianYear}`;
+};
+
+
 const formatDateForPdf = (date: string | undefined): string => {
   return date || 'N/A';
 };
@@ -47,7 +87,7 @@ export async function generateTransferReport(
     </tr>
   `).join('');
 
-  const dateToday = 'ዛሬ';
+  const dateToday = getEthiopianDate();
 
 
   reportElement.innerHTML = `
