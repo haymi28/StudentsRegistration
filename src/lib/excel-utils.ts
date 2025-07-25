@@ -32,7 +32,12 @@ export const exportToExcel = (students: Student[], fileName: string, t: TFunctio
   const worksheetData = students.map(student => {
     const row: Record<string, any> = {};
     headers.forEach(header => {
-      row[header.label] = student[header.key as keyof Student] || '';
+      // For the photo, ensure we're getting the URL string.
+      if (header.key === 'photo') {
+        row[header.label] = student.photo || '';
+      } else {
+        row[header.label] = student[header.key as keyof Omit<Student, 'photo'>] || '';
+      }
     });
     return row;
   });
@@ -68,6 +73,7 @@ export const readExcelFile = (file: File, t: TFunction): Promise<Student[]> => {
           for (const key in row) {
             if (headerKeyMap.has(key)) {
               const studentKey = headerKeyMap.get(key) as keyof Student;
+              // Ensure photo URL is handled correctly as a string
               student[studentKey] = row[key] !== null && row[key] !== undefined ? String(row[key]) : '';
             }
           }
