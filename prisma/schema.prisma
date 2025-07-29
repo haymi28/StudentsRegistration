@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  super_admin
+  children_admin
+  children_2_admin
+  junior_admin
+  senior_admin
+}
+
+enum ServiceDepartment {
+  children_1     @map("ቀዳማይ -1 ክፍል")
+  children_2     @map("ቀዳማይ -2 ክፍል")
+  junior         @map("ካእላይ ክፍል")
+  senior         @map("ማእከላይ ክፍል")
+  youth          @map("የወጣት ክፍል")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  displayName String
+  password    String
+  role        UserRole @default(children_admin)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Student {
+  id                    String    @id @default(cuid())
+  registrationNumber    String    @unique
+  photo                 String?
+  fullName              String
+  gender                String
+  serviceDepartment     ServiceDepartment
+  baptismalName         String
+  mothersName           String
+  dateOfBirth           String?
+  educationLevel        String
+  phoneNumber           String
+  additionalPhoneNumber String?
+  fathersPhoneNumber    String?
+  mothersPhoneNumber    String?
+  subcity               String
+  kebele                String
+  houseNumber           String
+  specificAddress       String
+  dateOfJoining         String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
