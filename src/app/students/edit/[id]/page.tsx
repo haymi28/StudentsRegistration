@@ -9,10 +9,6 @@ import { useLocale } from '@/contexts/locale-provider';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateStaticParams() {
-  return [];
-}
-
 export default function EditStudentPage() {
   const params = useParams();
   const { id } = params;
