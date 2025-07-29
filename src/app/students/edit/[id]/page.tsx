@@ -7,6 +7,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { mockStudents, Student } from '@/lib/mock-data';
 import { useLocale } from '@/contexts/locale-provider';
 
+export const dynamic = 'force-dynamic';
+
 export default function EditStudentPage() {
   const params = useParams();
   const { id } = params;
