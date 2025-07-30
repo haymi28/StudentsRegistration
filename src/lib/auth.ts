@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers'
 import { getUserByUsername } from './data';
 
-export type UserRole = 'super_admin' | 'children_admin' | 'children_2_admin' | 'junior_admin' | 'senior_admin';
+export type UserRole = 'super_admin' | 'children_admin' | 'children_2_admin' | 'junior_admin' | 'senior_admin' | 'youth_admin';
 export type ServiceDepartment = 'ቀዳማይ -1 ክፍል' | 'ቀዳማይ -2 ክፍል' | 'ካእላይ ክፍል' | 'ማእከላይ ክፍል' | 'የወጣት ክፍል';
 
 export const roleToServiceDepartmentMap: Record<Exclude<UserRole, 'super_admin'>, ServiceDepartment> = {
@@ -11,6 +11,7 @@ export const roleToServiceDepartmentMap: Record<Exclude<UserRole, 'super_admin'>
   children_2_admin: 'ቀዳማይ -2 ክፍል',
   junior_admin: 'ካእላይ ክፍል',
   senior_admin: 'ማእከላይ ክፍል',
+  youth_admin: 'የወጣት ክፍል'
 };
 
 export const serviceDepartmentTransferMap: Partial<Record<ServiceDepartment, ServiceDepartment>> = {
@@ -33,11 +34,7 @@ export async function signIn(credentials: {username: string, password: string}):
     cookies().set('user_role', user.role, { httpOnly: true, path: '/' });
     cookies().set('username', user.username, { httpOnly: true, path: '/' });
     cookies().set('displayName', user.displayName, { httpOnly: true, path: '/' });
-    localStorage.setItem('auth_token', user.id);
-    localStorage.setItem('user_role', user.role);
-    localStorage.setItem('username', user.username);
-
-
+    
     return { success: true, user: { ...user, serviceDepartment: roleToServiceDepartmentMap[user.role as Exclude<UserRole, 'super_admin'>] } };
 }
 
@@ -46,9 +43,6 @@ export async function signOut() {
     cookies().delete('user_role');
     cookies().delete('username');
     cookies().delete('displayName');
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_role');
-    localStorage.removeItem('username');
 }
 
 export async function getServerSession() {
