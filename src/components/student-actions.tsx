@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -28,7 +29,6 @@ import { TransferStudentsDialog } from './transfer-students-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/locale-provider';
 import { deleteStudent } from '@/lib/data';
-import { generateTransferReport } from '@/lib/reporting';
 import { Student, User } from '@prisma/client';
 import { ServiceDepartment, UserRole, serviceDepartmentTransferMap } from '@/lib/auth';
 
@@ -169,3 +169,4 @@ function RowActions({ student, session }: { student: Student, session: any }) {
 }
 
 StudentActions.RowActions = RowActions;
+

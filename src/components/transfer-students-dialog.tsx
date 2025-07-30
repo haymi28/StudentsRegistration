@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -13,8 +14,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
-import type { Student, UserRole, ServiceDepartment } from '@/lib/mock-data';
-import { serviceDepartmentTransferMap, roleToServiceDepartmentMap } from '@/lib/mock-data';
+import { Student, UserRole, ServiceDepartment } from '@prisma/client';
+import { serviceDepartmentTransferMap, roleToServiceDepartmentMap } from '@/lib/auth';
 import { useLocale } from '@/contexts/locale-provider';
 
 interface TransferStudentsDialogProps {
@@ -39,7 +40,7 @@ export function TransferStudentsDialog({
   const { t } = useLocale();
 
   const selectedStudents = useMemo(
-    () => students.filter(s => selectedStudentIds.includes(s.registrationNumber)),
+    () => students.filter(s => selectedStudentIds.includes(s.id)),
     [students, selectedStudentIds]
   );
   

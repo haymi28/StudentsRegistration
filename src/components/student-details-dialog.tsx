@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -10,16 +11,21 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import type { Student } from '@/lib/mock-data';
+import { Student } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
 import { format } from 'date-fns';
 
-const formatDateDisplay = (date: Date | string | undefined): string => {
+const formatDateDisplay = (date: Date | string | undefined | null): string => {
   if (!date) return 'N/A';
+  // Check if it's a string that might not be a valid date representation for `new Date()`
+  if (typeof date === 'string') {
+      // Simple check, can be improved. If it doesn't look like a standard date string, display as is.
+      if (!/^\d{1,2} \w+ \d{4}$/.test(date) && isNaN(new Date(date).getTime())) {
+          return date;
+      }
+  }
   const d = new Date(date);
-  // Check if it's a valid date string that can be parsed
   if (isNaN(d.getTime())) return date.toString();
-  // If it is a valid date, format it
   return format(d, 'PPP');
 };
 
@@ -56,7 +62,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
         <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto pr-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={student.photo} alt={student.fullName} />
+              <AvatarImage src={student.photo || undefined} alt={student.fullName} />
               <AvatarFallback>{student.fullName.charAt(0)}</AvatarFallback>
             </Avatar>
             <div>
@@ -74,9 +80,9 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
             <DetailItem label={t('studentDetails.label.baptismalName')} value={student.baptismalName} />
             <DetailItem label={t('studentDetails.label.mothersName')} value={student.mothersName} />
             <DetailItem label={t('studentDetails.label.gender')} value={student.gender} />
-            <DetailItem label={t('studentDetails.label.dob')} value={formatDateDisplay(student.dateOfBirth)} />
+            <DetailItem label={t('studentDetails.label.dob')} value={student.dateOfBirth} />
             <DetailItem label={t('studentDetails.label.education')} value={student.educationLevel} />
-            <DetailItem label={t('studentDetails.label.joinDate')} value={student.dateOfJoining || 'N/A'} />
+            <DetailItem label={t('studentDetails.label.joinDate')} value={student.dateOfJoining} />
           </div>
 
           <Separator />
