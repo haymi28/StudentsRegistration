@@ -13,12 +13,16 @@ import { Badge } from '@/components/ui/badge';
 import { getStudents, getUsers } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { StudentActions } from './student-actions';
-import { useLocale } from '@/contexts/locale-provider';
 import { getServerSession } from '@/lib/auth';
+import { useLocale } from '@/contexts/locale-provider';
 
 
 export async function StudentList() {
   const session = await getServerSession();
+  // We cannot use the hook here, so we will pass down the t function or specific translations
+  // For simplicity, we will assume a default or pass specific strings.
+  // A better solution might involve a server-side translation helper.
+  // For now, let's restructure to avoid the hook call.
   const { t } = useLocale();
 
   if (!session) {
@@ -31,15 +35,31 @@ export async function StudentList() {
 
   const fromServiceDepartment = session.user.role !== 'super_admin' ? session.user.serviceDepartment : undefined;
 
+  const translations = {
+      title: t('students.title'),
+      descriptionSuperAdmin: t('students.descriptionSuperAdmin'),
+      descriptionAdmin: t('students.descriptionAdmin'),
+      table: {
+          photo: t('students.table.photo'),
+          regNumber: t('students.table.regNumber'),
+          fullName: t('students.table.fullName'),
+          department: t('students.table.department'),
+          phone: t('students.table.phone'),
+          actions: t('students.table.actions'),
+      },
+      searchPlaceholder: t('students.searchPlaceholder'),
+      noStudents: t('students.noStudents'),
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-grow">
-          <CardTitle>{t('students.title')}</CardTitle>
+          <CardTitle>{translations.title}</CardTitle>
           <CardDescription>
             {session.user.role === 'super_admin'
-              ? t('students.descriptionSuperAdmin')
-              : t('students.descriptionAdmin').replace('{department}', fromServiceDepartment || '')}
+              ? translations.descriptionSuperAdmin
+              : translations.descriptionAdmin.replace('{department}', fromServiceDepartment || '')}
           </CardDescription>
         </div>
         <StudentActions students={students} users={users} session={session}/>
@@ -53,12 +73,12 @@ export async function StudentList() {
                 <TableHead className="w-[50px]">
                   {/* Placeholder for potential future checkbox */}
                 </TableHead>
-                <TableHead className="w-[80px]">{t('students.table.photo')}</TableHead>
-                <TableHead>{t('students.table.regNumber')}</TableHead>
-                <TableHead>{t('students.table.fullName')}</TableHead>
-                <TableHead>{t('students.table.department')}</TableHead>
-                <TableHead>{t('students.table.phone')}</TableHead>
-                <TableHead className="text-right">{t('students.table.actions')}</TableHead>
+                <TableHead className="w-[80px]">{translations.table.photo}</TableHead>
+                <TableHead>{translations.table.regNumber}</TableHead>
+                <TableHead>{translations.table.fullName}</TableHead>
+                <TableHead>{translations.table.department}</TableHead>
+                <TableHead>{translations.table.phone}</TableHead>
+                <TableHead className="text-right">{translations.table.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -88,7 +108,7 @@ export async function StudentList() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={7} className="h-24 text-center">
-                    {t('students.noStudents')}
+                    {translations.noStudents}
                   </TableCell>
                 </TableRow>
               )}
@@ -125,7 +145,7 @@ export async function StudentList() {
             ))
           ) : (
             <div className="text-center text-muted-foreground py-12">
-              {t('students.noStudents')}
+              {translations.noStudents}
             </div>
           )}
         </div>
