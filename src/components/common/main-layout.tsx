@@ -1,4 +1,3 @@
-
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -17,11 +16,14 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkAuth = () => {
+      // Check for a session token or any other auth indicator
       const token = localStorage.getItem('auth_token');
       setIsAuthenticated(!!token);
     };
 
     checkAuth();
+
+    // Listen for storage changes to react to login/logout from other tabs
     const handleStorageChange = () => checkAuth();
     window.addEventListener('storage', handleStorageChange);
     return () => {
@@ -36,31 +38,25 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
     const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-    // Not logged in and trying to access a protected page -> redirect
     if (!isAuthenticated && isProtectedRoute) {
       router.replace('/');
     }
 
-    // Logged in and trying to access login page -> redirect
-    if (isAuthenticated && pathname === '/') {
+    if (isAuthenticated && (pathname === '/' || pathname === '/login')) {
       router.replace('/students');
     }
   }, [isAuthenticated, pathname, router]);
 
 
   if (isAuthenticated === null) {
-    return null; // Render nothing until auth state is known to prevent layout flashing
-  }
-
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-  
-  // Return null while redirecting to prevent rendering the old page content
-  if ((!isAuthenticated && isProtectedRoute) || (isAuthenticated && pathname === '/')) {
+    // Show a loading state or a blank screen to avoid layout flashing
     return null;
   }
 
+  const isAuthPage = pathname === '/' || pathname === '/login';
+
   // Unauthenticated layout (Login page)
-  if (!isAuthenticated) {
+  if (!isAuthenticated && isAuthPage) {
     return (
       <div className="relative flex min-h-screen flex-col">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -76,15 +72,19 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   }
 
   // Authenticated layout
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <Header />
-        <main className="flex-1 overflow-y-auto bg-muted/30 pt-14 sm:pt-0">
-            {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
-  );
+  if (isAuthenticated && !isAuthPage) {
+    return (
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <Header />
+          <main className="flex-1 overflow-y-auto bg-muted/30 pt-14 sm:pt-0">
+              {children}
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
+
+  return null;
 }

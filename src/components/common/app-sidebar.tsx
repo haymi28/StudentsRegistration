@@ -1,4 +1,3 @@
-
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -18,7 +17,8 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { useEffect, useState } from 'react';
-import { UserRole } from '@/lib/mock-data';
+import { UserRole } from '@/lib/auth';
+import { signOut } from '@/lib/auth';
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -31,12 +31,11 @@ export function AppSidebar() {
     setUserRole(role);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_role');
-    localStorage.removeItem('username');
+  const handleLogout = async () => {
+    await signOut();
     window.dispatchEvent(new Event('storage'));
     router.push('/');
+    router.refresh();
   };
 
   const navLinks = [

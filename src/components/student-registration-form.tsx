@@ -16,8 +16,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Separator } from '@/components/ui/separator';
 import { ImageUpload } from './image-upload';
 import { useRouter } from 'next/navigation';
-import { mockStudents, roleToServiceDepartmentMap, UserRole, ServiceDepartment, Student } from '@/lib/mock-data';
 import { useLocale } from '@/contexts/locale-provider';
+import { Student } from '@prisma/client';
+import { createStudent, updateStudent } from '@/lib/data';
+import { roleToServiceDepartmentMap, ServiceDepartment, UserRole } from '@/lib/auth';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -95,7 +97,23 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
 
   useEffect(() => {
     if (studentToEdit) {
-      form.reset(studentToEdit);
+      const valuesToReset: any = {
+        ...studentToEdit,
+        photo: studentToEdit.photo || '',
+        baptismalName: studentToEdit.baptismalName || '',
+        mothersName: studentToEdit.mothersName || '',
+        dateOfBirth: studentToEdit.dateOfBirth || '',
+        educationLevel: studentToEdit.educationLevel || '',
+        fathersPhoneNumber: studentToEdit.fathersPhoneNumber || '',
+        mothersPhoneNumber: studentToEdit.mothersPhoneNumber || '',
+        additionalPhoneNumber: studentToEdit.additionalPhoneNumber || '',
+        subcity: studentToEdit.subcity || '',
+        kebele: studentToEdit.kebele || '',
+        houseNumber: studentToEdit.houseNumber || '',
+        specificAddress: studentToEdit.specificAddress || '',
+        dateOfJoining: studentToEdit.dateOfJoining || '',
+      };
+      form.reset(valuesToReset);
       if (studentToEdit.dateOfJoining) {
           const parts = studentToEdit.dateOfJoining.split(' ');
           if (parts.length === 3) {
@@ -134,18 +152,18 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
   useEffect(() => {
     if (joinDay || joinMonth || joinYear) {
       const fullDate = `${joinDay || ''} ${joinMonth || ''} ${joinYear || ''}`.trim();
-      form.setValue('dateOfJoining', fullDate || '', { shouldValidate: true });
+      form.setValue('dateOfJoining', fullDate || undefined, { shouldValidate: true });
     } else {
-      form.setValue('dateOfJoining', '', { shouldValidate: true });
+      form.setValue('dateOfJoining', undefined, { shouldValidate: true });
     }
   }, [joinDay, joinMonth, joinYear, form]);
 
   useEffect(() => {
     if (birthDay || birthMonth || birthYear) {
       const fullDate = `${birthDay || ''} ${birthMonth || ''} ${birthYear || ''}`.trim();
-      form.setValue('dateOfBirth', fullDate || '', { shouldValidate: true });
+      form.setValue('dateOfBirth', fullDate || undefined, { shouldValidate: true });
     } else {
-      form.setValue('dateOfBirth', '', { shouldValidate: true });
+      form.setValue('dateOfBirth', undefined, { shouldValidate: true });
     }
   }, [birthDay, birthMonth, birthYear, form]);
 
@@ -157,31 +175,32 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
 
   async function onSubmit(data: StudentFormValues) {
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const currentStudents = JSON.parse(localStorage.getItem('students') || 'null') || mockStudents;
-
-    if (isEditMode) {
-      const index = currentStudents.findIndex((s: Student) => s.registrationNumber === studentToEdit.registrationNumber);
-      if (index > -1) {
-        currentStudents[index] = data;
+    try {
+      if (isEditMode) {
+        await updateStudent(studentToEdit.id, data);
+        toast({
+          title: t('form.updateSuccess'),
+          description: t('form.updateSuccessDescription').replace('{name}', data.fullName),
+        });
+      } else {
+        await createStudent(data);
+        toast({
+          title: t('form.registerSuccess'),
+          description: t('form.registerSuccessDescription').replace('{name}', data.fullName),
+        });
       }
+      router.push('/students');
+      router.refresh();
+    } catch (error) {
        toast({
-        title: t('form.updateSuccess'),
-        description: t('form.updateSuccessDescription').replace('{name}', data.fullName),
+        variant: 'destructive',
+        title: t('common.error'),
+        description: error instanceof Error ? error.message : t('common.errorDescription'),
       });
-    } else {
-      currentStudents.unshift(data);
-      toast({
-        title: t('form.registerSuccess'),
-        description: t('form.registerSuccessDescription').replace('{name}', data.fullName),
-      });
+    } finally {
+      setIsLoading(false);
     }
-    
-    localStorage.setItem('students', JSON.stringify(currentStudents));
-    window.dispatchEvent(new Event('storage'));
-    setIsLoading(false);
-    router.push('/students');
   }
 
   return (
@@ -203,7 +222,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                             <FormLabel>{t('form.photoLabel')}</FormLabel>
                             <FormControl>
                                 <ImageUpload
-                                    value={field.value}
+                                    value={field.value ?? undefined}
                                     onChange={field.onChange}
                                 />
                             </FormControl>
@@ -242,10 +261,10 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                 </div>
                 <div className="grid md:grid-cols-3 gap-6">
                 <FormField control={form.control} name="baptismalName" render={({ field }) => (
-                    <FormItem><FormLabel>{t('form.label.baptismalName')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('form.label.baptismalName')}</FormLabel><FormControl><Input {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="mothersName" render={({ field }) => (
-                    <FormItem><FormLabel>{t('form.label.mothersName')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('form.label.mothersName')}</FormLabel><FormControl><Input {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                 )} />
                  <FormField
                     control={form.control}
@@ -321,7 +340,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                         <FormItem>
                             <FormLabel>{t('form.label.education')}</FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Input {...field} value={field.value ?? ''} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -375,15 +394,15 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                     <FormItem><FormLabel>{t('form.label.phone')}</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="additionalPhoneNumber" render={({ field }) => (
-                    <FormItem><FormLabel>{t('form.label.additionalPhone')}</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('form.label.additionalPhone')}</FormLabel><FormControl><Input type="tel" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                 )} />
                 </div>
                 <div className="grid md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="fathersPhoneNumber" render={({ field }) => (
-                        <FormItem><FormLabel>{t('form.label.fathersPhone')}</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t('form.label.fathersPhone')}</FormLabel><FormControl><Input type="tel" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="mothersPhoneNumber" render={({ field }) => (
-                        <FormItem><FormLabel>{t('form.label.mothersPhone')}</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t('form.label.mothersPhone')}</FormLabel><FormControl><Input type="tel" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </div>
             </div>
@@ -393,17 +412,17 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                 <Separator />
                 <div className="grid md:grid-cols-3 gap-6">
                     <FormField control={form.control} name="subcity" render={({ field }) => (
-                        <FormItem><FormLabel>{t('form.label.subcity')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t('form.label.subcity')}</FormLabel><FormControl><Input {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="kebele" render={({ field }) => (
-                        <FormItem><FormLabel>{t('form.label.kebele')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t('form.label.kebele')}</FormLabel><FormControl><Input {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="houseNumber" render={({ field }) => (
-                        <FormItem><FormLabel>{t('form.label.houseNumber')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t('form.label.houseNumber')}</FormLabel><FormControl><Input {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </div>
                 <FormField control={form.control} name="specificAddress" render={({ field }) => (
-                <FormItem><FormLabel>{t('form.label.specificAddress')}</FormLabel><FormControl><Textarea placeholder={t('form.placeholder.address')} {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('form.label.specificAddress')}</FormLabel><FormControl><Textarea placeholder={t('form.placeholder.address')} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                 )} />
             </div>
           </CardContent>

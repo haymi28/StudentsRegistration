@@ -1,37 +1,14 @@
-'use client';
+'use server';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 import { StudentRegistrationForm } from '@/components/student-registration-form';
-import { Skeleton } from '@/components/ui/skeleton';
-import { mockStudents, Student } from '@/lib/mock-data';
 import { useLocale } from '@/contexts/locale-provider';
+import { getStudentById } from '@/lib/data';
 
-export default function EditStudentPage() {
-  const params = useParams();
+export default async function EditStudentPage({ params }: { params: { id: string }}) {
   const { id } = params;
   const { t } = useLocale();
   
-  const [student, setStudent] = useState<Student | null | undefined>(undefined);
-
-  useEffect(() => {
-    if (id) {
-      const storedStudents = JSON.parse(localStorage.getItem('students') || 'null') || mockStudents;
-      const studentData = storedStudents.find((s: Student) => s.registrationNumber === id);
-      setStudent(studentData || null);
-    }
-  }, [id]);
-
-  if (student === undefined) {
-    return (
-      <div className="container py-8">
-        <div className="space-y-4 max-w-4xl mx-auto">
-          <Skeleton className="h-10 w-1/3" />
-          <Skeleton className="h-[600px] w-full" />
-        </div>
-      </div>
-    );
-  }
+  const student = await getStudentById(id);
 
   if (!student) {
     return (
