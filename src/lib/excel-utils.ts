@@ -2,7 +2,7 @@
 'use client';
 
 import * as XLSX from 'xlsx';
-import type { Student } from './mock-data';
+import type { Student } from '@prisma/client';
 import type { TFunction } from '@/contexts/locale-provider';
 
 // Note: The order of headers here is important and must match the template.
@@ -32,12 +32,7 @@ export const exportToExcel = (students: Student[], fileName: string, t: TFunctio
   const worksheetData = students.map(student => {
     const row: Record<string, any> = {};
     headers.forEach(header => {
-      // For the photo, ensure we're getting the URL string.
-      if (header.key === 'photo') {
-        row[header.label] = student.photo || '';
-      } else {
-        row[header.label] = student[header.key as keyof Omit<Student, 'photo'>] || '';
-      }
+      row[header.label] = (student as any)[header.key] || '';
     });
     return row;
   });
@@ -54,7 +49,7 @@ export const exportToExcel = (students: Student[], fileName: string, t: TFunctio
 };
 
 
-export const readExcelFile = (file: File, t: TFunction): Promise<Student[]> => {
+export const readExcelFile = (file: File, t: TFunction): Promise<Partial<Student>[]> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -68,16 +63,15 @@ export const readExcelFile = (file: File, t: TFunction): Promise<Student[]> => {
         const headers = studentHeaders(t);
         const headerKeyMap = new Map(headers.map(h => [h.label, h.key]));
 
-        const students: Student[] = jsonData.map(row => {
+        const students: Partial<Student>[] = jsonData.map(row => {
           const student: Partial<Student> = {};
           for (const key in row) {
             if (headerKeyMap.has(key)) {
               const studentKey = headerKeyMap.get(key) as keyof Student;
-              // Ensure photo URL is handled correctly as a string
               student[studentKey] = row[key] !== null && row[key] !== undefined ? String(row[key]) : '';
             }
           }
-          return student as Student;
+          return student;
         });
 
         resolve(students);

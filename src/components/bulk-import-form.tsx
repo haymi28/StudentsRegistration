@@ -24,7 +24,7 @@ const formSchema = z.object({
 });
 
 type ValidationResult = {
-  validStudents: Student[];
+  validStudents: Partial<Student>[];
   errors: { row: number; messages: string[] }[];
 };
 
@@ -69,7 +69,7 @@ export function BulkImportForm() {
       
       const results = await Promise.all(validationPromises);
 
-      const validStudents = results.filter(r => r.errors.length === 0).map(r => r.student as Student);
+      const validStudents = results.filter(r => r.errors.length === 0).map(r => r.student);
       const errors = results.filter(r => r.errors.length > 0).map(r => ({ row: r.row, messages: r.errors }));
 
       setValidationResult({ validStudents, errors });
