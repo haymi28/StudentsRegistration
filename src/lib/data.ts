@@ -1,3 +1,4 @@
+
 'use server';
 
 import prisma from './prisma';
@@ -46,6 +47,28 @@ export async function createStudent(data: StudentData) {
     await prisma.student.create({ data: validatedData.data });
     revalidatePath('/students');
 }
+
+export async function importStudents(students: StudentData[]) {
+    const validationSchema = getStudentRegistrationSchema(() => '');
+    const validatedStudents = students.map(student => {
+        const result = validationSchema.safeParse(student);
+        if (!result.success) {
+            console.error("Invalid student data during import:", result.error.flatten().fieldErrors);
+            // Optionally throw an error or filter out invalid students
+            return null;
+        }
+        return result.data;
+    }).filter(Boolean) as StudentData[];
+
+    if (validatedStudents.length > 0) {
+        await prisma.student.createMany({
+            data: validatedStudents,
+            skipDuplicates: true, // This will skip if a student with the same unique field (e.g., registrationNumber) already exists.
+        });
+        revalidatePath('/students');
+    }
+}
+
 
 export async function updateStudent(id: string, data: StudentData) {
     const validatedData = getStudentRegistrationSchema(() => '').safeParse(data);

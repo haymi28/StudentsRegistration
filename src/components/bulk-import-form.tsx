@@ -14,9 +14,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AlertCircle, CheckCircle, Download, Loader2, UploadCloud } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/locale-provider';
-import { mockStudents, Student } from '@/lib/mock-data';
+import { Student } from '@prisma/client';
 import { readExcelFile, downloadTemplate, studentHeaders } from '@/lib/excel-utils';
 import { getStudentRegistrationSchema } from '@/lib/validations/student';
+import { getStudents, importStudents } from '@/lib/data';
 
 const formSchema = z.object({
   file: z.instanceof(File).refine(file => file.size > 0, 'File is required.'),
@@ -51,7 +52,7 @@ export function BulkImportForm() {
 
     try {
       const studentsFromFile = await readExcelFile(file, t);
-      const currentStudents = JSON.parse(localStorage.getItem('students') || 'null') || mockStudents;
+      const currentStudents = await getStudents('super_admin');
       const existingRegNumbers = new Set(currentStudents.map((s: Student) => s.registrationNumber));
 
       const validationPromises = studentsFromFile.map((student, index) => {
@@ -60,7 +61,7 @@ export function BulkImportForm() {
         if (!result.success) {
           errors.push(...result.error.errors.map(e => `${studentHeaders(t).find(h => h.key === e.path[0])?.label || e.path[0]}: ${e.message}`));
         }
-        if (existingRegNumbers.has(student.registrationNumber)) {
+        if (student.registrationNumber && existingRegNumbers.has(student.registrationNumber)) {
           errors.push(t('import.errors.duplicateRegNumber').replace('{regNumber}', student.registrationNumber));
         }
         return { student, errors, row: index + 2 };
@@ -68,7 +69,7 @@ export function BulkImportForm() {
       
       const results = await Promise.all(validationPromises);
 
-      const validStudents = results.filter(r => r.errors.length === 0).map(r => r.student);
+      const validStudents = results.filter(r => r.errors.length === 0).map(r => r.student as Student);
       const errors = results.filter(r => r.errors.length > 0).map(r => ({ row: r.row, messages: r.errors }));
 
       setValidationResult({ validStudents, errors });
@@ -83,23 +84,28 @@ export function BulkImportForm() {
     }
   };
   
-  const handleConfirmImport = () => {
+  const handleConfirmImport = async () => {
     if (!validationResult || validationResult.validStudents.length === 0) return;
 
     setIsLoading(true);
-    const currentStudents: Student[] = JSON.parse(localStorage.getItem('students') || 'null') || mockStudents;
-    const updatedStudents = [...validationResult.validStudents, ...currentStudents];
-    localStorage.setItem('students', JSON.stringify(updatedStudents));
-    window.dispatchEvent(new Event('storage'));
+    try {
+        await importStudents(validationResult.validStudents);
+        toast({
+            title: t('import.successTitle'),
+            description: t('import.successDescription').replace('{count}', String(validationResult.validStudents.length)),
+        });
 
-    toast({
-      title: t('import.successTitle'),
-      description: t('import.successDescription').replace('{count}', String(validationResult.validStudents.length)),
-    });
-
-    setValidationResult(null);
-    form.reset();
-    setIsLoading(false);
+        setValidationResult(null);
+        form.reset();
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: t('common.error'),
+            description: error instanceof Error ? error.message : t('common.errorDescription'),
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -155,7 +161,7 @@ export function BulkImportForm() {
         </Form>
       </Card>
       
-      {isLoading && (
+      {isLoading && !validationResult && (
         <div className="flex items-center justify-center p-8">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="ml-4 text-muted-foreground">{t('import.loadingPreview')}</p>
