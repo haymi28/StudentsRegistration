@@ -9,9 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { mockUsers, User } from '@/lib/mock-data';
 import { useLocale } from '@/contexts/locale-provider';
 import { getUpdateProfileSchema } from '@/lib/validations/user';
+import { getUserByUsername, updateUser } from '@/lib/data';
+import { User } from '@prisma/client';
 
 type ProfileFormValues = z.infer<ReturnType<typeof getUpdateProfileSchema>>;
 
@@ -32,45 +33,38 @@ export function UpdateProfileForm() {
   });
 
   useEffect(() => {
-    const username = localStorage.getItem('username');
-    if (username) {
-      const storedUsers = JSON.parse(localStorage.getItem('users') || 'null') || mockUsers;
-      const user = storedUsers.find((u: User) => u.username === username);
-      if (user) {
-        setCurrentUser(user);
-        form.reset({
-          username: user.username,
-          displayName: user.displayName,
-        });
-      }
-    }
+    const fetchUser = async () => {
+        const username = localStorage.getItem('username');
+        if (username) {
+            const user = await getUserByUsername(username);
+            if (user) {
+                setCurrentUser(user);
+                form.reset({
+                    username: user.username,
+                    displayName: user.displayName,
+                });
+            }
+        }
+    };
+    fetchUser();
   }, [form]);
 
   async function onSubmit(values: ProfileFormValues) {
     if (!currentUser) return;
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
+    
     try {
-      const storedUsers: User[] = JSON.parse(localStorage.getItem('users') || 'null') || mockUsers;
-      const userIndex = storedUsers.findIndex(u => u.username === currentUser.username);
-
-      if (userIndex > -1) {
-        storedUsers[userIndex].displayName = values.displayName;
-        localStorage.setItem('users', JSON.stringify(storedUsers));
-        
+        await updateUser(currentUser.id, { displayName: values.displayName });
         toast({
           title: t('account.updateProfileSuccessTitle'),
           description: t('account.updateProfileSuccessDescription'),
         });
-      } else {
-         throw new Error('User not found');
-      }
+        
     } catch (error) {
        toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: t('common.errorDescription'),
+        description: error instanceof Error ? error.message : t('common.errorDescription'),
       });
     }
 

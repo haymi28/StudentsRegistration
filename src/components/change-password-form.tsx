@@ -9,9 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Eye, EyeOff, Lock } from 'lucide-react';
-import { mockUsers, User } from '@/lib/mock-data';
 import { useLocale } from '@/contexts/locale-provider';
 import { getChangePasswordSchema } from '@/lib/validations/user';
+import { getUserByUsername, updateUser } from '@/lib/data';
 
 type PasswordFormValues = z.infer<ReturnType<typeof getChangePasswordSchema>>;
 
@@ -63,7 +63,7 @@ export function ChangePasswordForm() {
 
   async function onSubmit(values: PasswordFormValues) {
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     const username = localStorage.getItem('username');
 
     if (!username) {
@@ -73,23 +73,19 @@ export function ChangePasswordForm() {
     }
     
     try {
-      const storedUsers: User[] = JSON.parse(localStorage.getItem('users') || 'null') || mockUsers;
-      const userIndex = storedUsers.findIndex(u => u.username === username);
+      const user = await getUserByUsername(username);
 
-      if (userIndex === -1) {
+      if (!user) {
           throw new Error('User not found in storage');
       }
-
-      const user = storedUsers[userIndex];
-
+      
       if (user.password !== values.currentPassword) {
           form.setError('currentPassword', { type: 'manual', message: t('validation.currentPasswordIncorrect') });
           setIsLoading(false);
           return;
       }
       
-      storedUsers[userIndex].password = values.newPassword;
-      localStorage.setItem('users', JSON.stringify(storedUsers));
+      await updateUser(user.id, { password: values.newPassword });
       
       toast({
         title: t('account.changePasswordSuccessTitle'),
@@ -101,7 +97,7 @@ export function ChangePasswordForm() {
        toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: t('common.errorDescription'),
+        description: error instanceof Error ? error.message : t('common.errorDescription'),
       });
     }
 
