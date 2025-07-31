@@ -5,6 +5,7 @@ import { getStudents, getUsers } from '@/lib/data';
 import { StudentActions } from './student-actions';
 import { getServerSession } from '@/lib/auth';
 import { getTranslations } from '@/lib/i18n';
+import { redirect } from 'next/navigation';
 
 export async function StudentList() {
   const session = await getServerSession();
