@@ -1,3 +1,4 @@
+
 'use client';
 
 import { getStudents } from '@/lib/data';
@@ -10,6 +11,7 @@ import { Student } from '@prisma/client';
 
 export default function ExportStudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const checkAuthAndFetch = async () => {
@@ -20,10 +22,15 @@ export default function ExportStudentsPage() {
             const studentData = await getStudents('super_admin');
             setStudents(studentData);
         }
+        setLoading(false);
     }
     checkAuthAndFetch();
   }, []);
   
+  if (loading) {
+    return <div>Loading...</div>; // Or a proper loading spinner
+  }
+
   return (
     <div className="container py-8">
       <ExportStudentClient students={students} />

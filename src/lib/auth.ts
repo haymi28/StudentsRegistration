@@ -38,7 +38,7 @@ export async function getServerSession() {
     const username = cookieStore.get('username');
     const displayName = cookieStore.get('displayName');
 
-    if (!token || !role || !username || !displayName) {
+    if (!token?.value || !role?.value || !username?.value || !displayName?.value) {
         return null;
     }
 
