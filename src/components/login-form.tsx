@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -14,6 +15,7 @@ import { useLocale } from '@/contexts/locale-provider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { signIn } from '@/lib/auth';
 import { getUsers } from '@/lib/data';
+import { User } from '@prisma/client';
 
 const getFormSchema = (t: (key: string) => string) => z.object({
   username: z.string({ required_error: t('validation.required').replace('{field}', t('login.username')) }),
@@ -26,7 +28,7 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { t } = useLocale();
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   const formSchema = getFormSchema(t);
 
@@ -44,12 +46,16 @@ export function LoginForm() {
         const fetchedUsers = await getUsers();
         setUsers(fetchedUsers);
       } catch (error) {
-        console.error("Failed to fetch users", error)
-        // Optionally, show a toast message to the user
+        console.error("Failed to fetch users", error);
+        toast({
+            variant: "destructive",
+            title: t('common.error'),
+            description: t('common.errorDescription'),
+        });
       }
     }
     fetchUsers();
-  }, []);
+  }, [t]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -83,7 +89,7 @@ export function LoginForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder={t('login.usernamePlaceholder')} />
@@ -91,7 +97,7 @@ export function LoginForm() {
                   </FormControl>
                   <SelectContent>
                     {users.map(user => (
-                        <SelectItem key={user.username} value={user.username}>{user.displayName}</SelectItem>
+                        <SelectItem key={user.id} value={user.username}>{user.displayName}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
