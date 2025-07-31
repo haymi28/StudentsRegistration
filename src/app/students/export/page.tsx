@@ -4,36 +4,23 @@ import { getStudents } from '@/lib/data';
 import { ExportStudentClient } from '@/components/export-student-client';
 import { useEffect, useState } from 'react';
 import { Student } from '@prisma/client';
-import { useRouter } from 'next/navigation';
-import { UserRole } from '@/lib/constants';
 
 export default function ExportStudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
-  const [authorized, setAuthorized] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      const role = localStorage.getItem('user_role') as UserRole | null;
-      if (role !== 'super_admin') {
-        router.replace('/students');
-      } else {
-        const studentData = await getStudents('super_admin');
-        setStudents(studentData);
-        setAuthorized(true);
-        setLoading(false);
-      }
+    const fetchStudents = async () => {
+      // Assuming 'super_admin' fetches all students now that auth is removed
+      const studentData = await getStudents('super_admin');
+      setStudents(studentData);
+      setLoading(false);
     };
-    checkAuthAndFetch();
-  }, [router]);
+    fetchStudents();
+  }, []);
 
   if (loading) {
     return <div className="container py-8 text-center">Loading...</div>;
-  }
-  
-  if (!authorized) {
-    return null;
   }
 
   return (
