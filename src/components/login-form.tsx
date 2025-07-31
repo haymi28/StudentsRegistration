@@ -55,7 +55,7 @@ export function LoginForm() {
       }
     }
     fetchUsers();
-  }, [t]);
+  }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
