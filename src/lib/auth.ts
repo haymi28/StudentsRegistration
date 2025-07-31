@@ -15,8 +15,6 @@ export async function signIn(credentials: {username: string, password: string}):
     const cookieStore = await cookies();
     cookieStore.set('auth_token', user.id, { httpOnly: true, path: '/' });
     cookieStore.set('user_role', user.role, { httpOnly: true, path: '/' });
-    cookieStore.set('username', user.username, { httpOnly: true, path: '/' });
-    cookieStore.set('displayName', user.displayName, { httpOnly: true, path: '/' });
     
     return { success: true, user: { ...user, serviceDepartment: roleToServiceDepartmentMap[user.role as Exclude<UserRole, 'super_admin'>] } };
 }
@@ -25,8 +23,6 @@ export async function signOut() {
     const cookieStore = await cookies();
     cookieStore.delete('auth_token');
     cookieStore.delete('user_role');
-    cookieStore.delete('username');
-    cookieStore.delete('displayName');
 }
 
 export async function getServerSession() {
@@ -36,7 +32,18 @@ export async function getServerSession() {
     const username = cookieStore.get('username');
     const displayName = cookieStore.get('displayName');
 
-    if (!token?.value || !role?.value || !username?.value || !displayName?.value) {
+    if (!token?.value || !role?.value) {
+        return null;
+    }
+
+    // Since username and displayName are not in httpOnly cookies, we might not have them server-side post-login.
+    // The important parts for session validation are the httpOnly cookies.
+    // The client will have username/displayName in localStorage.
+    
+    const user = await getUserByUsername(username?.value || '');
+    
+    if (!user) {
+        // This case can happen if the user was deleted but cookies remain.
         return null;
     }
 
@@ -45,8 +52,8 @@ export async function getServerSession() {
         user: {
             id: token.value,
             role: role.value,
-            username: username.value,
-            displayName: displayName.value,
+            username: user.username,
+            displayName: user.displayName,
             serviceDepartment: role.value !== 'super_admin' ? roleToServiceDepartmentMap[role.value as Exclude<UserRole, 'super_admin'>] : undefined
         }
     };

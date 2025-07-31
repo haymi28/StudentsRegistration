@@ -16,8 +16,10 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkAuthAndRedirect = () => {
-      const token = localStorage.getItem('auth_token');
-      const isAuthenticated = !!token;
+      // httpOnly cookies are not accessible via JS, so we check for another item
+      // that is set on successful login.
+      const role = localStorage.getItem('user_role');
+      const isAuthenticated = !!role;
 
       const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
       const isAuthPage = pathname === '/' || pathname === '/login';

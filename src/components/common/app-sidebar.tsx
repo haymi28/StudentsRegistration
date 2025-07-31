@@ -32,7 +32,13 @@ export function AppSidebar() {
   }, []);
 
   const handleLogout = async () => {
-    await signOut();
+    // Clear client-side markers of session
+    localStorage.removeItem('user_role');
+    localStorage.removeItem('username');
+    localStorage.removeItem('displayName');
+    
+    await signOut(); // Clear server-side httpOnly cookies
+    
     window.dispatchEvent(new Event('storage'));
     router.push('/');
     router.refresh();

@@ -55,14 +55,19 @@ export function LoginForm() {
       }
     }
     fetchUsers();
-  }, []);
+  }, [t, toast]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     
     const result = await signIn(values);
 
-    if (result.success) {
+    if (result.success && result.user) {
+      // This is crucial for the MainLayout to detect the session on the client-side
+      localStorage.setItem('user_role', result.user.role);
+      localStorage.setItem('username', result.user.username);
+      localStorage.setItem('displayName', result.user.displayName);
+      
       toast({
         title: t('login.success'),
         description: t('login.successDescription').replace('{username}', result.user?.displayName || ''),
