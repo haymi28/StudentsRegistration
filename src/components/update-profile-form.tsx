@@ -11,8 +11,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useLocale } from '@/contexts/locale-provider';
 import { getUpdateProfileSchema } from '@/lib/validations/user';
-import { getUserByUsername, updateUser } from '@/lib/data';
+import { updateUser } from '@/lib/data';
 import { User } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 
 type ProfileFormValues = z.infer<ReturnType<typeof getUpdateProfileSchema>>;
 
@@ -20,7 +21,7 @@ export function UpdateProfileForm() {
   const { toast } = useToast();
   const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const { data: session, update } = useSession();
 
   const formSchema = getUpdateProfileSchema(t);
 
@@ -33,28 +34,24 @@ export function UpdateProfileForm() {
   });
 
   useEffect(() => {
-    const fetchUser = async () => {
-        const username = localStorage.getItem('username');
-        if (username) {
-            const user = await getUserByUsername(username);
-            if (user) {
-                setCurrentUser(user);
-                form.reset({
-                    username: user.username,
-                    displayName: user.displayName,
-                });
-            }
-        }
-    };
-    fetchUser();
-  }, [form]);
+    if (session?.user) {
+        form.reset({
+            username: session.user.name ?? '',
+            displayName: session.user.displayName ?? '',
+        });
+    }
+  }, [form, session]);
 
   async function onSubmit(values: ProfileFormValues) {
-    if (!currentUser) return;
+    if (!session?.user.id) return;
     setIsLoading(true);
     
     try {
-        await updateUser(currentUser.id, { displayName: values.displayName });
+        await updateUser(session.user.id, { displayName: values.displayName });
+        
+        // This updates the session on the client
+        await update({ displayName: values.displayName });
+        
         toast({
           title: t('account.updateProfileSuccessTitle'),
           description: t('account.updateProfileSuccessDescription'),

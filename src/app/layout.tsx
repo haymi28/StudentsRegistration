@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { LocaleProvider } from "@/contexts/locale-provider";
 import { MainLayout } from "@/components/common/main-layout";
+import { SessionProvider } from 'next-auth/react';
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -36,12 +37,14 @@ export default function RootLayout({
       <head>
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable, notoSansEthiopic.variable)}>
-        <LocaleProvider>
-            <MainLayout>
-              {children}
-            </MainLayout>
-          <Toaster />
-        </LocaleProvider>
+        <SessionProvider>
+            <LocaleProvider>
+                <MainLayout>
+                  {children}
+                </MainLayout>
+              <Toaster />
+            </LocaleProvider>
+        </SessionProvider>
       </body>
     </html>
   );

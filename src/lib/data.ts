@@ -7,6 +7,7 @@ import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
 import { UserRole } from './constants';
 import { roleToServiceDepartmentMap } from './constants';
+import bcrypt from 'bcryptjs';
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -55,7 +56,6 @@ export async function importStudents(students: StudentData[]) {
         const result = validationSchema.safeParse(student);
         if (!result.success) {
             console.error("Invalid student data during import:", result.error.flatten().fieldErrors);
-            // Optionally throw an error or filter out invalid students
             return null;
         }
         return result.data;
@@ -64,7 +64,7 @@ export async function importStudents(students: StudentData[]) {
     if (validatedStudents.length > 0) {
         await prisma.student.createMany({
             data: validatedStudents,
-            skipDuplicates: true, // This will skip if a student with the same unique field (e.g., registrationNumber) already exists.
+            skipDuplicates: true,
         });
         revalidatePath('/students');
     }
@@ -97,9 +97,19 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUser(id: string, data: { displayName?: string, password?: string }) {
+    
+    const dataToUpdate: { displayName?: string; password?: string } = {};
+
+    if (data.displayName) {
+        dataToUpdate.displayName = data.displayName;
+    }
+    if (data.password) {
+        dataToUpdate.password = await bcrypt.hash(data.password, 10);
+    }
+
     await prisma.user.update({
         where: { id },
-        data
+        data: dataToUpdate
     });
     revalidatePath('/account');
 }

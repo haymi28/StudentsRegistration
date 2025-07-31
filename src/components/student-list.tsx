@@ -8,23 +8,14 @@ import { getTranslations } from '@/lib/i18n';
 import { UserRole } from '@/lib/constants';
 import { roleToServiceDepartmentMap } from '@/lib/constants';
 
-// This is a dummy session that will be used on the server.
-const DUMMY_SESSION = {
-  isAuthenticated: true,
-  user: {
-    id: 'clz1j2k3l0000m8npa3b4c5d6',
-    role: 'super_admin' as UserRole,
-    username: 'superadmin',
-    displayName: 'Super Admin',
-    serviceDepartment: undefined
-  }
-};
-
-
 export async function StudentList() {
-  // Using a dummy session object for server-side rendering
-  const session = DUMMY_SESSION;
+  const session = await getServerSession();
   
+  if (!session?.user?.role) {
+      // This should be caught by middleware, but as a safeguard.
+      return <p>Access Denied.</p>
+  }
+
   const students = await getStudents(session.user.role);
   const users = await getUsers();
   const t = await getTranslations();

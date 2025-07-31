@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { LogOut, User, UserPlus, Users, Upload, Download } from 'lucide-react';
 import { useLocale } from '@/contexts/locale-provider';
@@ -16,31 +16,16 @@ import {
   SidebarTrigger,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { useEffect, useState } from 'react';
-import { UserRole } from '@/lib/constants';
+import { useSession, signOut } from 'next-auth/react';
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const { t } = useLocale();
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
-
-  useEffect(() => {
-    const role = localStorage.getItem('user_role') as UserRole | null;
-    setUserRole(role);
-  }, []);
+  const { data: session } = useSession();
+  const userRole = session?.user?.role;
 
   const handleLogout = async () => {
-    // Clear client-side markers of session
-    localStorage.removeItem('user_role');
-    localStorage.removeItem('username');
-    localStorage.removeItem('displayName');
-    
-    // With dummy auth, we just need to trigger a storage event
-    // for other tabs and redirect.
-    window.dispatchEvent(new Event('storage'));
-    router.push('/');
-    router.refresh();
+    await signOut({ callbackUrl: '/' });
   };
 
   const navLinks = [
