@@ -11,6 +11,8 @@ export async function StudentList() {
   const session = await getServerSession();
   
   if (!session) {
+    // The redirect is handled by MainLayout on the client side.
+    // Returning null prevents rendering the component's content without a session.
     return null;
   }
   
