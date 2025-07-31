@@ -14,19 +14,21 @@ export async function signIn(credentials: {username: string, password: string}):
     }
     
     // In a real app, use JWTs or a session library. For this, we'll set simple cookies.
-    cookies().set('auth_token', user.id, { httpOnly: true, path: '/' });
-    cookies().set('user_role', user.role, { httpOnly: true, path: '/' });
-    cookies().set('username', user.username, { httpOnly: true, path: '/' });
-    cookies().set('displayName', user.displayName, { httpOnly: true, path: '/' });
+    const cookieStore = cookies();
+    cookieStore.set('auth_token', user.id, { httpOnly: true, path: '/' });
+    cookieStore.set('user_role', user.role, { httpOnly: true, path: '/' });
+    cookieStore.set('username', user.username, { httpOnly: true, path: '/' });
+    cookieStore.set('displayName', user.displayName, { httpOnly: true, path: '/' });
     
     return { success: true, user: { ...user, serviceDepartment: roleToServiceDepartmentMap[user.role as Exclude<UserRole, 'super_admin'>] } };
 }
 
 export async function signOut() {
-    cookies().delete('auth_token');
-    cookies().delete('user_role');
-    cookies().delete('username');
-    cookies().delete('displayName');
+    const cookieStore = cookies();
+    cookieStore.delete('auth_token');
+    cookieStore.delete('user_role');
+    cookieStore.delete('username');
+    cookieStore.delete('displayName');
 }
 
 export async function getServerSession() {
