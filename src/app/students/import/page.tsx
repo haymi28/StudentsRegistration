@@ -10,17 +10,18 @@ import { useEffect, useState } from 'react';
 export default function ImportPage() {
   const router = useRouter();
   const { t } = useLocale();
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
     const role = localStorage.getItem('user_role') as UserRole;
     if (role !== 'super_admin') {
       router.replace('/students');
+    } else {
+      setAuthorized(true);
     }
-    setUserRole(role);
   }, [router]);
   
-  if (userRole !== 'super_admin') {
+  if (!authorized) {
     return null; // Or a loading/access denied component
   }
 

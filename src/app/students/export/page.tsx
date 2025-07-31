@@ -10,6 +10,7 @@ import { UserRole } from '@/lib/constants';
 export default function ExportStudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -20,6 +21,7 @@ export default function ExportStudentsPage() {
       } else {
         const studentData = await getStudents('super_admin');
         setStudents(studentData);
+        setAuthorized(true);
         setLoading(false);
       }
     };
@@ -28,6 +30,10 @@ export default function ExportStudentsPage() {
 
   if (loading) {
     return <div className="container py-8 text-center">Loading...</div>;
+  }
+  
+  if (!authorized) {
+    return null;
   }
 
   return (
