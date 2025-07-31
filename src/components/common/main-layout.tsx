@@ -12,51 +12,53 @@ const protectedRoutes = ['/students', '/register', '/attendance', '/account'];
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [authStatus, setAuthStatus] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
 
   useEffect(() => {
-    const checkAuth = () => {
-      // Check for a session token or any other auth indicator
+    const checkAuthAndRedirect = () => {
       const token = localStorage.getItem('auth_token');
-      setIsAuthenticated(!!token);
+      const isAuthenticated = !!token;
+
+      const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+      const isAuthPage = pathname === '/' || pathname === '/login';
+
+      if (isAuthenticated) {
+        setAuthStatus('authenticated');
+        if (isAuthPage) {
+          router.replace('/students');
+        }
+      } else {
+        setAuthStatus('unauthenticated');
+        if (isProtectedRoute) {
+          router.replace('/');
+        }
+      }
+    };
+    
+    checkAuthAndRedirect();
+
+    const handleStorageChange = () => {
+      // Re-run the check when storage changes (e.g., login/logout in another tab)
+      // This will cause a re-render and the effect will run again.
+      setAuthStatus('loading'); 
     };
 
-    checkAuth();
-
-    // Listen for storage changes to react to login/logout from other tabs
-    const handleStorageChange = () => checkAuth();
     window.addEventListener('storage', handleStorageChange);
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated === null) {
-      return; // Wait until authentication status is determined
-    }
-
-    const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-
-    if (!isAuthenticated && isProtectedRoute) {
-      router.replace('/');
-    }
-
-    if (isAuthenticated && (pathname === '/' || pathname === '/login')) {
-      router.replace('/students');
-    }
-  }, [isAuthenticated, pathname, router]);
+  }, [pathname, router]);
 
 
-  if (isAuthenticated === null) {
+  if (authStatus === 'loading') {
     // Show a loading state or a blank screen to avoid layout flashing
     return null;
   }
-
+  
   const isAuthPage = pathname === '/' || pathname === '/login';
 
   // Unauthenticated layout (Login page)
-  if (!isAuthenticated && isAuthPage) {
+  if (authStatus === 'unauthenticated' && isAuthPage) {
     return (
       <div className="relative flex min-h-screen flex-col">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -72,7 +74,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   }
 
   // Authenticated layout
-  if (isAuthenticated && !isAuthPage) {
+  if (authStatus === 'authenticated' && !isAuthPage) {
     return (
       <SidebarProvider>
         <AppSidebar />
@@ -86,5 +88,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // This handles cases where the user is on a page that doesn't match their auth state
+  // and the redirect is in flight.
   return null;
 }
