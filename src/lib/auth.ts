@@ -1,3 +1,4 @@
+
 import NextAuth from 'next-auth';
 import { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -5,6 +6,7 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from './prisma';
 import bcrypt from 'bcryptjs';
 import { UserRole } from './constants';
+import { getServerSession as getNextAuthServerSession } from 'next-auth/next';
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -65,8 +67,8 @@ export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
+export default NextAuth(authOptions);
 
 export async function getServerSession() {
-    return await auth();
+    return await getNextAuthServerSession(authOptions);
 }

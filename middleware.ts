@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import type { NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  const session = await auth();
+  const session = await getServerSession({ req: request, ...authOptions });
   const { pathname } = request.nextUrl;
 
   const isAuthPage = pathname === '/';
