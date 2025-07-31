@@ -1,13 +1,14 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession, SessionProvider } from 'next-auth/react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
 import { LanguageSwitcher } from './language-switcher';
+import { LocaleProvider } from '@/contexts/locale-provider';
 
-export function MainLayout({ children }: { children: React.ReactNode }) {
+function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { status } = useSession();
 
@@ -16,19 +17,9 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   if (status === 'loading') {
     return <div className="flex h-screen w-full items-center justify-center">Loading...</div>;
   }
-
-  if (status === 'unauthenticated' && !isAuthPage) {
-    // This case should be handled by middleware, but as a fallback
-    return <div className="flex h-screen w-full items-center justify-center">Redirecting to login...</div>;
-  }
   
-  if (status === 'authenticated' && isAuthPage) {
-     return <div className="flex h-screen w-full items-center justify-center">Redirecting to dashboard...</div>;
-  }
-
-
-  if (isAuthPage) {
-    return (
+  if (status === 'unauthenticated' && isAuthPage) {
+     return (
       <div className="relative flex min-h-screen flex-col">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container flex h-16 items-center justify-end">
@@ -52,5 +43,15 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </main>
         </SidebarInset>
       </SidebarProvider>
+  );
+}
+
+export function MainLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <SessionProvider>
+      <LocaleProvider>
+        <Layout>{children}</Layout>
+      </LocaleProvider>
+    </SessionProvider>
   );
 }
