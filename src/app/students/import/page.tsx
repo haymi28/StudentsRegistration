@@ -3,7 +3,7 @@
 
 import { BulkImportForm } from '@/components/bulk-import-form';
 import { useLocale } from '@/contexts/locale-provider';
-import { UserRole } from '@/lib/mock-data';
+import { UserRole } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

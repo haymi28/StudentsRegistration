@@ -19,7 +19,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale } from '@/contexts/locale-provider';
 import { Student } from '@prisma/client';
 import { createStudent, updateStudent } from '@/lib/data';
-import { roleToServiceDepartmentMap, ServiceDepartment, UserRole } from '@/lib/auth';
+import { roleToServiceDepartmentMap, ServiceDepartment, UserRole } from '@/lib/constants';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 

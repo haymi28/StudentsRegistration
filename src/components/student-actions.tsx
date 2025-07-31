@@ -23,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, Card } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal, Loader2 } from 'lucide-react';
@@ -32,7 +32,7 @@ import { TransferStudentsDialog } from './transfer-students-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { deleteStudent } from '@/lib/data';
 import { Student, User } from '@prisma/client';
-import { serviceDepartmentTransferMap, ServiceDepartment } from '@/lib/auth';
+import { serviceDepartmentTransferMap, ServiceDepartment } from '@/lib/constants';
 
 interface StudentActionsProps {
   students: Student[];
@@ -284,4 +284,5 @@ function RowActions({ student, session, translations }: { student: Student, sess
         </>
     );
 }
+
 

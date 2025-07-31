@@ -5,7 +5,8 @@ import prisma from './prisma';
 import { z } from 'zod';
 import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
-import { UserRole, roleToServiceDepartmentMap } from './auth';
+import { UserRole } from './constants';
+import { roleToServiceDepartmentMap } from './constants';
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 

@@ -17,7 +17,7 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { useEffect, useState } from 'react';
-import { UserRole } from '@/lib/auth';
+import { UserRole } from '@/lib/constants';
 import { signOut } from '@/lib/auth';
 
 export function AppSidebar() {
