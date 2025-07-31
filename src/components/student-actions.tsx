@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useTransition } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -206,7 +206,7 @@ export function StudentActions({ students, users, session, translations }: Stude
 function RowActions({ student, session, translations }: { student: Student, session: any, translations: RowActionsTranslations }) {
     const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
     const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
-    const [isPending, startTransition] = useTransition();
+    const [isDeleting, setIsDeleting] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
 
@@ -217,7 +217,8 @@ function RowActions({ student, session, translations }: { student: Student, sess
     const handleDeleteStudent = async () => {
         if (!studentToDelete) return;
         
-        startTransition(async () => {
+        setIsDeleting(true);
+        try {
             await deleteStudent(studentToDelete.id);
             toast({
                 variant: "destructive",
@@ -226,7 +227,15 @@ function RowActions({ student, session, translations }: { student: Student, sess
             });
             setStudentToDelete(null);
             router.refresh();
-        });
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Failed to delete student.',
+            });
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     return (
@@ -253,6 +262,7 @@ function RowActions({ student, session, translations }: { student: Student, sess
                         <DropdownMenuItem
                             className="text-destructive focus:text-destructive focus:bg-destructive/10"
                             onClick={() => setStudentToDelete(student)}
+                            disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
                             {translations.delete}
@@ -275,8 +285,8 @@ function RowActions({ student, session, translations }: { student: Student, sess
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel onClick={() => setStudentToDelete(null)}>{translations.deleteDialog.cancel}</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteStudent} disabled={isPending}>
-                            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        <AlertDialogAction onClick={handleDeleteStudent} disabled={isDeleting}>
+                            {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {translations.deleteDialog.confirm}
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -285,6 +295,3 @@ function RowActions({ student, session, translations }: { student: Student, sess
         </>
     );
 }
-
-
-
