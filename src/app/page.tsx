@@ -17,7 +17,7 @@ export default function HomePage() {
             className="rounded-md shadow-md"
         />
         <h1 className="text-xl font-bold text-primary font-headline sm:text-2xl px-4">
-            የደብረ ገሊላ ቅዱስ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት የተማሪዎች መመዝገቢያ ቅጽ
+            የደብረ ገሊላ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት የተማሪዎች መመዝገቢያ ቅጽ
         </h1>
         <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
