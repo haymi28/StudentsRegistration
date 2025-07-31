@@ -1,3 +1,4 @@
+
 'use server';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -5,15 +6,15 @@ import { getStudents, getUsers } from '@/lib/data';
 import { StudentActions } from './student-actions';
 import { getServerSession } from '@/lib/auth';
 import { getTranslations } from '@/lib/i18n';
-import { redirect } from 'next/navigation';
 
 export async function StudentList() {
   const session = await getServerSession();
   
+  // The redirect is handled by MainLayout on the client side.
+  // If there's no session, MainLayout will redirect before this component renders.
+  // If it does render, we can safely assume a session exists.
   if (!session) {
-    // The redirect is handled by MainLayout on the client side.
-    // Returning null prevents rendering the component's content without a session.
-    return null;
+    return null; // Return null to prevent rendering anything if the session is somehow missing.
   }
   
   const students = await getStudents(session.user.role as any);
