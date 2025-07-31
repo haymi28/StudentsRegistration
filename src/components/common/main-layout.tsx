@@ -9,16 +9,13 @@ import { LanguageSwitcher } from './language-switcher';
 import { LocaleProvider } from '@/contexts/locale-provider';
 
 function Layout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const { status } = useSession();
-
-  const isAuthPage = pathname === '/';
 
   if (status === 'loading') {
     return <div className="flex h-screen w-full items-center justify-center">Loading...</div>;
   }
   
-  if (status === 'unauthenticated' && isAuthPage) {
+  if (status === 'unauthenticated') {
      return (
       <div className="relative flex min-h-screen flex-col">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
