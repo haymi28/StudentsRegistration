@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,13 +38,18 @@ export function LoginForm() {
     },
   });
 
-  useState(() => {
+  useEffect(() => {
     async function fetchUsers() {
-      const fetchedUsers = await getUsers();
-      setUsers(fetchedUsers);
+      try {
+        const fetchedUsers = await getUsers();
+        setUsers(fetchedUsers);
+      } catch (error) {
+        console.error("Failed to fetch users", error)
+        // Optionally, show a toast message to the user
+      }
     }
     fetchUsers();
-  });
+  }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
