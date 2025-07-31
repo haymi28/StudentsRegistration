@@ -8,7 +8,8 @@ import { getTranslations } from '@/lib/i18n';
 import { cookies } from 'next/headers';
 
 export async function StudentList() {
-  const locale = cookies().get('locale')?.value || 'am';
+  const cookieStore = cookies();
+  const locale = cookieStore.get('locale')?.value || 'am';
   const t = await getTranslations(locale);
 
   const students = await getStudents();
