@@ -1,22 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
 import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  const session = await getServerSession({ req: request, ...authOptions });
-  const { pathname } = request.nextUrl;
-
-  const isAuthPage = pathname === '/';
-
-  if (session && isAuthPage) {
-    return NextResponse.redirect(new URL('/students', request.url));
-  }
-
-  if (!session && !isAuthPage) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
+export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 

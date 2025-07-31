@@ -1,24 +1,10 @@
-import { PrismaClient, UserRole } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log(`Start seeding ...`);
-  const adminPassword = await bcrypt.hash('Admin@123', 10);
-  
-  const admin = await prisma.user.upsert({
-    where: { username: 'admin' },
-    update: {},
-    create: {
-      username: 'admin',
-      password: adminPassword,
-      role: UserRole.super_admin,
-      displayName: 'Super Admin',
-    },
-  });
-  console.log(`Created super admin user with id: ${admin.id}`);
-  
+  // Seeding logic can be added here in the future if needed
   console.log(`Seeding finished.`);
 }
 

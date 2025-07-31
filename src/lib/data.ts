@@ -7,7 +7,6 @@ import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
 import { UserRole } from './constants';
 import { roleToServiceDepartmentMap } from './constants';
-import bcrypt from 'bcryptjs';
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -50,7 +49,7 @@ export async function createStudent(data: StudentData) {
     revalidatePath('/students');
 }
 
-export async function importStudents(students: StudentData[]) {
+export async function importStudents(students: Partial<StudentData>[]) {
     const validationSchema = getStudentRegistrationSchema(() => '');
     const validatedStudents = students.map(student => {
         const result = validationSchema.safeParse(student);
@@ -104,7 +103,8 @@ export async function updateUser(id: string, data: { displayName?: string, passw
         dataToUpdate.displayName = data.displayName;
     }
     if (data.password) {
-        dataToUpdate.password = await bcrypt.hash(data.password, 10);
+        // Password hashing would happen here, but removed since bcrypt is removed
+        dataToUpdate.password = data.password;
     }
 
     await prisma.user.update({

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -27,21 +26,17 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal, Loader2 } from 'lucide-react';
+import { Search, Eye, Edit, Trash2, MoreHorizontal, Loader2 } from 'lucide-react';
 import { StudentDetailsDialog } from './student-details-dialog';
-import { TransferStudentsDialog } from './transfer-students-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { deleteStudent } from '@/lib/data';
 import { Student, User } from '@prisma/client';
-import { serviceDepartmentTransferMap, ServiceDepartment } from '@/lib/constants';
 
 interface StudentActionsProps {
   students: Student[];
   users: User[];
-  session: any;
   translations: {
     searchPlaceholder: string;
-    transferButton: string;
     row: RowActionsTranslations;
   }
 }
@@ -62,10 +57,8 @@ interface RowActionsTranslations {
 }
 
 
-export function StudentActions({ students, users, session, translations }: StudentActionsProps) {
+export function StudentActions({ students, users, translations }: StudentActionsProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
-  const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const router = useRouter();
 
   const filteredStudents = useMemo(() => {
@@ -79,9 +72,6 @@ export function StudentActions({ students, users, session, translations }: Stude
     }
     return studentsToDisplay;
   }, [students, searchQuery]);
-  
-  const fromServiceDepartment = session.user.role !== 'super_admin' ? session.user.serviceDepartment : undefined;
-  const canTransfer = fromServiceDepartment && !!serviceDepartmentTransferMap[fromServiceDepartment as ServiceDepartment];
 
 
   return (
@@ -96,32 +86,12 @@ export function StudentActions({ students, users, session, translations }: Stude
             className="pl-10 w-full"
           />
         </div>
-        {selectedRowKeys.size > 0 && (session.user.role !== 'super_admin' ? canTransfer : true) && (
-          <Button onClick={() => setIsTransferDialogOpen(true)} className="shrink-0">
-            <ArrowRightLeft className="mr-2 h-4 w-4" />
-            {translations.transferButton.replace('{count}', String(selectedRowKeys.size))}
-          </Button>
-        )}
       </div>
-      <TransferStudentsDialog
-        open={isTransferDialogOpen}
-        onOpenChange={setIsTransferDialogOpen}
-        selectedStudentIds={Array.from(selectedRowKeys)}
-        students={students}
-        currentUserRole={session.user.role}
-        onTransferSuccess={() => {
-            setSelectedRowKeys(new Set());
-            router.refresh();
-        }}
-      />
       {/* Desktop Table View */}
       <div className="border rounded-lg overflow-x-auto hidden md:block w-full">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[50px]">
-                  {/* Placeholder for potential future checkbox */}
-                </TableHead>
                 <TableHead className="w-[80px]">Photo</TableHead>
                 <TableHead>Reg. Number</TableHead>
                 <TableHead>Full Name</TableHead>
@@ -135,9 +105,6 @@ export function StudentActions({ students, users, session, translations }: Stude
                 filteredStudents.map((student) => (
                   <TableRow key={student.registrationNumber}>
                     <TableCell>
-                      {/* Placeholder for checkbox */}
-                    </TableCell>
-                    <TableCell>
                       <Avatar>
                         <AvatarImage src={student.photo || undefined} alt={student.fullName} data-ai-hint="student portrait" />
                         <AvatarFallback>{student.fullName.charAt(0)}</AvatarFallback>
@@ -150,13 +117,13 @@ export function StudentActions({ students, users, session, translations }: Stude
                     </TableCell>
                     <TableCell className="whitespace-nowrap">{student.phoneNumber}</TableCell>
                     <TableCell className="text-right">
-                       <RowActions student={student} session={session} translations={translations.row}/>
+                       <RowActions student={student} translations={translations.row}/>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
+                  <TableCell colSpan={6} className="h-24 text-center">
                     No students found.
                   </TableCell>
                 </TableRow>
@@ -171,9 +138,6 @@ export function StudentActions({ students, users, session, translations }: Stude
             filteredStudents.map((student) => (
               <Card key={student.registrationNumber}>
                   <div className="flex items-start p-4 gap-4">
-                      <div className="flex-shrink-0 pt-1">
-                          {/* Placeholder for checkbox */}
-                      </div>
                       <Avatar className="w-12 h-12 flex-shrink-0">
                           <AvatarImage src={student.photo || undefined} alt={student.fullName} data-ai-hint="student portrait" />
                           <AvatarFallback>{student.fullName.charAt(0)}</AvatarFallback>
@@ -187,7 +151,7 @@ export function StudentActions({ students, users, session, translations }: Stude
                           <p className="text-sm text-muted-foreground pt-1">{student.phoneNumber}</p>
                       </div>
                       <div className="flex-shrink-0 -mr-2">
-                        <RowActions student={student} session={session} translations={translations.row}/>
+                        <RowActions student={student} translations={translations.row}/>
                       </div>
                   </div>
               </Card>
@@ -203,7 +167,7 @@ export function StudentActions({ students, users, session, translations }: Stude
 }
 
 
-function RowActions({ student, session, translations }: { student: Student, session: any, translations: RowActionsTranslations }) {
+function RowActions({ student, translations }: { student: Student, translations: RowActionsTranslations }) {
     const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
     const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -257,17 +221,15 @@ function RowActions({ student, session, translations }: { student: Student, sess
                         <Edit className="mr-2 h-4 w-4" />
                         {translations.edit}
                     </DropdownMenuItem>
-                    {session.user.role === 'super_admin' && <DropdownMenuSeparator />}
-                    {session.user.role === 'super_admin' &&
-                        <DropdownMenuItem
-                            className="text-destructive focus:text-destructive focus:bg-destructive/10"
-                            onClick={() => setStudentToDelete(student)}
-                            disabled={isDeleting}
-                        >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            {translations.delete}
-                        </DropdownMenuItem>
-                    }
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                        className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                        onClick={() => setStudentToDelete(student)}
+                        disabled={isDeleting}
+                    >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        {translations.delete}
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
