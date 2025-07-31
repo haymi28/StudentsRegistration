@@ -5,20 +5,11 @@ import { useLocale } from '@/contexts/locale-provider';
 import { Student } from '@prisma/client';
 
 interface EditStudentClientProps {
-  student: Student | null;
+  student: Student;
 }
 
 export function EditStudentClient({ student }: EditStudentClientProps) {
   const { t } = useLocale();
-
-  if (!student) {
-    return (
-      <div className="container py-8 text-center">
-        <h1 className="text-2xl font-bold">{t('students.noStudents')}</h1>
-        <p className="text-muted-foreground">The student with the given ID could not be found.</p>
-      </div>
-    );
-  }
 
   return (
     <div className="container py-8">

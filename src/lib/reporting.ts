@@ -1,8 +1,7 @@
-'use client';
+'use server';
 
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import type { Student, ServiceDepartment } from './mock-data';
+import type { Student, ServiceDepartment } from '@prisma/client';
+import type { TFunction } from '@/contexts/locale-provider';
 
 export interface ReportTranslations {
   title: string;
@@ -70,6 +69,9 @@ export async function generateTransferReport(
   translations: ReportTranslations,
   generatedByDisplayName: string
 ) {
+  const jsPDF = (await import('jspdf')).default;
+  const html2canvas = (await import('html2canvas')).default;
+
   const reportElement = document.createElement('div');
   // Styling for the off-screen element that will be rendered to PDF
   reportElement.style.position = 'fixed';

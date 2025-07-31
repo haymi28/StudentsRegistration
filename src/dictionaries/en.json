@@ -1,0 +1,241 @@
+{
+    "nav": {
+        "students": "Students",
+        "newStudent": "New Student",
+        "import": "Import",
+        "export": "Export",
+        "attendance": "Attendance",
+        "account": "My Account",
+        "logout": "Logout",
+        "language": "Language"
+    },
+    "login": {
+        "title": "Login",
+        "description": "Enter your credentials to access your account.",
+        "username": "Username",
+        "usernamePlaceholder": "Select a username",
+        "password": "Password",
+        "button": "Login",
+        "loadingButton": "Logging in...",
+        "success": "Login Successful!",
+        "successDescription": "Welcome back, {username}!",
+        "fail": "Login Failed",
+        "failDescription": "Please check your credentials and try again.",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password"
+    },
+    "register": {
+        "pageTitle": "Student Registration",
+        "pageDescription": "Fill out the form below to register a new student.",
+        "editPageTitle": "Edit Student Information",
+        "editPageDescription": "Update the student's information on the form below."
+    },
+    "form": {
+        "title": "Student Registration Form",
+        "editTitle": "Edit Student Information",
+        "photoSection": "Student Photo",
+        "photoLabel": "Student Photo",
+        "personalInfoSection": "Personal Information",
+        "contactInfoSection": "Contact Information",
+        "addressSection": "Address Information",
+        "label": {
+            "regNumber": "Registration Number",
+            "fullName": "Full Name",
+            "gender": "Gender",
+            "department": "Service Department",
+            "baptismalName": "Baptismal Name",
+            "mothersName": "Mother's Name",
+            "dob": "Date of Birth (E.C.)",
+            "education": "Education Level",
+            "phone": "Phone Number",
+            "additionalPhone": "Additional Phone",
+            "fathersPhone": "Father's Phone",
+            "mothersPhone": "Mother's Phone",
+            "subcity": "Subcity",
+            "kebele": "Kebele",
+            "houseNumber": "House Number",
+            "specificAddress": "Specific Address",
+            "joinDate": "Date of Joining (E.C.)"
+        },
+        "placeholder": {
+            "regNumber": "e.g., 001/17",
+            "selectGender": "Select gender",
+            "selectDepartment": "Select service department",
+            "address": "Enter detailed address information",
+            "day": "Day",
+            "month": "Month",
+            "year": "Year"
+        },
+        "submit": "Register",
+        "save": "Save Changes",
+        "loading": "Submitting...",
+        "registerSuccess": "Student Registered!",
+        "registerSuccessDescription": "{name} has been successfully registered.",
+        "updateSuccess": "Student Updated!",
+        "updateSuccessDescription": "{name}'s information has been successfully updated."
+    },
+    "students": {
+        "title": "Student List",
+        "descriptionSuperAdmin": "View and manage all registered students.",
+        "descriptionAdmin": "View and manage students in the {department}.",
+        "searchPlaceholder": "Search by name or registration number...",
+        "noStudents": "No students found.",
+        "transferButton": "Transfer {count} Students",
+        "table": {
+            "photo": "Photo",
+            "regNumber": "Reg. No.",
+            "fullName": "Full Name",
+            "department": "Department",
+            "phone": "Phone Number",
+            "actions": "Actions"
+        },
+        "actions": {
+            "view": "View Details",
+            "edit": "Edit",
+            "delete": "Delete"
+        },
+        "deleteDialog": {
+            "title": "Are you sure you want to delete this student?",
+            "description": "This action cannot be undone. This will permanently delete {name}.",
+            "cancel": "Cancel",
+            "confirm": "Yes, delete"
+        },
+        "deleteSuccess": "Student Deleted!",
+        "deleteSuccessDescription": "{name} has been successfully deleted."
+    },
+    "studentDetails": {
+        "title": "Student Details",
+        "description": "Full information for {name}.",
+        "personalInfo": "Personal Information",
+        "contactInfo": "Contact Information",
+        "address": "Address Information",
+        "label": {
+            "fullName": "Full Name",
+            "baptismalName": "Baptismal Name",
+            "mothersName": "Mother's Name",
+            "gender": "Gender",
+            "dob": "Date of Birth",
+            "education": "Education Level",
+            "joinDate": "Date of Joining",
+            "phone": "Phone Number",
+            "additionalPhone": "Additional Phone",
+            "fathersPhone": "Father's Phone",
+            "mothersPhone": "Mother's Phone",
+            "subcity": "Subcity",
+            "kebele": "Kebele",
+            "houseNumber": "House Number",
+            "specificAddress": "Specific Address"
+        }
+    },
+    "import": {
+        "pageTitle": "Bulk Import Students",
+        "pageDescription": "Use the form below to import student data from an Excel file.",
+        "templateCard": {
+            "title": "Download Excel Template",
+            "description": "To get started, download our template to ensure the correct column formatting.",
+            "button": "Download Template"
+        },
+        "uploadCard": {
+            "title": "Upload Excel File",
+            "description": "Choose the completed Excel file to proceed with the import."
+        },
+        "selectFile": "Select file",
+        "fileDrop": {
+            "click": "Click to upload",
+            "drag": "or drag and drop",
+            "fileTypes": "XLSX, XLS (MAX. 5MB)"
+        },
+        "loadingPreview": "Loading file preview...",
+        "preview": {
+            "title": "Import Preview",
+            "description": "{count} students are ready to be imported."
+        },
+        "confirmButton": "Import {count} Students",
+        "successTitle": "Import Successful!",
+        "successDescription": "{count} students have been successfully imported.",
+        "errors": {
+            "title": "Validation Errors",
+            "fileReadError": "Error reading the file.",
+            "fileParseError": "Could not parse the Excel file.",
+            "duplicateRegNumber": "Registration number '{regNumber}' already exists."
+        }
+    },
+    "export": {
+        "pageTitle": "Export Student Data",
+        "pageDescription": "Select students to export their data to Excel or PDF.",
+        "button": "Export {count} Selected",
+        "noSelectionTitle": "No Students Selected",
+        "noSelectionDescription": "Please select at least one student to export.",
+        "successTitle": "Export Successful!",
+        "successDescription": "{count} students have been successfully exported."
+    },
+    "transfer": {
+        "title": "Transfer Students",
+        "description": "You have selected {count} students to transfer from the <strong>{from}</strong> department.",
+        "toLabel": "Transfer to:",
+        "toPlaceholder": "Select target department",
+        "noOptionsHighest": "These students are already in the highest department.",
+        "noOptionsMultiple": "You cannot transfer students from different departments at once.",
+        "cancel": "Cancel",
+        "confirm": "Transfer",
+        "loading": "Transferring...",
+        "successTitle": "Transfer Successful!",
+        "successDescription": "{count} students have been successfully transferred to {to}."
+    },
+     "report": {
+        "title": "Student Transfer Report",
+        "from": "From Department:",
+        "to": "To Department:",
+        "date": "Date:",
+        "generatedBy": "Generated By:",
+        "regNumber": "Reg. No.",
+        "fullName": "Full Name",
+        "gender": "Gender"
+    },
+    "account": {
+        "pageTitle": "Account Management",
+        "pageDescription": "Update your profile and password information.",
+        "updateProfileTitle": "Update Profile",
+        "updateProfileDescription": "Change your display name here.",
+        "displayName": "Display Name",
+        "displayNamePlaceholder": "Enter your display name",
+        "updateProfileSuccessTitle": "Profile Updated",
+        "updateProfileSuccessDescription": "Your display name has been successfully updated.",
+        "changePasswordTitle": "Change Password",
+        "changePasswordDescription": "Make sure to set a new strong password.",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "changePasswordButton": "Change Password",
+        "changePasswordSuccessTitle": "Password Changed",
+        "changePasswordSuccessDescription": "Your password has been successfully updated."
+    },
+    "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {currentPage} of {totalPages}"
+    },
+    "validation": {
+        "required": "{field} is required.",
+        "min": "{field} must be at least {length} characters.",
+        "invalidNumber": "Invalid number.",
+        "passwordMismatch": "Passwords do not match.",
+        "gender": {
+            "male": "Male",
+            "female": "Female"
+        },
+        "currentPasswordIncorrect": "Current password is incorrect."
+    },
+    "serviceDepartment": {
+        "children_1": "Children's Class 1",
+        "children_2": "Children's Class 2",
+        "junior": "Junior Class",
+        "senior": "Senior Class",
+        "youth": "Youth Class"
+    },
+    "common": {
+        "error": "Error",
+        "errorDescription": "An unexpected error occurred. Please try again.",
+        "userNotFound": "User not found. Please log in again."
+    }
+}
