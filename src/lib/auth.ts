@@ -1,9 +1,10 @@
 'use server'
 
-import { cookies } from 'next/headers'
-import { getUserByUsername } from './data';
+import { getUserByUsername, getUsers } from './data';
 import { UserRole, ServiceDepartment, roleToServiceDepartmentMap } from './constants';
+import { User } from '@prisma/client';
 
+// DUMMY AUTH IMPLEMENTATION
 
 export async function signIn(credentials: {username: string, password: string}): Promise<{success: boolean, error?: string, user?: any}> {
     const user = await getUserByUsername(credentials.username);
@@ -12,49 +13,32 @@ export async function signIn(credentials: {username: string, password: string}):
         return { success: false, error: 'Invalid username or password' };
     }
     
-    const cookieStore = await cookies();
-    cookieStore.set('auth_token', user.id, { httpOnly: true, path: '/' });
-    cookieStore.set('user_role', user.role, { httpOnly: true, path: '/' });
-    
+    // The user object will be stored in localStorage on the client
     return { success: true, user: { ...user, serviceDepartment: roleToServiceDepartmentMap[user.role as Exclude<UserRole, 'super_admin'>] } };
 }
 
 export async function signOut() {
-    const cookieStore = await cookies();
-    cookieStore.delete('auth_token');
-    cookieStore.delete('user_role');
+    // This function is now a placeholder.
+    // The client will clear localStorage.
 }
 
-export async function getServerSession() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth_token');
-    const role = cookieStore.get('user_role');
-    const username = cookieStore.get('username');
-    const displayName = cookieStore.get('displayName');
-
-    if (!token?.value || !role?.value) {
-        return null;
-    }
-
-    // Since username and displayName are not in httpOnly cookies, we might not have them server-side post-login.
-    // The important parts for session validation are the httpOnly cookies.
-    // The client will have username/displayName in localStorage.
-    
-    const user = await getUserByUsername(username?.value || '');
-    
-    if (!user) {
-        // This case can happen if the user was deleted but cookies remain.
-        return null;
-    }
-
+export async function getServerSession(): Promise<{ isAuthenticated: boolean; user: any } | null> {
+  // This is a dummy session for server components.
+  // In a real app, you'd fetch this from cookies or a session store.
+  // For this project, we primarily rely on client-side session management.
+  const users = await getUsers();
+  if (users.length > 0) {
+    const user = users[0];
     return {
         isAuthenticated: true,
         user: {
-            id: token.value,
-            role: role.value,
+            id: user.id,
+            role: user.role,
             username: user.username,
             displayName: user.displayName,
-            serviceDepartment: role.value !== 'super_admin' ? roleToServiceDepartmentMap[role.value as Exclude<UserRole, 'super_admin'>] : undefined
+            serviceDepartment: user.role !== 'super_admin' ? roleToServiceDepartmentMap[user.role as Exclude<UserRole, 'super_admin'>] : undefined
         }
     };
+  }
+  return null;
 }

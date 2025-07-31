@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/sidebar';
 import { useEffect, useState } from 'react';
 import { UserRole } from '@/lib/constants';
-import { signOut } from '@/lib/auth';
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -37,8 +36,8 @@ export function AppSidebar() {
     localStorage.removeItem('username');
     localStorage.removeItem('displayName');
     
-    await signOut(); // Clear server-side httpOnly cookies
-    
+    // With dummy auth, we just need to trigger a storage event
+    // for other tabs and redirect.
     window.dispatchEvent(new Event('storage'));
     router.push('/');
     router.refresh();

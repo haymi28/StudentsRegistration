@@ -16,8 +16,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkAuthAndRedirect = () => {
-      // httpOnly cookies are not accessible via JS, so we check for another item
-      // that is set on successful login.
       const role = localStorage.getItem('user_role');
       const isAuthenticated = !!role;
 
@@ -37,24 +35,24 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       }
     };
     
+    // Initial check
     checkAuthAndRedirect();
 
+    // Listen for storage changes to handle login/logout in other tabs
     const handleStorageChange = () => {
-      // Re-run the check when storage changes (e.g., login/logout in another tab)
-      // This will cause a re-render and the effect will run again.
-      setAuthStatus('loading'); 
+      setAuthStatus('loading'); // Triggers a re-check
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [pathname, router]);
+  }, [pathname, router, authStatus]); // re-run when authStatus changes to 'loading'
 
 
   if (authStatus === 'loading') {
     // Show a loading state or a blank screen to avoid layout flashing
-    return null;
+    return <div className="flex h-screen w-full items-center justify-center">Loading...</div>;
   }
   
   const isAuthPage = pathname === '/' || pathname === '/login';
@@ -89,8 +87,18 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
     );
   }
-
+  
   // This handles cases where the user is on a page that doesn't match their auth state
-  // and the redirect is in flight.
-  return null;
+  // and the redirect is in flight, or if they land on a protected route while unauthenticated.
+  if (authStatus === 'unauthenticated' && protectedRoutes.some(route => pathname.startsWith(route))) {
+      return <div className="flex h-screen w-full items-center justify-center">Redirecting to login...</div>;
+  }
+
+  if (authStatus === 'authenticated' && isAuthPage) {
+      return <div className="flex h-screen w-full items-center justify-center">Redirecting to dashboard...</div>;
+  }
+
+
+  // Fallback for any other state
+  return children;
 }

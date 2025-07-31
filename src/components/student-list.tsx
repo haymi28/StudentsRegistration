@@ -1,27 +1,35 @@
 'use server';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getStudents, getUsers } from '@/lib/data';
 import { StudentActions } from './student-actions';
 import { getServerSession } from '@/lib/auth';
 import { getTranslations } from '@/lib/i18n';
+import { UserRole } from '@/lib/constants';
+import { roleToServiceDepartmentMap } from '@/lib/constants';
+
+// This is a dummy session that will be used on the server.
+const DUMMY_SESSION = {
+  isAuthenticated: true,
+  user: {
+    id: 'clz1j2k3l0000m8npa3b4c5d6',
+    role: 'super_admin' as UserRole,
+    username: 'superadmin',
+    displayName: 'Super Admin',
+    serviceDepartment: undefined
+  }
+};
+
 
 export async function StudentList() {
-  const session = await getServerSession();
+  // Using a dummy session object for server-side rendering
+  const session = DUMMY_SESSION;
   
-  // The redirect is handled by MainLayout on the client side.
-  // If there's no session, MainLayout will redirect before this component renders.
-  // If it does render, we can safely assume a session exists.
-  if (!session) {
-    return null; // Return null to prevent rendering anything if the session is somehow missing.
-  }
-  
-  const students = await getStudents(session.user.role as any);
+  const students = await getStudents(session.user.role);
   const users = await getUsers();
   const t = await getTranslations();
 
-
-  const fromServiceDepartment = session.user.role !== 'super_admin' ? session.user.serviceDepartment : undefined;
+  const fromServiceDepartment = session.user.role !== 'super_admin' ? roleToServiceDepartmentMap[session.user.role as Exclude<UserRole, 'super_admin'>] : undefined;
 
   const translations = {
       title: t('students.title'),
