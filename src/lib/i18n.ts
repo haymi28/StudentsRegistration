@@ -10,8 +10,7 @@ const getNestedTranslation = (translations: any, key: string): string | undefine
     return key.split('.').reduce((obj, k) => (obj && typeof obj[k] !== 'undefined') ? obj[k] : undefined, translations);
 }
 
-export const getTranslations = async () => {
-  const locale = cookies().get('locale')?.value || 'am';
+export const getTranslations = async (locale: string) => {
   const dictionary = await dictionaries[locale]();
 
   return (key: string, params?: Record<string, string | number>): string => {

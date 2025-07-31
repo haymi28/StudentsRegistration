@@ -1,13 +1,14 @@
 
 'use server';
 
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { getStudents, getUsers } from '@/lib/data';
 import { StudentActions } from './student-actions';
 import { getServerSession } from '@/lib/auth';
 import { getTranslations } from '@/lib/i18n';
 import { UserRole } from '@/lib/constants';
 import { roleToServiceDepartmentMap } from '@/lib/constants';
+import { cookies } from 'next/headers';
 
 export async function StudentList() {
   const session = await getServerSession();
@@ -16,10 +17,12 @@ export async function StudentList() {
       // This should be caught by middleware, but as a safeguard.
       return <p>Access Denied.</p>
   }
+  
+  const locale = cookies().get('locale')?.value || 'am';
+  const t = await getTranslations(locale);
 
   const students = await getStudents(session.user.role);
   const users = await getUsers();
-  const t = await getTranslations();
 
   const fromServiceDepartment = session.user.role !== 'super_admin' ? roleToServiceDepartmentMap[session.user.role as Exclude<UserRole, 'super_admin'>] : undefined;
 
