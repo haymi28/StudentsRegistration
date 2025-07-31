@@ -1,3 +1,4 @@
+
 'use server'
 
 import { cookies } from 'next/headers'
@@ -29,10 +30,11 @@ export async function signOut() {
 }
 
 export async function getServerSession() {
-    const token = cookies().get('auth_token');
-    const role = cookies().get('user_role');
-    const username = cookies().get('username');
-    const displayName = cookies().get('displayName');
+    const cookieStore = cookies();
+    const token = cookieStore.get('auth_token');
+    const role = cookieStore.get('user_role');
+    const username = cookieStore.get('username');
+    const displayName = cookieStore.get('displayName');
 
     if (!token || !role || !username || !displayName) {
         return null;
