@@ -12,8 +12,7 @@ export async function signIn(credentials: {username: string, password: string}):
         return { success: false, error: 'Invalid username or password' };
     }
     
-    // In a real app, use JWTs or a session library. For this, we'll set simple cookies.
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.set('auth_token', user.id, { httpOnly: true, path: '/' });
     cookieStore.set('user_role', user.role, { httpOnly: true, path: '/' });
     cookieStore.set('username', user.username, { httpOnly: true, path: '/' });
@@ -23,7 +22,7 @@ export async function signIn(credentials: {username: string, password: string}):
 }
 
 export async function signOut() {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.delete('auth_token');
     cookieStore.delete('user_role');
     cookieStore.delete('username');
@@ -31,7 +30,7 @@ export async function signOut() {
 }
 
 export async function getServerSession() {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('auth_token');
     const role = cookieStore.get('user_role');
     const username = cookieStore.get('username');
