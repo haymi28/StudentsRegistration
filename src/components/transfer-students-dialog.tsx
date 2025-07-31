@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { Student } from '@prisma/client';
-import { serviceDepartmentTransferMap, roleToServiceDepartmentMap, UserRole, ServiceDepartment } from '@/lib/constants';
+import { serviceDepartmentTransferMap, ServiceDepartment } from '@/lib/constants';
 import { useLocale } from '@/contexts/locale-provider';
 import { updateStudent } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
@@ -27,7 +27,6 @@ interface TransferStudentsDialogProps {
   onOpenChange: (open: boolean) => void;
   selectedStudentIds: string[];
   students: Student[];
-  currentUserRole: UserRole;
   onTransferSuccess: () => void;
 }
 
@@ -36,7 +35,6 @@ export function TransferStudentsDialog({
   onOpenChange,
   selectedStudentIds,
   students,
-  currentUserRole,
   onTransferSuccess,
 }: TransferStudentsDialogProps) {
   const [targetServiceDepartment, setTargetServiceDepartment] = useState<ServiceDepartment | ''>('');
@@ -51,17 +49,14 @@ export function TransferStudentsDialog({
   );
   
   const fromServiceDepartment = useMemo(() => {
-    if (currentUserRole === 'super_admin') {
-      if (selectedStudents.length > 0) {
-        const firstStudentDepartment = selectedStudents[0].serviceDepartment;
-        if (selectedStudents.every(s => s.serviceDepartment === firstStudentDepartment)) {
-          return firstStudentDepartment;
-        }
+    if (selectedStudents.length > 0) {
+      const firstStudentDepartment = selectedStudents[0].serviceDepartment;
+      if (selectedStudents.every(s => s.serviceDepartment === firstStudentDepartment)) {
+        return firstStudentDepartment;
       }
-      return t('transfer.multipleDepartments');
     }
-    return roleToServiceDepartmentMap[currentUserRole as Exclude<UserRole, 'super_admin'>];
-  }, [currentUserRole, selectedStudents, t]);
+    return t('transfer.multipleDepartments');
+  }, [selectedStudents, t]);
 
   const transferOptions = useMemo<ServiceDepartment[]>(() => {
     if (fromServiceDepartment === t('transfer.multipleDepartments')) return [];
@@ -92,7 +87,7 @@ export function TransferStudentsDialog({
             description: t('transfer.successDescription').replace('{count}', String(selectedStudents.length)).replace('{to}', targetServiceDepartment),
         });
 
-        const displayName = localStorage.getItem('displayName') || 'N/A';
+        const displayName = 'Admin';
         await generateTransferReport(
             selectedStudents,
             fromServiceDepartment,

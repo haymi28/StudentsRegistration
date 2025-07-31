@@ -1,3 +1,4 @@
+
 'use client';
 
 import { getStudents } from '@/lib/data';
@@ -11,8 +12,7 @@ export default function ExportStudentsPage() {
 
   useEffect(() => {
     const fetchStudents = async () => {
-      // Assuming 'super_admin' fetches all students now that auth is removed
-      const studentData = await getStudents('super_admin');
+      const studentData = await getStudents();
       setStudents(studentData);
       setLoading(false);
     };

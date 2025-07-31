@@ -2,7 +2,7 @@
 'use server';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { getStudents, getUsers } from '@/lib/data';
+import { getStudents } from '@/lib/data';
 import { StudentActions } from './student-actions';
 import { getTranslations } from '@/lib/i18n';
 import { cookies } from 'next/headers';
@@ -11,8 +11,7 @@ export async function StudentList() {
   const locale = cookies().get('locale')?.value || 'am';
   const t = await getTranslations(locale);
 
-  const students = await getStudents('super_admin');
-  const users = await getUsers();
+  const students = await getStudents();
 
   const translations = {
       title: t('students.title'),
@@ -45,8 +44,7 @@ export async function StudentList() {
           </CardDescription>
         </div>
         <StudentActions 
-            students={students} 
-            users={users} 
+            students={students}
             translations={{
               searchPlaceholder: translations.searchPlaceholder,
               row: translations.rowActions

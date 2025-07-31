@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -19,7 +20,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale } from '@/contexts/locale-provider';
 import { Student } from '@prisma/client';
 import { createStudent, updateStudent } from '@/lib/data';
-import { roleToServiceDepartmentMap, ServiceDepartment, UserRole } from '@/lib/constants';
+import { ServiceDepartment } from '@/lib/constants';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -30,7 +31,6 @@ interface StudentRegistrationFormProps {
 export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const router = useRouter();
   const isEditMode = !!studentToEdit;
   const { t } = useLocale();
@@ -62,19 +62,12 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     { value: 'ሴት', label: t('validation.gender.female') },
   ], [t]);
 
-  useEffect(() => {
-    const role = localStorage.getItem('user_role') as UserRole | null;
-    setUserRole(role);
-  }, []);
-
-  const defaultServiceDepartment = userRole && userRole !== 'super_admin' ? roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>] : '';
-
   const defaultFormValues = useMemo(() => ({
     photo: '',
     registrationNumber: '',
     fullName: '',
     gender: '',
-    serviceDepartment: defaultServiceDepartment,
+    serviceDepartment: '',
     baptismalName: '',
     mothersName: '',
     dateOfBirth: '',
@@ -88,7 +81,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     houseNumber: '',
     specificAddress: '',
     dateOfJoining: '',
-  }), [defaultServiceDepartment]);
+  }), []);
 
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentRegistrationSchema),
@@ -166,12 +159,6 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
       form.setValue('dateOfBirth', undefined, { shouldValidate: true });
     }
   }, [birthDay, birthMonth, birthYear, form]);
-
-  useEffect(() => {
-    if (!isEditMode && userRole && userRole !== 'super_admin') {
-      form.setValue('serviceDepartment', roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>]);
-    }
-  }, [userRole, form, isEditMode]);
 
   async function onSubmit(data: StudentFormValues) {
     setIsLoading(true);
@@ -272,26 +259,16 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>{t('form.label.department')}</FormLabel>
-                        {userRole === 'super_admin' ? (
-                            <Select onValueChange={field.onChange} value={field.value} disabled={isLoading}>
-                                <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder={t('form.placeholder.selectDepartment')} />
-                                </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                {serviceDepartments.map(dep => <SelectItem key={dep.value} value={dep.value}>{dep.label}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        ) : (
-                           <FormControl>
-                             <Input
-                                readOnly
-                                value={serviceDepartments.find(d => d.value === field.value)?.label || 'Loading...'}
-                                className="bg-muted"
-                             />
-                           </FormControl>
-                        )}
+                        <Select onValueChange={field.onChange} value={field.value} disabled={isLoading}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder={t('form.placeholder.selectDepartment')} />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            {serviceDepartments.map(dep => <SelectItem key={dep.value} value={dep.value}>{dep.label}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
                         <FormMessage />
                         </FormItem>
                     )}

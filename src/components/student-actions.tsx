@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -30,11 +31,10 @@ import { Search, Eye, Edit, Trash2, MoreHorizontal, Loader2 } from 'lucide-react
 import { StudentDetailsDialog } from './student-details-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { deleteStudent } from '@/lib/data';
-import { Student, User } from '@prisma/client';
+import { Student } from '@prisma/client';
 
 interface StudentActionsProps {
   students: Student[];
-  users: User[];
   translations: {
     searchPlaceholder: string;
     row: RowActionsTranslations;
@@ -57,7 +57,7 @@ interface RowActionsTranslations {
 }
 
 
-export function StudentActions({ students, users, translations }: StudentActionsProps) {
+export function StudentActions({ students, translations }: StudentActionsProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
