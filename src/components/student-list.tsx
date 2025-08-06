@@ -51,7 +51,11 @@ export function StudentList() {
   
   const StudentListSkeleton = () => (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-64" />
+        </div>
         <Skeleton className="h-10 w-64" />
       </div>
       <div className="border rounded-lg p-4 space-y-2">
@@ -69,25 +73,34 @@ export function StudentList() {
     </div>
   );
 
+  if (loading) {
+    return (
+        <Card className="w-full">
+            <CardContent className="p-6">
+                <StudentListSkeleton />
+            </CardContent>
+        </Card>
+    );
+  }
+
   return (
     <Card className="w-full">
-      <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex-grow">
-          <CardTitle>{translations.title}</CardTitle>
-          <CardDescription>{translations.descriptionSuperAdmin}</CardDescription>
+      <CardContent className="p-6">
+        <div className="flex flex-col md:flex-row gap-8">
+            <div className="w-full md:w-1/4">
+                <CardTitle>{translations.title}</CardTitle>
+                <CardDescription className="mt-2">{translations.descriptionSuperAdmin}</CardDescription>
+            </div>
+            <div className="w-full md:w-3/4">
+                <StudentActions 
+                    students={students}
+                    translations={{
+                        searchPlaceholder: translations.searchPlaceholder,
+                        row: translations.rowActions
+                    }}
+                />
+            </div>
         </div>
-        {!loading && (
-            <StudentActions 
-                students={students}
-                translations={{
-                    searchPlaceholder: translations.searchPlaceholder,
-                    row: translations.rowActions
-                }}
-            />
-        )}
-      </CardHeader>
-      <CardContent>
-        {loading ? <StudentListSkeleton /> : null}
       </CardContent>
     </Card>
   );
