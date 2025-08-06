@@ -75,9 +75,9 @@ export function StudentActions({ students, translations }: StudentActionsProps) 
 
 
   return (
-    <>
-      <div className="flex items-center gap-2 w-full md:w-auto">
-        <div className="relative flex-grow md:flex-grow-0 md:w-64">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-2 w-full">
+        <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={translations.searchPlaceholder}
@@ -87,6 +87,7 @@ export function StudentActions({ students, translations }: StudentActionsProps) 
           />
         </div>
       </div>
+      
       {/* Desktop Table View */}
       <div className="border rounded-lg overflow-x-auto hidden md:block w-full">
           <Table>
@@ -162,7 +163,7 @@ export function StudentActions({ students, translations }: StudentActionsProps) 
             </div>
           )}
         </div>
-    </>
+    </div>
   );
 }
 
