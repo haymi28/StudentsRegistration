@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { getStudents } from '@/lib/data';
 import { StudentActions } from './student-actions';
 import { useLocale } from '@/contexts/locale-provider';
