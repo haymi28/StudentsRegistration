@@ -54,7 +54,6 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     { value: 'ቀዳማይ -2 ክፍል', label: t('serviceDepartment.children_2') },
     { value: 'ካእላይ ክፍል', label: t('serviceDepartment.junior') },
     { value: 'ማእከላይ ክፍል', label: t('serviceDepartment.senior') },
-    { value: 'የወጣት ክፍል', label: t('serviceDepartment.youth') },
   ], [t]);
 
   const genders = useMemo(() => [
