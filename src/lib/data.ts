@@ -1,15 +1,21 @@
-
 'use server';
 
 import prisma from './prisma';
 import { z } from 'zod';
 import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
+import { User, UserRole } from '@prisma/client';
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
-export async function getStudents() {
+export async function getStudents(role: UserRole, serviceDepartment?: string) {
+  if (role === 'super_admin') {
+      return await prisma.student.findMany({
+          orderBy: { createdAt: 'desc'}
+      });
+  }
   return await prisma.student.findMany({
+      where: { serviceDepartment },
       orderBy: { createdAt: 'desc'}
   });
 }
@@ -77,11 +83,35 @@ export async function deleteStudent(id: string) {
 
 // User Functions
 export async function getUsers() {
-    return await prisma.user.findMany();
+    return await prisma.user.findMany({
+        orderBy: { createdAt: 'desc' }
+    });
 }
 
 export async function getUserByUsername(username: string) {
     return await prisma.user.findUnique({ where: { username }});
+}
+
+export async function createUser(data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>) {
+    const { username, displayName, password, role } = data;
+
+    const existingUser = await prisma.user.findUnique({
+        where: { username }
+    });
+    if (existingUser) {
+        throw new Error('A user with this username already exists.');
+    }
+    
+    const newUser = await prisma.user.create({
+        data: {
+            username,
+            displayName,
+            password, // In a real app, hash this password
+            role,
+        }
+    });
+    revalidatePath('/account');
+    return newUser;
 }
 
 export async function updateUser(id: string, data: { displayName?: string, password?: string }) {
@@ -92,7 +122,7 @@ export async function updateUser(id: string, data: { displayName?: string, passw
         dataToUpdate.displayName = data.displayName;
     }
     if (data.password) {
-        // Password hashing would happen here, but removed since bcrypt is removed
+        // Password hashing would happen here
         dataToUpdate.password = data.password;
     }
 

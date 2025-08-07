@@ -1,11 +1,18 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
 import { LocaleProvider } from '@/contexts/locale-provider';
 
 function Layout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  if (pathname === '/login') {
+    return <main>{children}</main>;
+  }
+
   return (
       <SidebarProvider>
         <AppSidebar />

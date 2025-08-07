@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,16 +7,25 @@ import { StudentActions } from './student-actions';
 import { useLocale } from '@/contexts/locale-provider';
 import { Student } from '@prisma/client';
 import { Skeleton } from './ui/skeleton';
+import { useAuth } from '@/contexts/auth-provider';
+import { roleToServiceDepartmentMap } from '@/lib/constants';
 
 export function StudentList() {
   const { t } = useLocale();
+  const { user } = useAuth();
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchStudents() {
+      if (!user) return;
       try {
-        const studentData = await getStudents();
+        setLoading(true);
+        const department = user.role !== 'super_admin' 
+            ? roleToServiceDepartmentMap[user.role as keyof typeof roleToServiceDepartmentMap] 
+            : undefined;
+            
+        const studentData = await getStudents(user.role, department);
         setStudents(studentData);
       } catch (error) {
         console.error("Failed to fetch students", error);
@@ -26,11 +34,12 @@ export function StudentList() {
       }
     }
     fetchStudents();
-  }, []);
+  }, [user]);
 
   const translations = {
     title: t('students.title'),
     descriptionSuperAdmin: t('students.descriptionSuperAdmin'),
+    descriptionAdmin: user ? t('students.descriptionAdmin').replace('{department}', user.role) : '',
     searchPlaceholder: t('students.searchPlaceholder'),
     noStudents: t('students.noStudents'),
     rowActions: {
@@ -73,7 +82,7 @@ export function StudentList() {
     </div>
   );
 
-  if (loading) {
+  if (loading || !user) {
     return (
         <Card className="w-full">
             <CardContent className="p-6">
@@ -89,7 +98,9 @@ export function StudentList() {
         <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/4">
                 <CardTitle>{translations.title}</CardTitle>
-                <CardDescription className="mt-2">{translations.descriptionSuperAdmin}</CardDescription>
+                <CardDescription className="mt-2">
+                    {user.role === 'super_admin' ? translations.descriptionSuperAdmin : translations.descriptionAdmin}
+                </CardDescription>
             </div>
             <div className="w-full md:w-3/4">
                 <StudentActions 
