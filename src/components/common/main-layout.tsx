@@ -4,13 +4,27 @@ import { usePathname } from 'next/navigation';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
-import { LocaleProvider } from '@/contexts/locale-provider';
+import { useAuth } from '@/contexts/auth-provider';
 
-function Layout({ children }: { children: React.ReactNode }) {
+export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, isLoading } = useAuth();
+  
+  const isLoginPage = pathname === '/login';
 
-  if (pathname === '/login') {
+  if (isLoading) {
+    // You can return a global loading spinner here if you want
+    return null;
+  }
+
+  if (isLoginPage) {
     return <main>{children}</main>;
+  }
+
+  if (!user && !isLoginPage) {
+    // This case will be handled by the redirect in the AuthProvider or page-level checks,
+    // but as a fallback, we can render null or a loading indicator.
+    return null;
   }
 
   return (
@@ -23,13 +37,5 @@ function Layout({ children }: { children: React.ReactNode }) {
           </main>
         </SidebarInset>
       </SidebarProvider>
-  );
-}
-
-export function MainLayout({ children }: { children: React.ReactNode }) {
-  return (
-      <LocaleProvider>
-        <Layout>{children}</Layout>
-      </LocaleProvider>
   );
 }

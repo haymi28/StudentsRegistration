@@ -84,7 +84,7 @@ export default function LoginPage() {
        toast({
         variant: 'destructive',
         title: t('login.fail'),
-        description: error instanceof Error ? error.message : t('common.errorDescription'),
+        description: error instanceof Error ? error.message : String(error),
       });
     }
     setIsLoading(false);

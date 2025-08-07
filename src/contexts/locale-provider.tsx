@@ -26,9 +26,13 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const storedLocale = localStorage.getItem('locale') as Locale | null;
-    if (storedLocale) {
-      setLocaleState(storedLocale);
+    try {
+      const storedLocale = localStorage.getItem('locale') as Locale | null;
+      if (storedLocale) {
+        setLocaleState(storedLocale);
+      }
+    } catch (error) {
+      console.error("Could not access localStorage for locale.", error)
     }
     setIsMounted(true);
   }, []);
@@ -40,19 +44,23 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       try {
         const res = await fetch(`/i18n/${locale}.json`);
         if (!res.ok) {
-          throw new Error('Failed to load translations');
+          throw new Error(`Failed to load translations for ${locale}`);
         }
         const data = await res.json();
         setTranslations(data);
       } catch (error) {
         console.error(error);
+        // Fallback to English if the selected locale fails
         if (locale !== 'en') {
           try {
             const res = await fetch(`/i18n/en.json`);
+            if (!res.ok) {
+              throw new Error('Failed to load fallback English translations');
+            }
             const data = await res.json();
             setTranslations(data);
           } catch (e) {
-            console.error("Failed to load fallback translations", e)
+            console.error(e)
           }
         }
       }
@@ -62,17 +70,26 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
-    localStorage.setItem('locale', newLocale);
+    try {
+      localStorage.setItem('locale', newLocale);
+    } catch(error) {
+       console.error("Could not access localStorage to set locale.", error)
+    }
   };
 
   const t: TFunction = useCallback((key: string, params?: Record<string, string | number>): string => {
-    let translation = getNestedTranslation(translations, key) || key;
+    const translation = getNestedTranslation(translations, key);
+    if (typeof translation !== 'string') {
+      return key;
+    }
+    
+    let result = translation;
     if (params) {
       Object.keys(params).forEach((paramKey) => {
-        translation = translation.replace(`{${paramKey}}`, String(params[paramKey]));
+        result = result.replace(`{${paramKey}}`, String(params[paramKey]));
       });
     }
-    return translation;
+    return result;
   }, [translations]);
 
   if (!isMounted) {

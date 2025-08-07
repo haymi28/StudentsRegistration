@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { MainLayout } from "@/components/common/main-layout";
 import { AuthProvider } from "@/contexts/auth-provider";
+import { LocaleProvider } from "@/contexts/locale-provider";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -37,9 +38,11 @@ export default function RootLayout({
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable, notoSansEthiopic.variable)}>
           <AuthProvider>
-            <MainLayout>
-              {children}
-            </MainLayout>
+            <LocaleProvider>
+              <MainLayout>
+                {children}
+              </MainLayout>
+            </LocaleProvider>
           </AuthProvider>
           <Toaster />
       </body>
