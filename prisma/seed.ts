@@ -33,12 +33,6 @@ const users = [
         role: 'senior_admin' as UserRole,
         displayName: 'ማእከላይ ክፍል',
     },
-    {
-        username: 'youth_admin',
-        password: 'Password123!',
-        role: 'youth_admin' as UserRole,
-        displayName: 'የወጣት ክፍል',
-    },
 ];
 
 async function main() {
