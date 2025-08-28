@@ -29,7 +29,8 @@ export async function signIn(credentials: { username: string; password: string }
       expiresIn: '1d', // Token expires in 1 day
     });
 
-    cookies().set(COOKIE_NAME, token, {
+    const cookieStore = await cookies(); // ✅ await
+    cookieStore.set(COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24, // 1 day in seconds
@@ -44,11 +45,13 @@ export async function signIn(credentials: { username: string; password: string }
 }
 
 export async function signOut() {
-  cookies().delete(COOKIE_NAME);
+  const cookieStore = await cookies(); // ✅ await
+  cookieStore.delete(COOKIE_NAME);
 }
 
 export async function getServerSession(): Promise<{ user: Omit<User, 'password'> } | null> {
-  const token = cookies().get(COOKIE_NAME)?.value;
+  const cookieStore = await cookies(); // ✅ await
+  const token = cookieStore.get(COOKIE_NAME)?.value;
 
   if (!token) {
     return null;
