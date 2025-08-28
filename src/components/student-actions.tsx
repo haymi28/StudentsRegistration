@@ -27,7 +27,8 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal, Loader2, UserPlus, FileUp, FileDown, Checkbox } from 'lucide-react';
+import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal, Loader2, UserPlus, FileUp, FileDown } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { StudentDetailsDialog } from './student-details-dialog';
 import { TransferStudentsDialog } from './transfer-students-dialog';
 import { useToast } from '@/hooks/use-toast';
