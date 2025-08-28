@@ -8,25 +8,29 @@ import Image from "next/image";
 export default function HomePage() {
   const { t } = useLocale();
   return (
-    <div className="flex flex-col items-center justify-center gap-6 text-center">
-        <Image 
-            src="https://debregelila.org/wp-content/uploads/2024/10/cropped-IMG_20240909_155141_966-scaled-1.jpg" 
-            alt="Debre Gelila St. Amanuel Cathedral Logo" 
-            width={120} 
-            height={120}
-            className="rounded-md shadow-md"
-        />
-        <h1 className="text-xl font-bold text-primary font-headline sm:text-2xl px-4">
-            የደብረ ገሊላ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት የተማሪዎች መመዝገቢያ ቅጽ
-        </h1>
-        <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold font-headline sm:text-3xl">{t('login.title')}</CardTitle>
-            <CardDescription>{t('login.description')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <LoginForm />
-        </CardContent>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="text-center mb-8">
+            <Image 
+                src="https://debregelila.org/wp-content/uploads/2024/10/cropped-IMG_20240909_155141_966-scaled-1.jpg" 
+                alt="Debre Gelila St. Amanuel Cathedral Logo" 
+                width={120} 
+                height={120}
+                className="rounded-full shadow-lg mx-auto"
+                priority
+            />
+            <h1 className="text-xl sm:text-2xl font-bold text-primary font-headline mt-4 px-4">
+                የደብረ ገሊላ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት
+            </h1>
+             <p className="text-lg sm:text-xl font-semibold text-muted-foreground mt-2">የተማሪዎች መመዝገቢያና መቆጣጠሪያ ዘዴ</p>
+        </div>
+        <Card className="w-full max-w-md shadow-2xl">
+            <CardHeader className="text-center">
+                <CardTitle className="text-2xl sm:text-3xl font-bold font-headline">{t('login.title')}</CardTitle>
+                <CardDescription>{t('login.description')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <LoginForm />
+            </CardContent>
         </Card>
     </div>
   );

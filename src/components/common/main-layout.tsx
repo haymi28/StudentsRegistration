@@ -5,79 +5,54 @@ import { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
-import { LanguageSwitcher } from './language-switcher';
 
-const protectedRoutes = ['/students', '/register', '/attendance', '/account'];
+// Routes that do not require authentication
+const publicRoutes = ['/', '/login'];
 
-export function MainLayout({ children }: { children: React.ReactNode }) {
+export function MainLayout({ 
+    children,
+    isAuthenticated
+}: { 
+    children: React.ReactNode,
+    isAuthenticated: boolean
+}) {
   const pathname = usePathname();
   const router = useRouter();
-  const [authStatus, setAuthStatus] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const checkAuthAndRedirect = () => {
-      // httpOnly cookies are not accessible via JS, so we check for another item
-      // that is set on successful login.
-      const role = localStorage.getItem('user_role');
-      const isAuthenticated = !!role;
+    setIsClient(true);
+  }, []);
+  
+  useEffect(() => {
+    if (!isClient) return;
 
-      const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-      const isAuthPage = pathname === '/' || pathname === '/login';
+    const isPublicPage = publicRoutes.includes(pathname);
 
-      if (isAuthenticated) {
-        setAuthStatus('authenticated');
-        if (isAuthPage) {
-          router.replace('/students');
-        }
-      } else {
-        setAuthStatus('unauthenticated');
-        if (isProtectedRoute) {
-          router.replace('/');
-        }
-      }
-    };
-    
-    checkAuthAndRedirect();
+    // If user is authenticated and on a public page, redirect to students page
+    if (isAuthenticated && isPublicPage) {
+        router.replace('/students');
+    }
 
-    const handleStorageChange = () => {
-      // Re-run the check when storage changes (e.g., login/logout in another tab)
-      // This will cause a re-render and the effect will run again.
-      setAuthStatus('loading'); 
-    };
+    // If user is not authenticated and on a protected page, redirect to login
+    if (!isAuthenticated && !isPublicPage) {
+        router.replace('/');
+    }
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [pathname, router]);
+  }, [pathname, isAuthenticated, router, isClient]);
 
-
-  if (authStatus === 'loading') {
-    // Show a loading state or a blank screen to avoid layout flashing
+  if (!isClient) {
+    // Render nothing or a loading spinner on the server to avoid hydration mismatches
     return null;
   }
   
-  const isAuthPage = pathname === '/' || pathname === '/login';
-
-  // Unauthenticated layout (Login page)
-  if (authStatus === 'unauthenticated' && isAuthPage) {
-    return (
-      <div className="relative flex min-h-screen flex-col">
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-16 items-center justify-end">
-            <LanguageSwitcher />
-          </div>
-        </header>
-        <main className="flex flex-1 items-center justify-center p-4">
-          {children}
-        </main>
-      </div>
-    );
+  if (!isAuthenticated) {
+    // Only render children for unauthenticated users (i.e., the login page)
+    return <>{children}</>;
   }
 
-  // Authenticated layout
-  if (authStatus === 'authenticated' && !isAuthPage) {
-    return (
+  // Render the full layout for authenticated users
+  return (
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -87,10 +62,5 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </main>
         </SidebarInset>
       </SidebarProvider>
-    );
-  }
-
-  // This handles cases where the user is on a page that doesn't match their auth state
-  // and the redirect is in flight.
-  return null;
+  );
 }

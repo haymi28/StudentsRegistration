@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -12,6 +13,9 @@ datasource db {
 
 model Student {
   id                    String    @id @default(cuid())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  photo                 String?
   registrationNumber    String    @unique
   fullName              String
   gender                String
@@ -19,31 +23,26 @@ model Student {
   baptismalName         String?
   mothersName           String?
   dateOfBirth           String?
-  educationLevel        String?
+  educationLevel        String
+  phoneNumber           String
+  additionalPhoneNumber String?
   fathersPhoneNumber    String?
   mothersPhoneNumber    String?
-  additionalPhoneNumber String?
-  phoneNumber           String
   subcity               String?
   kebele                String?
   houseNumber           String?
   specificAddress       String?
   dateOfJoining         String?
-  photo                 String?
-  
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
 }
 
 model User {
-  id           String   @id @default(cuid())
-  username     String   @unique
-  displayName  String
-  password     String // In a real app, this should be a hashed password
-  role         UserRole
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  username    String   @unique
+  password    String
+  role        UserRole
+  displayName String
 }
 
 enum UserRole {

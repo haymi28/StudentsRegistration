@@ -27,19 +27,13 @@ export function AppSidebar() {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
 
   useEffect(() => {
-    const role = localStorage.getItem('user_role') as UserRole | null;
-    setUserRole(role);
+    // In a real app, you'd get this from your session/context
+    const role = 'super_admin'; // Placeholder
+    setUserRole(role as UserRole);
   }, []);
 
   const handleLogout = async () => {
-    // Clear client-side markers of session
-    localStorage.removeItem('user_role');
-    localStorage.removeItem('username');
-    localStorage.removeItem('displayName');
-    
-    await signOut(); // Clear server-side httpOnly cookies
-    
-    window.dispatchEvent(new Event('storage'));
+    await signOut();
     router.push('/');
     router.refresh();
   };

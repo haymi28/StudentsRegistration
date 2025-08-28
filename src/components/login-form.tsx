@@ -1,25 +1,21 @@
-
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Lock, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Lock, Eye, EyeOff, User } from 'lucide-react';
 import { useLocale } from '@/contexts/locale-provider';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { signIn } from '@/lib/auth';
-import { getUsers } from '@/lib/data';
-import { User } from '@prisma/client';
 
 const getFormSchema = (t: (key: string) => string) => z.object({
-  username: z.string({ required_error: t('validation.required').replace('{field}', t('login.username')) }),
-  password: z.string().min(6, { message: t('validation.min').replace('{field}', t('login.password')).replace('{length}', '6') }),
+  username: z.string().min(1, { message: t('validation.required').replace('{field}', t('login.username')) }),
+  password: z.string().min(1, { message: t('validation.required').replace('{field}', t('login.password')) }),
 });
 
 export function LoginForm() {
@@ -28,7 +24,6 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { t } = useLocale();
-  const [users, setUsers] = useState<User[]>([]);
 
   const formSchema = getFormSchema(t);
 
@@ -40,41 +35,18 @@ export function LoginForm() {
     },
   });
 
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const fetchedUsers = await getUsers();
-        setUsers(fetchedUsers);
-      } catch (error) {
-        console.error("Failed to fetch users", error);
-        toast({
-            variant: "destructive",
-            title: t('common.error'),
-            description: t('common.errorDescription'),
-        });
-      }
-    }
-    fetchUsers();
-  }, [t, toast]);
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     
     const result = await signIn(values);
 
-    if (result.success && result.user) {
-      // This is crucial for the MainLayout to detect the session on the client-side
-      localStorage.setItem('user_role', result.user.role);
-      localStorage.setItem('username', result.user.username);
-      localStorage.setItem('displayName', result.user.displayName);
-      
+    if (result.success) {
       toast({
         title: t('login.success'),
         description: t('login.successDescription').replace('{username}', result.user?.displayName || ''),
       });
-      window.dispatchEvent(new Event("storage")); // Manually trigger storage event
       router.push('/students');
-      router.refresh(); // Important to re-fetch server components
+      router.refresh();
     } else {
       toast({
           variant: "destructive",
@@ -94,18 +66,13 @@ export function LoginForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('login.usernamePlaceholder')} />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {users.map(user => (
-                        <SelectItem key={user.id} value={user.username}>{user.displayName}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <FormLabel>{t('login.username')}</FormLabel>
+               <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <FormControl>
+                  <Input placeholder={t('login.usernamePlaceholder')} {...field} className="pl-10" />
+                </FormControl>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -115,6 +82,7 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
+              <FormLabel>{t('login.password')}</FormLabel>
                <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <FormControl>

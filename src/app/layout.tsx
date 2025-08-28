@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { LocaleProvider } from "@/contexts/locale-provider";
 import { MainLayout } from "@/components/common/main-layout";
+import { getServerSession } from "@/lib/auth";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -26,18 +27,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession();
+  const isAuthenticated = !!session;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable, notoSansEthiopic.variable)}>
         <LocaleProvider>
-            <MainLayout>
+            <MainLayout isAuthenticated={isAuthenticated}>
               {children}
             </MainLayout>
           <Toaster />
