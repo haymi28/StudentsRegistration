@@ -57,19 +57,19 @@ export async function StudentList() {
               : translations.descriptionAdmin.replace('{department}', fromServiceDepartment || '')}
           </CardDescription>
         </div>
+      </CardHeader>
+      <CardContent>
         <StudentActions 
             students={students} 
             users={users} 
             session={session}
             translations={{
               searchPlaceholder: translations.searchPlaceholder,
+              noStudents: translations.noStudents,
               transferButton: translations.transferButton,
               row: translations.rowActions
             }}
         />
-      </CardHeader>
-      <CardContent>
-        {/* The table and card views are now inside StudentActions */}
       </CardContent>
     </Card>
   );

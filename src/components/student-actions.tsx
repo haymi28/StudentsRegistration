@@ -27,7 +27,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal, Loader2 } from 'lucide-react';
+import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal, Loader2, UserPlus, FileUp, FileDown, Checkbox } from 'lucide-react';
 import { StudentDetailsDialog } from './student-details-dialog';
 import { TransferStudentsDialog } from './transfer-students-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -42,6 +42,7 @@ interface StudentActionsProps {
   translations: {
     searchPlaceholder: string;
     transferButton: string;
+    noStudents: string;
     row: RowActionsTranslations;
   }
 }
@@ -68,6 +69,24 @@ export function StudentActions({ students, users, session, translations }: Stude
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const router = useRouter();
 
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedRowKeys(new Set(filteredStudents.map(s => s.id)));
+    } else {
+      setSelectedRowKeys(new Set());
+    }
+  };
+
+  const handleRowSelect = (rowKey: string, checked: boolean) => {
+    const newSelection = new Set(selectedRowKeys);
+    if (checked) {
+      newSelection.add(rowKey);
+    } else {
+      newSelection.delete(rowKey);
+    }
+    setSelectedRowKeys(newSelection);
+  };
+  
   const filteredStudents = useMemo(() => {
     let studentsToDisplay = students;
     if (searchQuery) {
@@ -86,8 +105,8 @@ export function StudentActions({ students, users, session, translations }: Stude
 
   return (
     <>
-      <div className="flex items-center gap-2 w-full md:w-auto">
-        <div className="relative flex-grow md:flex-grow-0 md:w-64">
+      <div className="flex flex-col md:flex-row items-center gap-4 w-full mb-4">
+        <div className="relative flex-grow w-full md:flex-grow-0 md:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={translations.searchPlaceholder}
@@ -96,12 +115,14 @@ export function StudentActions({ students, users, session, translations }: Stude
             className="pl-10 w-full"
           />
         </div>
-        {selectedRowKeys.size > 0 && (session.user.role !== 'super_admin' ? canTransfer : true) && (
-          <Button onClick={() => setIsTransferDialogOpen(true)} className="shrink-0">
-            <ArrowRightLeft className="mr-2 h-4 w-4" />
-            {translations.transferButton.replace('{count}', String(selectedRowKeys.size))}
-          </Button>
-        )}
+        <div className="flex items-center gap-2 self-start md:self-center">
+            {selectedRowKeys.size > 0 && (session.user.role !== 'super_admin' ? canTransfer : true) && (
+              <Button onClick={() => setIsTransferDialogOpen(true)} className="shrink-0">
+                <ArrowRightLeft className="mr-2 h-4 w-4" />
+                {translations.transferButton.replace('{count}', String(selectedRowKeys.size))}
+              </Button>
+            )}
+        </div>
       </div>
       <TransferStudentsDialog
         open={isTransferDialogOpen}
@@ -120,7 +141,12 @@ export function StudentActions({ students, users, session, translations }: Stude
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[50px]">
-                  {/* Placeholder for potential future checkbox */}
+                    <Checkbox
+                        checked={selectedRowKeys.size > 0 && selectedRowKeys.size === filteredStudents.length}
+                        onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                        aria-label="Select all students"
+                        disabled={filteredStudents.length === 0}
+                    />
                 </TableHead>
                 <TableHead className="w-[80px]">Photo</TableHead>
                 <TableHead>Reg. Number</TableHead>
@@ -133,9 +159,13 @@ export function StudentActions({ students, users, session, translations }: Stude
             <TableBody>
               {filteredStudents.length > 0 ? (
                 filteredStudents.map((student) => (
-                  <TableRow key={student.registrationNumber}>
+                  <TableRow key={student.id}>
                     <TableCell>
-                      {/* Placeholder for checkbox */}
+                      <Checkbox
+                            checked={selectedRowKeys.has(student.id)}
+                            onCheckedChange={(checked) => handleRowSelect(student.id, !!checked)}
+                            aria-label={`Select student ${student.registrationNumber}`}
+                        />
                     </TableCell>
                     <TableCell>
                       <Avatar>
@@ -157,7 +187,7 @@ export function StudentActions({ students, users, session, translations }: Stude
               ) : (
                 <TableRow>
                   <TableCell colSpan={7} className="h-24 text-center">
-                    No students found.
+                    {translations.noStudents}
                   </TableCell>
                 </TableRow>
               )}
@@ -169,10 +199,14 @@ export function StudentActions({ students, users, session, translations }: Stude
         <div className="md:hidden space-y-4 w-full">
           {filteredStudents.length > 0 ? (
             filteredStudents.map((student) => (
-              <Card key={student.registrationNumber}>
+              <Card key={student.id}>
                   <div className="flex items-start p-4 gap-4">
                       <div className="flex-shrink-0 pt-1">
-                          {/* Placeholder for checkbox */}
+                          <Checkbox
+                                checked={selectedRowKeys.has(student.id)}
+                                onCheckedChange={(checked) => handleRowSelect(student.id, !!checked)}
+                                aria-label={`Select student ${student.registrationNumber}`}
+                            />
                       </div>
                       <Avatar className="w-12 h-12 flex-shrink-0">
                           <AvatarImage src={student.photo || undefined} alt={student.fullName} data-ai-hint="student portrait" />
@@ -194,7 +228,7 @@ export function StudentActions({ students, users, session, translations }: Stude
             ))
           ) : (
             <div className="text-center text-muted-foreground py-12">
-              No students found.
+              {translations.noStudents}
             </div>
           )}
         </div>
@@ -285,7 +319,7 @@ function RowActions({ student, session, translations }: { student: Student, sess
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel onClick={() => setStudentToDelete(null)}>{translations.deleteDialog.cancel}</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteStudent} disabled={isDeleting}>
+                        <AlertDialogAction onClick={handleDeleteStudent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
                             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {translations.deleteDialog.confirm}
                         </AlertDialogAction>
