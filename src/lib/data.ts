@@ -6,7 +6,8 @@ import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
 import { UserRole } from './constants';
 import { roleToServiceDepartmentMap } from './constants';
-import { User } from '@prisma/client';
+import { Student, User } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -110,9 +111,19 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUser(id: string, data: { displayName?: string, password?: string }) {
+    const dataToUpdate: { displayName?: string; password?: string } = {};
+
+    if (data.displayName) {
+        dataToUpdate.displayName = data.displayName;
+    }
+
+    if (data.password) {
+        dataToUpdate.password = await bcrypt.hash(data.password, 10);
+    }
+    
     await prisma.user.update({
         where: { id },
-        data
+        data: dataToUpdate
     });
     revalidatePath('/account');
 }

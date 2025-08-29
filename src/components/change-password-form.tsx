@@ -12,6 +12,7 @@ import { Loader2, Eye, EyeOff, Lock } from 'lucide-react';
 import { useLocale } from '@/contexts/locale-provider';
 import { getChangePasswordSchema } from '@/lib/validations/user';
 import { getUserByUsername, updateUser } from '@/lib/data';
+import bcrypt from 'bcryptjs';
 
 type PasswordFormValues = z.infer<ReturnType<typeof getChangePasswordSchema>>;
 
@@ -79,7 +80,8 @@ export function ChangePasswordForm() {
           throw new Error('User not found in storage');
       }
       
-      if (user.password !== values.currentPassword) {
+      const isPasswordCorrect = await bcrypt.compare(values.currentPassword, user.password);
+      if (!isPasswordCorrect) {
           form.setError('currentPassword', { type: 'manual', message: t('validation.currentPasswordIncorrect') });
           setIsLoading(false);
           return;
