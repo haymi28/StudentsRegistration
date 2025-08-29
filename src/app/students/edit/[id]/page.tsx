@@ -3,8 +3,7 @@ import { StudentRegistrationForm } from '@/components/student-registration-form'
 import { EditStudentClient } from '@/components/edit-student-client';
 
 export default async function EditStudentPage({ params }: { params: { id: string }}) {
-  const { id } = params;
-  const student = await getStudentById(id);
+  const student = await getStudentById(params.id);
 
   if (!student) {
     return (
