@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -40,10 +41,14 @@ export function LoginForm() {
     
     const result = await signIn(values);
 
-    if (result.success) {
+    if (result.success && result.user) {
+      localStorage.setItem('username', result.user.username);
+      localStorage.setItem('displayName', result.user.displayName);
+      localStorage.setItem('user_role', result.user.role);
+      
       toast({
         title: t('login.success'),
-        description: t('login.successDescription').replace('{username}', result.user?.displayName || ''),
+        description: t('login.successDescription').replace('{username}', result.user.displayName || ''),
       });
       router.push('/students');
       router.refresh();
