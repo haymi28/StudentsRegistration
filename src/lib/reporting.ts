@@ -1,4 +1,5 @@
-'use server';
+
+'use client';
 
 import type { Student, ServiceDepartment } from '@prisma/client';
 import type { TFunction } from '@/contexts/locale-provider';
