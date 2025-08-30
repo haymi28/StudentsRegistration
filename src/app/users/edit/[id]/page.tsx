@@ -40,6 +40,7 @@ export default async function EditUserPage({ params }: { params: { id: string } 
         placeholders: {
             selectRole: t('users.form.placeholder.selectRole'),
             selectDepartment: t('users.form.placeholder.selectDepartment'),
+            password: t('users.form.placeholder.password')
         },
         buttons: {
             submit: t('form.save'),
@@ -60,6 +61,10 @@ export default async function EditUserPage({ params }: { params: { id: string } 
         success: {
             title: t('users.form.updateSuccess'),
             description: t('users.form.updateSuccessDescription'),
+        },
+        errors: {
+            passwordMismatch: t('validation.passwordMismatch'),
+            departmentRequired: t('validation.departmentRequired')
         }
     };
 

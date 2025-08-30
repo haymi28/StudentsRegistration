@@ -1,16 +1,12 @@
 
-import { UserForm } from "@/components/user-form";
-import { getTranslations } from "@/lib/i18n";
-import { getServerSession } from "@/lib/auth";
-import { redirect } from "next/navigation";
+'use client';
 
-export default async function CreateUserPage() {
-    const session = await getServerSession();
-    if (session?.user.role !== 'super_admin') {
-        redirect('/students');
-    }
-    
-    const t = await getTranslations();
+import { UserForm } from "@/components/user-form";
+import { useLocale } from "@/contexts/locale-provider";
+
+export default function CreateUserPage() {
+    const { t } = useLocale();
+
     const translations = {
         title: t('users.form.createTitle'),
         description: t('users.form.createDescription'),
@@ -48,6 +44,10 @@ export default async function CreateUserPage() {
         success: {
             title: t('users.form.createSuccess'),
             description: t('users.form.createSuccessDescription'),
+        },
+        errors: {
+            passwordMismatch: t('validation.passwordMismatch'),
+            departmentRequired: t('validation.departmentRequired')
         }
     };
 
