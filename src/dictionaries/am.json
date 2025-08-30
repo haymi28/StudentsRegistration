@@ -70,7 +70,11 @@
         },
         "submit": "መዝግብ",
         "save": "አስቀምጥ",
-        "loading": "እያስገባ ነው..."
+        "loading": "እያስገባ ነው...",
+        "registerSuccess": "ምዝገባ ተሳክቷል!",
+        "registerSuccessDescription": "{name} በተሳካ ሁኔታ ተመዝግቧል።",
+        "updateSuccess": "ማስተካከያ ተሳክቷል!",
+        "updateSuccessDescription": "የ{name} መረጃ በተሳካ ሁኔታ ተስተካክሏል።"
     },
     "students": {
         "title": "የተማሪዎች ዝርዝር",
@@ -210,16 +214,22 @@
                 "department": "የአገልግሎት ክፍል",
                 "status": "የተጠቃሚ ሁኔታ",
                 "active": "የነቃ",
-                "inactive": "ተጠቃሚው መግባት አይችልም።"
+                "inactive": "ተጠቃሚው መግባት አይችልም።",
+                "inactiveShort": "ያልነቃ"
             },
             "placeholder": {
                 "selectRole": "ሚና ይምረጡ",
-                "selectDepartment": "ክፍል ይምረጡ"
+                "selectDepartment": "ክፍል ይምረጡ",
+                "password": "የይለፍ ቃል ካልቀየሩ ባዶ ይተዉት"
             },
-            "createSuccess": "ተጠቃሚ ተፈጥሯል!",
-            "createSuccessDescription": "ተጠቃሚ {username} በተሳካ ሁኔታ ተፈጥሯል።",
-            "updateSuccess": "ተጠቃሚ ዘምኗል!",
-            "updateSuccessDescription": "ተጠቃሚ {username} በተሳካ ሁኔታ ዘምኗል።"
+            "createSuccess": {
+                "title": "ተጠቃሚ ተፈጥሯል!",
+                "description": "ተጠቃሚ {username} በተሳካ ሁኔታ ተፈጥሯል።"
+            },
+            "updateSuccess": {
+                "title": "ተጠቃሚ ዘምኗል!",
+                "description": "ተጠቃሚ {username} በተሳካ ሁኔታ ዘምኗል።"
+            }
         },
         "table": {
             "displayName": "የሚታይ ስም",
@@ -235,8 +245,10 @@
             "cancel": "ተመለስ",
             "confirm": "አዎ፣ ሰርዝ"
         },
-        "deleteSuccess": "ተጠቃሚ ተሰርዟል!",
-        "deleteSuccessDescription": "ተጠቃሚ {name} በተሳካ ሁኔታ ተሰርዟል።"
+        "deleteSuccess": {
+            "title": "ተጠቃሚ ተሰርዟል!",
+            "description": "ተጠቃሚ {name} በተሳካ ሁኔታ ተሰርዟል።"
+        }
     },
     "account": {
         "pageTitle": "የመለያ አስተዳደር",

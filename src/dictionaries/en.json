@@ -70,7 +70,11 @@
         },
         "submit": "Register",
         "save": "Save Changes",
-        "loading": "Submitting..."
+        "loading": "Submitting...",
+        "registerSuccess": "Registration Successful!",
+        "registerSuccessDescription": "{name} has been successfully registered.",
+        "updateSuccess": "Update Successful!",
+        "updateSuccessDescription": "Information for {name} has been successfully updated."
     },
     "students": {
         "title": "Student List",
@@ -210,16 +214,22 @@
                 "department": "Service Department",
                 "status": "User Status",
                 "active": "Active",
-                "inactive": "The user will not be able to log in."
+                "inactive": "The user will not be able to log in.",
+                "inactiveShort": "Inactive"
             },
             "placeholder": {
                 "selectRole": "Select a role",
-                "selectDepartment": "Select a department"
+                "selectDepartment": "Select a department",
+                "password": "Leave blank to keep current password"
             },
-            "createSuccess": "User Created!",
-            "createSuccessDescription": "User {username} has been successfully created.",
-            "updateSuccess": "User Updated!",
-            "updateSuccessDescription": "User {username} has been successfully updated."
+            "createSuccess": {
+                "title": "User Created!",
+                "description": "User {username} has been successfully created."
+            },
+            "updateSuccess": {
+                "title": "User Updated!",
+                "description": "User {username} has been successfully updated."
+            }
         },
         "table": {
             "displayName": "Display Name",
@@ -235,8 +245,10 @@
             "cancel": "Cancel",
             "confirm": "Yes, delete"
         },
-        "deleteSuccess": "User Deleted!",
-        "deleteSuccessDescription": "User {name} has been successfully deleted."
+        "deleteSuccess": {
+            "title": "User Deleted!",
+            "description": "User {name} has been successfully deleted."
+        }
     },
     "account": {
         "pageTitle": "Account Management",

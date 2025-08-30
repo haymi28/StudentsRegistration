@@ -31,19 +31,18 @@ import { useToast } from '@/hooks/use-toast';
 import { User } from '@prisma/client';
 import { UserRole } from '@/lib/constants';
 import { deleteUser } from '@/lib/data';
-import { useLocale } from '@/contexts/locale-provider';
 
 interface UserListProps {
   users: User[];
+  translations: any;
 }
 
-export function UserList({ users }: UserListProps) {
+export function UserList({ users, translations }: UserListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { t } = useLocale();
 
   const filteredUsers = useMemo(() => {
     if (!searchQuery) return users;
@@ -60,8 +59,8 @@ export function UserList({ users }: UserListProps) {
     try {
       await deleteUser(userToDelete.id);
       toast({
-        title: t('users.deleteSuccess'),
-        description: t('users.deleteSuccessDescription').replace('{name}', userToDelete.displayName),
+        title: translations.deleteSuccess.title,
+        description: translations.deleteSuccess.description.replace('{name}', userToDelete.displayName),
       });
       setUserToDelete(null);
       router.refresh();
@@ -76,23 +75,17 @@ export function UserList({ users }: UserListProps) {
     }
   };
   
-  const roleTranslations: Record<UserRole, string> = {
-      super_admin: t('roles.super_admin'),
-      admin: t('roles.admin'),
-      teacher: t('roles.teacher'),
-  }
-
   return (
     <Card className="w-full">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle>{t('users.title')}</CardTitle>
-            <CardDescription>{t('users.description')}</CardDescription>
+            <CardTitle>{translations.title}</CardTitle>
+            <CardDescription>{translations.description}</CardDescription>
           </div>
           <Button onClick={() => router.push('/users/create')}>
             <UserPlus className="mr-2 h-4 w-4" />
-            {t('users.createUserButton')}
+            {translations.createUserButton}
           </Button>
         </div>
       </CardHeader>
@@ -101,7 +94,7 @@ export function UserList({ users }: UserListProps) {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder={t('users.searchPlaceholder')}
+              placeholder={translations.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 w-full max-w-sm"
@@ -112,12 +105,12 @@ export function UserList({ users }: UserListProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('users.table.displayName')}</TableHead>
-                <TableHead>{t('users.table.username')}</TableHead>
-                <TableHead>{t('users.table.role')}</TableHead>
-                <TableHead>{t('users.table.department')}</TableHead>
-                <TableHead>{t('users.table.status')}</TableHead>
-                <TableHead className="text-right">{t('users.table.actions')}</TableHead>
+                <TableHead>{translations.table.displayName}</TableHead>
+                <TableHead>{translations.table.username}</TableHead>
+                <TableHead>{translations.table.role}</TableHead>
+                <TableHead>{translations.table.department}</TableHead>
+                <TableHead>{translations.table.status}</TableHead>
+                <TableHead className="text-right">{translations.table.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -127,12 +120,12 @@ export function UserList({ users }: UserListProps) {
                     <TableCell className="font-medium">{user.displayName}</TableCell>
                     <TableCell>{user.username}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{roleTranslations[user.role as UserRole] || user.role}</Badge>
+                      <Badge variant="outline">{translations.roles[user.role as UserRole] || user.role}</Badge>
                     </TableCell>
                     <TableCell>{user.serviceDepartment || 'N/A'}</TableCell>
                     <TableCell>
                       <Badge variant={user.isActive ? 'secondary' : 'destructive'}>
-                        {user.isActive ? t('users.form.label.active') : t('users.form.label.inactive').split('.')[0]}
+                        {user.isActive ? translations.status.active : translations.status.inactive}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -144,10 +137,10 @@ export function UserList({ users }: UserListProps) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>{t('users.table.actions')}</DropdownMenuLabel>
+                          <DropdownMenuLabel>{translations.table.actions}</DropdownMenuLabel>
                           <DropdownMenuItem onClick={() => router.push(`/users/edit/${user.id}`)}>
                             <Edit className="mr-2 h-4 w-4" />
-                            <span>{t('students.actions.edit')}</span>
+                            <span>{translations.actions.edit}</span>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
@@ -156,7 +149,7 @@ export function UserList({ users }: UserListProps) {
                             disabled={isDeleting}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            <span>{t('students.actions.delete')}</span>
+                            <span>{translations.actions.delete}</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -166,7 +159,7 @@ export function UserList({ users }: UserListProps) {
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">
-                    {t('users.noUsers')}
+                    {translations.noUsers}
                   </TableCell>
                 </TableRow>
               )}
@@ -177,14 +170,14 @@ export function UserList({ users }: UserListProps) {
       <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('users.deleteDialog.title')}</AlertDialogTitle>
-            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: t('users.deleteDialog.description').replace('{name}', `<strong>${userToDelete?.displayName}</strong>`) }} />
+            <AlertDialogTitle>{translations.deleteDialog.title}</AlertDialogTitle>
+            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: translations.deleteDialog.description.replace('{name}', `<strong>${userToDelete?.displayName}</strong>`) }} />
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setUserToDelete(null)}>{t('users.deleteDialog.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setUserToDelete(null)}>{translations.deleteDialog.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteUser} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('users.deleteDialog.confirm')}
+              {translations.deleteDialog.confirm}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
