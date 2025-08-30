@@ -1,3 +1,4 @@
+
 'use server';
 
 import { cookies } from 'next/headers';
@@ -29,7 +30,7 @@ export async function signIn(credentials: { username: string; password: string }
       expiresIn: '1d', // Token expires in 1 day
     });
 
-    const cookieStore = await cookies(); // ✅ await
+    const cookieStore = cookies();
     cookieStore.set(COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -45,12 +46,12 @@ export async function signIn(credentials: { username: string; password: string }
 }
 
 export async function signOut() {
-  const cookieStore = await cookies(); // ✅ await
+  const cookieStore = cookies();
   cookieStore.delete(COOKIE_NAME);
 }
 
 export async function getServerSession(): Promise<{ user: Omit<User, 'password'> } | null> {
-  const cookieStore = await cookies(); // ✅ await
+  const cookieStore = cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
   if (!token) {

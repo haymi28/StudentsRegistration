@@ -11,7 +11,8 @@ const getNestedTranslation = (translations: any, key: string): string | undefine
 }
 
 export const getTranslations = async () => {
-  const locale = cookies().get('locale')?.value || 'am';
+  const cookieStore = cookies();
+  const locale = cookieStore.get('locale')?.value || 'am';
   const dictionary = await dictionaries[locale]();
 
   return (key: string, params?: Record<string, string | number>): string => {
