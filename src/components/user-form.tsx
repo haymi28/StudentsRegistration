@@ -76,8 +76,8 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
         await createUser(data);
       }
       toast({
-        title: isEditMode ? t('users.form.updateSuccess') : t('users.form.createSuccess'),
-        description: (isEditMode ? t('users.form.updateSuccessDescription') : t('users.form.createSuccessDescription')).replace('{username}', data.username),
+        title: isEditMode ? translations.success.title : translations.success.title,
+        description: (isEditMode ? translations.success.description : translations.success.description).replace('{username}', data.username),
       });
       router.push('/users');
       router.refresh();
@@ -92,25 +92,15 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
     }
   }
   
-  const departmentOptions = useMemo(() => Object.entries({
-    children_1: t('serviceDepartment.children_1'),
-    children_2: t('serviceDepartment.children_2'),
-    junior: t('serviceDepartment.junior'),
-    senior: t('serviceDepartment.senior'),
-    youth: t('serviceDepartment.youth'),
-  }).map(([key, value], index) => ({
-      value: serviceDepartmentConstants[index],
+  const departmentOptions = useMemo(() => Object.entries(translations.departments).map(([key, value]) => ({
+      value: serviceDepartmentConstants[Object.keys(translations.departments).indexOf(key)],
       label: value,
-  })), [t]);
+  })), [translations.departments]);
 
-  const roleOptions = useMemo(() => Object.entries({
-      super_admin: t('roles.super_admin'),
-      admin: t('roles.admin'),
-      teacher: t('roles.teacher'),
-  }).map(([key, value]) => ({
+  const roleOptions = useMemo(() => Object.entries(translations.roles).map(([key, value]) => ({
       value: key,
       label: value,
-  })), [t]);
+  })), [translations.roles]);
 
   return (
     <Card className="w-full shadow-lg">
@@ -119,24 +109,24 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
           <CardContent className="space-y-8 pt-6">
             <div className="grid md:grid-cols-2 gap-6">
               <FormField control={form.control} name="displayName" render={({ field }) => (
-                <FormItem><FormLabel>{t('users.form.label.displayName')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{translations.labels.displayName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="username" render={({ field }) => (
-                <FormItem><FormLabel>{t('users.form.label.username')}</FormLabel><FormControl><Input {...field} readOnly={isEditMode} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{translations.labels.username}</FormLabel><FormControl><Input {...field} readOnly={isEditMode} /></FormControl><FormMessage /></FormItem>
               )} />
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
                 <FormField control={form.control} name="password" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{t('users.form.label.password')}</FormLabel>
-                        <FormControl><Input type="password" {...field} placeholder={isEditMode ? t('users.form.placeholder.password') : ''} /></FormControl>
+                        <FormLabel>{translations.labels.password}</FormLabel>
+                        <FormControl><Input type="password" {...field} placeholder={isEditMode ? translations.placeholders.password : ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <FormField control={form.control} name="confirmPassword" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{t('users.form.label.confirmPassword')}</FormLabel>
+                        <FormLabel>{translations.labels.confirmPassword}</FormLabel>
                         <FormControl><Input type="password" {...field} /></FormControl>
                         <FormMessage />
                     </FormItem>
@@ -148,9 +138,9 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
             <div className="grid md:grid-cols-2 gap-6">
                 <FormField control={form.control} name="role" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{t('users.form.label.role')}</FormLabel>
+                        <FormLabel>{translations.labels.role}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value} disabled={userToEdit?.username === 'superadmin'}>
-                            <FormControl><SelectTrigger><SelectValue placeholder={t('users.form.placeholder.selectRole')} /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger><SelectValue placeholder={translations.placeholders.selectRole} /></SelectTrigger></FormControl>
                             <SelectContent>
                                 {roleOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label as any}</SelectItem>)}
                             </SelectContent>
@@ -160,9 +150,9 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
                 )} />
                  <FormField control={form.control} name="serviceDepartment" render={({ field }) => (
                     <FormItem style={{ display: selectedRole === 'admin' || selectedRole === 'teacher' ? 'block' : 'none' }}>
-                        <FormLabel>{t('users.form.label.department')}</FormLabel>
+                        <FormLabel>{translations.labels.department}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder={t('users.form.placeholder.selectDepartment')} /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger><SelectValue placeholder={translations.placeholders.selectDepartment} /></SelectTrigger></FormControl>
                             <SelectContent>
                                 {departmentOptions.map(dep => <SelectItem key={dep.value} value={dep.value}>{dep.label as any}</SelectItem>)}
                             </SelectContent>
@@ -177,8 +167,8 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
                 render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                            <FormLabel>{t('users.form.label.status')}</FormLabel>
-                            <FormDescription>{field.value ? t('users.form.label.active') : t('users.form.label.inactive')}</FormDescription>
+                            <FormLabel>{translations.labels.status}</FormLabel>
+                            <FormDescription>{field.value ? translations.labels.active : translations.labels.inactive}</FormDescription>
                         </div>
                         <FormControl>
                             <Switch
@@ -194,7 +184,7 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
           <CardFooter>
             <Button type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLoading ? t('form.loading') : (isEditMode ? t('form.save') : t('form.submit'))}
+              {isLoading ? translations.buttons.loading : (isEditMode ? translations.buttons.submit : translations.buttons.submit)}
             </Button>
           </CardFooter>
         </form>
