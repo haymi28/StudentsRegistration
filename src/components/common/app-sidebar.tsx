@@ -3,7 +3,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, User, UserPlus, Users, Upload, Download } from 'lucide-react';
+import { LogOut, User, UserPlus, Users, Upload, Download, Shield } from 'lucide-react';
 import { useLocale } from '@/contexts/locale-provider';
 import { Logo } from './logo';
 import {
@@ -41,11 +41,12 @@ export function AppSidebar() {
   const navLinks = [
     { href: '/students', label: t('nav.students'), icon: Users },
     { href: '/register', label: t('nav.newStudent'), icon: UserPlus, roles: ['super_admin', 'admin', 'teacher'] },
+    { href: '/users', label: t('nav.userManagement'), icon: Shield, roles: ['super_admin'] },
   ];
 
   const adminLinks = [
-    { href: '/students/import', label: t('nav.import'), icon: Upload, roles: ['super_admin', 'admin'] },
-    { href: '/students/export', label: t('nav.export'), icon: Download, roles: ['super_admin', 'admin'] },
+    { href: '/students/import', label: t('nav.import'), icon: Upload, roles: ['super_admin'] },
+    { href: '/students/export', label: t('nav.export'), icon: Download, roles: ['super_admin'] },
   ];
   
   const visibleNavLinks = navLinks.filter(link => !link.roles || (userRole && link.roles.includes(userRole)));
@@ -70,7 +71,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
-          {visibleAdminLinks.length > 0 && (
+          {visibleAdminLinks.length > 0 && userRole === 'super_admin' && (
             <>
               <SidebarSeparator />
               {visibleAdminLinks.map((link) => (

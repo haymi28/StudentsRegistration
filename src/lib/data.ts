@@ -8,6 +8,7 @@ import { revalidatePath } from 'next/cache';
 import { UserRole } from './constants';
 import { Student, User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { getCreateUserSchema, getUpdateUserSchema } from './validations/user';
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -97,31 +98,32 @@ export async function deleteStudent(id: string) {
 // User Functions
 export async function getUsers() {
     return await prisma.user.findMany({
-        select: {
-            id: true,
-            username: true,
-            role: true,
-            displayName: true,
-            serviceDepartment: true,
-            createdAt: true,
-            updatedAt: true,
-        }
+        orderBy: { createdAt: 'desc' }
     });
+}
+
+export async function getUserById(id: string) {
+    return await prisma.user.findUnique({ where: { id } });
 }
 
 export async function getUserByUsername(username: string) {
     return await prisma.user.findUnique({ where: { username }});
 }
 
-export async function updateUser(id: string, data: { displayName?: string, password?: string }) {
-    const dataToUpdate: { displayName?: string; password?: string } = {};
+export async function updateUser(id: string, data: Partial<z.infer<ReturnType<typeof getUpdateUserSchema>>>) {
+    const validationSchema = getUpdateUserSchema(() => '');
+    const validatedData = validationSchema.safeParse(data);
 
-    if (data.displayName) {
-        dataToUpdate.displayName = data.displayName;
+    if (!validatedData.success) {
+        throw new Error('Invalid user data: ' + validatedData.error.message);
     }
+    
+    const { password, ...rest } = validatedData.data;
 
-    if (data.password) {
-        dataToUpdate.password = await bcrypt.hash(data.password, 10);
+    const dataToUpdate: any = { ...rest };
+
+    if (password) {
+        dataToUpdate.password = await bcrypt.hash(password, 10);
     }
     
     await prisma.user.update({
@@ -129,23 +131,44 @@ export async function updateUser(id: string, data: { displayName?: string, passw
         data: dataToUpdate
     });
     revalidatePath('/account');
+    revalidatePath('/users');
+    revalidatePath(`/users/edit/${id}`);
 }
 
-export async function createUser(data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>) {
+export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSchema>>) {
+    const validationSchema = getCreateUserSchema(() => '');
+    const validatedData = validationSchema.safeParse(data);
+
+    if (!validatedData.success) {
+        throw new Error('Invalid user data: ' + validatedData.error.message);
+    }
+
     const existingUser = await prisma.user.findUnique({
-        where: { username: data.username },
+        where: { username: validatedData.data.username },
     });
 
     if (existingUser) {
         throw new Error('User with this username already exists.');
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await bcrypt.hash(validatedData.data.password, 10);
 
-    return prisma.user.create({
+    await prisma.user.create({
         data: {
-            ...data,
+            ...validatedData.data,
             password: hashedPassword
         },
     });
+
+    revalidatePath('/users');
+}
+
+export async function deleteUser(id: string) {
+    // Prevent deleting the default superadmin
+    const user = await prisma.user.findUnique({ where: { id }});
+    if (user?.username === 'superadmin') {
+        throw new Error("Cannot delete the default super administrator.");
+    }
+    await prisma.user.delete({ where: { id }});
+    revalidatePath('/users');
 }

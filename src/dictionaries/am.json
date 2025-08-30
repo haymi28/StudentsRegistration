@@ -1,3 +1,4 @@
+
 {
     "nav": {
         "students": "ተማሪዎች",
@@ -5,6 +6,7 @@
         "import": "አስመጣ",
         "export": "ላክ",
         "attendance": "የተማሪዎች ክትትል",
+        "userManagement": "የተጠቃሚ አስተዳደር",
         "account": "የኔ መለያ",
         "logout": "ውጣ",
         "language": "ቋንቋ"
@@ -68,11 +70,7 @@
         },
         "submit": "መዝግብ",
         "save": "አስቀምጥ",
-        "loading": "እያስገባ ነው...",
-        "registerSuccess": "ተማሪ ተመዝግቧል!",
-        "registerSuccessDescription": "{name} በተሳካ ሁኔታ ተመዝግቧል።",
-        "updateSuccess": "የተማሪ መረጃ ተስተካክሏል!",
-        "updateSuccessDescription": "የ {name} መረጃ በተሳካ ሁኔታ ተስተካክሏል።"
+        "loading": "እያስገባ ነው..."
     },
     "students": {
         "title": "የተማሪዎች ዝርዝር",
@@ -192,6 +190,54 @@
         "fullName": "ሙሉ ስም",
         "gender": "ጾታ"
     },
+     "users": {
+        "title": "የተጠቃሚ አስተዳደር",
+        "description": "የስርዓት ተጠቃሚዎችን እና ሚናዎቻቸውን ይፍጠሩ፣ ይመልከቱ እና ያስተዳድሩ።",
+        "searchPlaceholder": "በስም ወይም በተጠቃሚ ስም ይፈልጉ...",
+        "noUsers": "ምንም ተጠቃሚዎች አልተገኙም።",
+        "createUserButton": "ተጠቃሚ ፍጠር",
+        "form": {
+            "createTitle": "አዲስ ተጠቃሚ ፍጠር",
+            "createDescription": "አዲስ የስርዓት ተጠቃሚ ለማከል ቅጹን ይሙሉ።",
+            "editTitle": "ተጠቃሚን አስተካክል",
+            "editDescription": "የተጠቃሚውን ዝርዝር እና ፈቃዶች ያዘምኑ።",
+            "label": {
+                "displayName": "የሚታይ ስም",
+                "username": "የተጠቃሚ ስም",
+                "password": "የይለፍ ቃል",
+                "confirmPassword": "የይለፍ ቃል አረጋግጥ",
+                "role": "ሚና",
+                "department": "የአገልግሎት ክፍል",
+                "status": "የተጠቃሚ ሁኔታ",
+                "active": "የነቃ",
+                "inactive": "ተጠቃሚው መግባት አይችልም።"
+            },
+            "placeholder": {
+                "selectRole": "ሚና ይምረጡ",
+                "selectDepartment": "ክፍል ይምረጡ"
+            },
+            "createSuccess": "ተጠቃሚ ተፈጥሯል!",
+            "createSuccessDescription": "ተጠቃሚ {username} በተሳካ ሁኔታ ተፈጥሯል።",
+            "updateSuccess": "ተጠቃሚ ዘምኗል!",
+            "updateSuccessDescription": "ተጠቃሚ {username} በተሳካ ሁኔታ ዘምኗል።"
+        },
+        "table": {
+            "displayName": "የሚታይ ስም",
+            "username": "የተጠቃሚ ስም",
+            "role": "ሚና",
+            "department": "ክፍል",
+            "status": "ሁኔታ",
+            "actions": "ድርጊቶች"
+        },
+        "deleteDialog": {
+            "title": "ይህን ተጠቃሚ ለመሰረዝ እርግጠኛ ነዎት?",
+            "description": "ይህ ድርጊት ሊቀለበስ አይችልም። ይህ ተጠቃሚ {name}ን በቋሚነት ይሰርዛል እና መዳረሻቸውን ያስወግዳል።",
+            "cancel": "ተመለስ",
+            "confirm": "አዎ፣ ሰርዝ"
+        },
+        "deleteSuccess": "ተጠቃሚ ተሰርዟል!",
+        "deleteSuccessDescription": "ተጠቃሚ {name} በተሳካ ሁኔታ ተሰርዟል።"
+    },
     "account": {
         "pageTitle": "የመለያ አስተዳደር",
         "pageDescription": "የእርስዎን መገለጫ እና የይለፍ ቃል መረጃ ያዘምኑ።",
@@ -220,11 +266,17 @@
         "min": "{field} ቢያንስ {length} ፊደላት መሆን አለበት።",
         "invalidNumber": "ልክ ያልሆነ ቁጥር።",
         "passwordMismatch": "የይለፍ ቃላት አይዛመዱም።",
+        "departmentRequired": "ለዚህ ሚና የአገልግሎት ክፍል ያስፈልጋል።",
         "gender": {
             "male": "ወንድ",
             "female": "ሴት"
         },
         "currentPasswordIncorrect": "የአሁኑ የይለፍ ቃል ትክክል አይደለም።"
+    },
+    "roles": {
+        "super_admin": "ዋና አስተዳዳሪ",
+        "admin": "አስተዳዳሪ",
+        "teacher": "መምህር"
     },
     "serviceDepartment": {
         "children_1": "ቀዳማይ -1 ክፍል",

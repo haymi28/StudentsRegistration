@@ -1,3 +1,4 @@
+
 {
     "nav": {
         "students": "Students",
@@ -5,6 +6,7 @@
         "import": "Import",
         "export": "Export",
         "attendance": "Attendance",
+        "userManagement": "User Management",
         "account": "My Account",
         "logout": "Logout",
         "language": "Language"
@@ -68,11 +70,7 @@
         },
         "submit": "Register",
         "save": "Save Changes",
-        "loading": "Submitting...",
-        "registerSuccess": "Student Registered!",
-        "registerSuccessDescription": "{name} has been successfully registered.",
-        "updateSuccess": "Student Updated!",
-        "updateSuccessDescription": "{name}'s information has been successfully updated."
+        "loading": "Submitting..."
     },
     "students": {
         "title": "Student List",
@@ -192,6 +190,54 @@
         "fullName": "Full Name",
         "gender": "Gender"
     },
+    "users": {
+        "title": "User Management",
+        "description": "Create, view, and manage system users and their roles.",
+        "searchPlaceholder": "Search by name or username...",
+        "noUsers": "No users found.",
+        "createUserButton": "Create User",
+        "form": {
+            "createTitle": "Create a New User",
+            "createDescription": "Fill out the form to add a new system user.",
+            "editTitle": "Edit User",
+            "editDescription": "Update the user's details and permissions.",
+            "label": {
+                "displayName": "Display Name",
+                "username": "Username",
+                "password": "Password",
+                "confirmPassword": "Confirm Password",
+                "role": "Role",
+                "department": "Service Department",
+                "status": "User Status",
+                "active": "Active",
+                "inactive": "The user will not be able to log in."
+            },
+            "placeholder": {
+                "selectRole": "Select a role",
+                "selectDepartment": "Select a department"
+            },
+            "createSuccess": "User Created!",
+            "createSuccessDescription": "User {username} has been successfully created.",
+            "updateSuccess": "User Updated!",
+            "updateSuccessDescription": "User {username} has been successfully updated."
+        },
+        "table": {
+            "displayName": "Display Name",
+            "username": "Username",
+            "role": "Role",
+            "department": "Department",
+            "status": "Status",
+            "actions": "Actions"
+        },
+        "deleteDialog": {
+            "title": "Are you sure you want to delete this user?",
+            "description": "This action cannot be undone. This will permanently delete the user {name} and remove their access.",
+            "cancel": "Cancel",
+            "confirm": "Yes, delete"
+        },
+        "deleteSuccess": "User Deleted!",
+        "deleteSuccessDescription": "User {name} has been successfully deleted."
+    },
     "account": {
         "pageTitle": "Account Management",
         "pageDescription": "Update your profile and password information.",
@@ -220,11 +266,17 @@
         "min": "{field} must be at least {length} characters.",
         "invalidNumber": "Invalid number.",
         "passwordMismatch": "Passwords do not match.",
+        "departmentRequired": "Service department is required for this role.",
         "gender": {
             "male": "Male",
             "female": "Female"
         },
         "currentPasswordIncorrect": "Current password is incorrect."
+    },
+    "roles": {
+        "super_admin": "Super Admin",
+        "admin": "Admin",
+        "teacher": "Teacher"
     },
     "serviceDepartment": {
         "children_1": "Children's Class 1",

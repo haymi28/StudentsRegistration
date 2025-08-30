@@ -1,3 +1,5 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -9,9 +11,8 @@ datasource db {
 }
 
 model Student {
-  id                    String   @id @default(cuid())
-  registrationNumber    String   @unique
-  photo                 String?
+  id                    String  @id @default(cuid())
+  registrationNumber    String  @unique
   fullName              String
   gender                String
   serviceDepartment     String
@@ -19,16 +20,17 @@ model Student {
   mothersName           String?
   dateOfBirth           String?
   educationLevel        String
+  phoneNumber           String
+  additionalPhoneNumber String?
   fathersPhoneNumber    String?
   mothersPhoneNumber    String?
-  additionalPhoneNumber String?
-  phoneNumber           String
   subcity               String?
   kebele                String?
   houseNumber           String?
   specificAddress       String?
+  photo                 String?
   dateOfJoining         String?
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -40,7 +42,7 @@ model User {
   role              String
   displayName       String
   serviceDepartment String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
