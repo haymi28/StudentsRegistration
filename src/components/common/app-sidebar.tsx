@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -27,9 +28,8 @@ export function AppSidebar() {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
 
   useEffect(() => {
-    // In a real app, you'd get this from your session/context
-    const role = 'super_admin'; // Placeholder
-    setUserRole(role as UserRole);
+    const role = localStorage.getItem('user_role') as UserRole;
+    setUserRole(role);
   }, []);
 
   const handleLogout = async () => {
@@ -40,13 +40,17 @@ export function AppSidebar() {
 
   const navLinks = [
     { href: '/students', label: t('nav.students'), icon: Users },
-    { href: '/register', label: t('nav.newStudent'), icon: UserPlus },
+    { href: '/register', label: t('nav.newStudent'), icon: UserPlus, roles: ['super_admin', 'admin', 'teacher'] },
   ];
 
   const adminLinks = [
-    { href: '/students/import', label: t('nav.import'), icon: Upload },
-    { href: '/students/export', label: t('nav.export'), icon: Download },
+    { href: '/students/import', label: t('nav.import'), icon: Upload, roles: ['super_admin', 'admin'] },
+    { href: '/students/export', label: t('nav.export'), icon: Download, roles: ['super_admin', 'admin'] },
   ];
+  
+  const visibleNavLinks = navLinks.filter(link => !link.roles || (userRole && link.roles.includes(userRole)));
+  const visibleAdminLinks = adminLinks.filter(link => !link.roles || (userRole && link.roles.includes(userRole)));
+
 
   return (
     <Sidebar collapsible="icon">
@@ -56,7 +60,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          {navLinks.map((link) => (
+          {visibleNavLinks.map((link) => (
             <SidebarMenuItem key={link.href}>
               <SidebarMenuButton asChild isActive={pathname.startsWith(link.href)} tooltip={link.label}>
                   <Link href={link.href}>
@@ -66,10 +70,10 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
-          {userRole === 'super_admin' && (
+          {visibleAdminLinks.length > 0 && (
             <>
               <SidebarSeparator />
-              {adminLinks.map((link) => (
+              {visibleAdminLinks.map((link) => (
                 <SidebarMenuItem key={link.href}>
                   <SidebarMenuButton asChild isActive={pathname.startsWith(link.href)} tooltip={link.label}>
                       <Link href={link.href}>

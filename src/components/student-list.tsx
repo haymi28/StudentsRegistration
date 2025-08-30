@@ -38,7 +38,7 @@ import { serviceDepartmentTransferMap, ServiceDepartment } from '@/lib/constants
 
 interface StudentListProps {
   students: Student[];
-  users: User[];
+  users: Partial<User>[];
   session: any;
   translations: {
     title: string;
@@ -113,7 +113,8 @@ export function StudentList({ students, users, session, translations }: StudentL
   }, [students, searchQuery]);
   
   const fromServiceDepartment = session.user.role !== 'super_admin' ? session.user.serviceDepartment : undefined;
-  const canTransfer = fromServiceDepartment && !!serviceDepartmentTransferMap[fromServiceDepartment as ServiceDepartment];
+  
+  const canTransfer = fromServiceDepartment ? !!serviceDepartmentTransferMap[fromServiceDepartment as ServiceDepartment] : session.user.role === 'super_admin';
 
 
   return (
@@ -140,7 +141,7 @@ export function StudentList({ students, users, session, translations }: StudentL
               />
             </div>
             <div className="flex items-center gap-2 self-start md:self-center">
-                {selectedRowKeys.size > 0 && (session.user.role !== 'super_admin' ? canTransfer : true) && (
+                {selectedRowKeys.size > 0 && canTransfer && (
                   <Button onClick={() => setIsTransferDialogOpen(true)} className="shrink-0">
                     <ArrowRightLeft className="mr-2 h-4 w-4" />
                     {translations.transferButton.replace('{count}', String(selectedRowKeys.size))}
@@ -154,6 +155,7 @@ export function StudentList({ students, users, session, translations }: StudentL
             selectedStudentIds={Array.from(selectedRowKeys)}
             students={students}
             currentUserRole={session.user.role}
+            currentUserDept={session.user.serviceDepartment}
             onTransferSuccess={() => {
                 setSelectedRowKeys(new Set());
                 router.refresh();
@@ -296,6 +298,9 @@ function RowActions({ student, session, translations }: { student: Student, sess
             setIsDeleting(false);
         }
     };
+    
+    const canEdit = session.user.role === 'super_admin' || session.user.role === 'admin';
+    const canDelete = session.user.role === 'super_admin';
 
     return (
         <>
@@ -312,12 +317,14 @@ function RowActions({ student, session, translations }: { student: Student, sess
                         <Eye className="mr-2 h-4 w-4" />
                         {translations.view}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push(`/students/edit/${student.id}`)}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        {translations.edit}
-                    </DropdownMenuItem>
-                    {session.user.role === 'super_admin' && <DropdownMenuSeparator />}
-                    {session.user.role === 'super_admin' &&
+                    {canEdit && (
+                        <DropdownMenuItem onClick={() => router.push(`/students/edit/${student.id}`)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            {translations.edit}
+                        </DropdownMenuItem>
+                    )}
+                    {canDelete && <DropdownMenuSeparator />}
+                    {canDelete &&
                         <DropdownMenuItem
                             className="text-destructive focus:text-destructive focus:bg-destructive/10"
                             onClick={() => setStudentToDelete(student)}

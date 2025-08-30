@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -19,7 +20,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale } from '@/contexts/locale-provider';
 import { Student } from '@prisma/client';
 import { createStudent, updateStudent } from '@/lib/data';
-import { roleToServiceDepartmentMap, ServiceDepartment, UserRole } from '@/lib/constants';
+import { ServiceDepartment, UserRole, serviceDepartments as serviceDepartmentConstants } from '@/lib/constants';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -31,6 +32,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [userServiceDepartment, setUserServiceDepartment] = useState<ServiceDepartment | null>(null);
   const router = useRouter();
   const isEditMode = !!studentToEdit;
   const { t } = useLocale();
@@ -64,17 +66,19 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
 
   useEffect(() => {
     const role = localStorage.getItem('user_role') as UserRole | null;
+    const department = localStorage.getItem('user_service_department') as ServiceDepartment | null;
     setUserRole(role);
+    setUserServiceDepartment(department);
   }, []);
 
-  const defaultServiceDepartment = userRole && userRole !== 'super_admin' ? roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>] : '';
+  const defaultServiceDepartment = userRole !== 'super_admin' ? userServiceDepartment : '';
 
   const defaultFormValues = useMemo(() => ({
     photo: '',
     registrationNumber: '',
     fullName: '',
     gender: '',
-    serviceDepartment: defaultServiceDepartment,
+    serviceDepartment: defaultServiceDepartment || '',
     baptismalName: '',
     mothersName: '',
     dateOfBirth: '',
@@ -168,10 +172,10 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
   }, [birthDay, birthMonth, birthYear, form]);
 
   useEffect(() => {
-    if (!isEditMode && userRole && userRole !== 'super_admin') {
-      form.setValue('serviceDepartment', roleToServiceDepartmentMap[userRole as Exclude<UserRole, 'super_admin'>]);
+    if (!isEditMode && userRole && userRole !== 'super_admin' && userServiceDepartment) {
+      form.setValue('serviceDepartment', userServiceDepartment);
     }
-  }, [userRole, form, isEditMode]);
+  }, [userRole, userServiceDepartment, form, isEditMode]);
 
   async function onSubmit(data: StudentFormValues) {
     setIsLoading(true);
@@ -202,6 +206,8 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
       setIsLoading(false);
     }
   }
+  
+  const canChangeDepartment = userRole === 'super_admin' || userRole === 'admin';
 
   return (
     <Card className="w-full shadow-lg">
@@ -272,7 +278,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>{t('form.label.department')}</FormLabel>
-                        {userRole === 'super_admin' ? (
+                        {canChangeDepartment ? (
                             <Select onValueChange={field.onChange} value={field.value} disabled={isLoading}>
                                 <FormControl>
                                 <SelectTrigger>

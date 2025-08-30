@@ -1,22 +1,17 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
-}
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 model Student {
   id                    String    @id @default(cuid())
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  photo                 String?
-  registrationNumber    String    @unique
+  registrationNumber  String    @unique
   fullName              String
   gender                String
   serviceDepartment     String
@@ -33,22 +28,18 @@ model Student {
   houseNumber           String?
   specificAddress       String?
   dateOfJoining         String?
+  photo                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 }
 
 model User {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  username    String   @unique
-  password    String
-  role        UserRole
-  displayName String
-}
-
-enum UserRole {
-  super_admin
-  children_admin
-  children_2_admin
-  junior_admin
-  senior_admin
+  id                String    @id @default(cuid())
+  username          String    @unique
+  password          String
+  role              String
+  displayName       String
+  serviceDepartment String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }

@@ -1,3 +1,4 @@
+
 'use server';
 
 import prisma from './prisma';
@@ -5,20 +6,21 @@ import { z } from 'zod';
 import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
 import { UserRole } from './constants';
-import { roleToServiceDepartmentMap } from './constants';
 import { Student, User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
-export async function getStudents(role: UserRole) {
+export async function getStudents(role: UserRole, department?: string | null) {
   if (role === 'super_admin') {
     return await prisma.student.findMany({
         orderBy: { createdAt: 'desc'}
     });
   }
   
-  const department = roleToServiceDepartmentMap[role as Exclude<UserRole, 'super_admin'>];
+  if (!department) {
+    return [];
+  }
   
   return await prisma.student.findMany({
     where: { serviceDepartment: department },
@@ -100,6 +102,7 @@ export async function getUsers() {
             username: true,
             role: true,
             displayName: true,
+            serviceDepartment: true,
             createdAt: true,
             updatedAt: true,
         }
@@ -137,7 +140,12 @@ export async function createUser(data: Omit<User, 'id' | 'createdAt' | 'updatedA
         throw new Error('User with this username already exists.');
     }
 
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
     return prisma.user.create({
-        data,
+        data: {
+            ...data,
+            password: hashedPassword
+        },
     });
 }

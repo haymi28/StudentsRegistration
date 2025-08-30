@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { Student } from '@prisma/client';
-import { serviceDepartmentTransferMap, roleToServiceDepartmentMap, UserRole, ServiceDepartment } from '@/lib/constants';
+import { serviceDepartmentTransferMap, UserRole, ServiceDepartment, serviceDepartments } from '@/lib/constants';
 import { useLocale } from '@/contexts/locale-provider';
 import { updateStudent } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
@@ -28,6 +28,7 @@ interface TransferStudentsDialogProps {
   selectedStudentIds: string[];
   students: Student[];
   currentUserRole: UserRole;
+  currentUserDept: ServiceDepartment | null;
   onTransferSuccess: () => void;
 }
 
@@ -37,6 +38,7 @@ export function TransferStudentsDialog({
   selectedStudentIds,
   students,
   currentUserRole,
+  currentUserDept,
   onTransferSuccess,
 }: TransferStudentsDialogProps) {
   const [targetServiceDepartment, setTargetServiceDepartment] = useState<ServiceDepartment | ''>('');
@@ -51,7 +53,7 @@ export function TransferStudentsDialog({
   );
   
   const fromServiceDepartment = useMemo(() => {
-    if (currentUserRole === 'super_admin') {
+    if (currentUserRole === 'super_admin' || currentUserRole === 'admin') {
       if (selectedStudents.length > 0) {
         const firstStudentDepartment = selectedStudents[0].serviceDepartment;
         if (selectedStudents.every(s => s.serviceDepartment === firstStudentDepartment)) {
@@ -60,25 +62,28 @@ export function TransferStudentsDialog({
       }
       return t('transfer.multipleDepartments');
     }
-    return roleToServiceDepartmentMap[currentUserRole as Exclude<UserRole, 'super_admin'>];
-  }, [currentUserRole, selectedStudents, t]);
+    return currentUserDept;
+  }, [currentUserRole, selectedStudents, t, currentUserDept]);
 
   const transferOptions = useMemo<ServiceDepartment[]>(() => {
     if (fromServiceDepartment === t('transfer.multipleDepartments')) return [];
+    if (currentUserRole === 'super_admin' || currentUserRole === 'admin') {
+        return serviceDepartments.filter(d => d !== fromServiceDepartment);
+    }
     const nextDepartment = serviceDepartmentTransferMap[fromServiceDepartment as ServiceDepartment];
     return nextDepartment ? [nextDepartment] : [];
-  }, [fromServiceDepartment, t]);
+  }, [fromServiceDepartment, t, currentUserRole]);
 
   useEffect(() => {
-    if (transferOptions.length === 1) {
+    if (transferOptions.length === 1 && currentUserRole !== 'super_admin' && currentUserRole !== 'admin') {
       setTargetServiceDepartment(transferOptions[0]);
     } else {
       setTargetServiceDepartment('');
     }
-  }, [transferOptions]);
+  }, [transferOptions, currentUserRole]);
 
   const handleTransfer = async () => {
-    if (!targetServiceDepartment) return;
+    if (!targetServiceDepartment || !fromServiceDepartment) return;
     setIsLoading(true);
 
     try {
