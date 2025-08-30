@@ -1,11 +1,16 @@
 
-'use client';
-
 import { UserForm } from "@/components/user-form";
-import { useLocale } from "@/contexts/locale-provider";
+import { getTranslations } from "@/lib/i18n";
+import { getServerSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function CreateUserPage() {
-    const { t } = useLocale();
+export default async function CreateUserPage() {
+    const session = await getServerSession();
+    if (session?.user.role !== 'super_admin') {
+        redirect('/students');
+    }
+    
+    const t = await getTranslations();
 
     const translations = {
         title: t('users.form.createTitle'),
@@ -24,6 +29,7 @@ export default function CreateUserPage() {
         placeholders: {
             selectRole: t('users.form.placeholder.selectRole'),
             selectDepartment: t('users.form.placeholder.selectDepartment'),
+            password: t('users.form.placeholder.passwordOptional')
         },
         buttons: {
             submit: t('form.submit'),
@@ -42,8 +48,8 @@ export default function CreateUserPage() {
             youth: t('serviceDepartment.youth'),
         },
         success: {
-            title: t('users.form.createSuccess'),
-            description: t('users.form.createSuccessDescription'),
+            title: t('users.form.createSuccess.title'),
+            description: t('users.form.createSuccess.description'),
         },
         errors: {
             passwordMismatch: t('validation.passwordMismatch'),

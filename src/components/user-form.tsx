@@ -72,13 +72,17 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
     try {
       if (isEditMode) {
         await updateUser(userToEdit.id, data);
+        toast({
+            title: translations.success.title,
+            description: translations.success.description.replace('{username}', data.username),
+        });
       } else {
         await createUser(data);
+        toast({
+            title: translations.success.title,
+            description: translations.success.description.replace('{username}', data.username),
+        });
       }
-      toast({
-        title: isEditMode ? translations.success.title : translations.success.title,
-        description: (isEditMode ? translations.success.description : translations.success.description).replace('{username}', data.username),
-      });
       router.push('/users');
       router.refresh();
     } catch (error) {
@@ -121,6 +125,7 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
                     <FormItem>
                         <FormLabel>{translations.labels.password}</FormLabel>
                         <FormControl><Input type="password" {...field} placeholder={isEditMode ? translations.placeholders.password : ''} /></FormControl>
+                        {isEditMode && <FormDescription>{translations.placeholders.password}</FormDescription>}
                         <FormMessage />
                     </FormItem>
                 )} />
