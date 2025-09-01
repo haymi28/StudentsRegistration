@@ -1,8 +1,9 @@
+
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, User, UserPlus, Users, Upload, Download, Shield } from 'lucide-react';
+import { LogOut, User, UserPlus, Users, Upload, Download, Shield, Home } from 'lucide-react';
 import { Logo } from './logo';
 import {
   Sidebar,
@@ -37,7 +38,8 @@ export function AppSidebar({ navTranslations }: { navTranslations: any }) {
 
   const navLinks = [
     { href: '/students', label: navTranslations.students, icon: Users },
-    { href: '/register', label: navTranslations.newStudent, icon: UserPlus, roles: ['super_admin', 'admin', 'teacher'] },
+    { href: '/register', label: navTranslations.newStudent, icon: UserPlus },
+    { href: '/classes', label: navTranslations.classManagement, icon: Home, roles: ['super_admin'] },
     { href: '/users', label: navTranslations.userManagement, icon: Shield, roles: ['super_admin'] },
   ];
 

@@ -1,0 +1,130 @@
+
+'use client';
+
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { useRouter } from 'next/navigation';
+import { User, Class } from '@prisma/client';
+import { getCreateClassSchema } from '@/lib/validations/class';
+import { createClass, updateClass } from '@/lib/data';
+import { useLocale } from '@/contexts/locale-provider';
+
+type ClassFormValues = z.infer<ReturnType<typeof getCreateClassSchema>>;
+
+interface ClassFormProps {
+  classToEdit?: Class;
+  users: User[];
+  translations: any;
+}
+
+export function ClassForm({ classToEdit, users, translations }: ClassFormProps) {
+  const { toast } = useToast();
+  const { t } = useLocale();
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const isEditMode = !!classToEdit;
+
+  const validationSchema = getCreateClassSchema(t);
+
+  const form = useForm<ClassFormValues>({
+    resolver: zodResolver(validationSchema),
+    defaultValues: isEditMode
+      ? {
+          name: classToEdit.name,
+          managerId: classToEdit.managerId || undefined,
+        }
+      : {
+          name: '',
+          managerId: undefined,
+        },
+  });
+
+  async function onSubmit(data: ClassFormValues) {
+    setIsLoading(true);
+    try {
+      if (isEditMode) {
+        await updateClass(classToEdit.id, data);
+        toast({
+          title: translations.success.title,
+          description: translations.success.description.replace('{name}', data.name),
+        });
+      } else {
+        await createClass(data);
+        toast({
+          title: translations.success.title,
+          description: translations.success.description.replace('{name}', data.name),
+        });
+      }
+      router.push('/classes');
+      router.refresh();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <Card className="w-full shadow-lg">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <CardContent className="space-y-8 pt-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{translations.labels.name}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={translations.placeholders.name} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="managerId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{translations.labels.manager}</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={translations.placeholders.manager} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {users.map(user => (
+                        <SelectItem key={user.id} value={user.id}>{user.displayName} ({user.username})</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading ? translations.buttons.loading : translations.buttons.submit}
+            </Button>
+          </CardFooter>
+        </form>
+      </Form>
+    </Card>
+  );
+}

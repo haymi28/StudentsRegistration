@@ -108,7 +108,6 @@ export function UserList({ users, translations }: UserListProps) {
                 <TableHead>{translations.table.displayName}</TableHead>
                 <TableHead>{translations.table.username}</TableHead>
                 <TableHead>{translations.table.role}</TableHead>
-                <TableHead>{translations.table.department}</TableHead>
                 <TableHead>{translations.table.status}</TableHead>
                 <TableHead className="text-right">{translations.table.actions}</TableHead>
               </TableRow>
@@ -122,7 +121,6 @@ export function UserList({ users, translations }: UserListProps) {
                     <TableCell>
                       <Badge variant="outline">{translations.roles[user.role as UserRole] || user.role}</Badge>
                     </TableCell>
-                    <TableCell>{user.serviceDepartment || 'N/A'}</TableCell>
                     <TableCell>
                       <Badge variant={user.isActive ? 'secondary' : 'destructive'}>
                         {user.isActive ? translations.status.active : translations.status.inactive}
@@ -158,7 +156,7 @@ export function UserList({ users, translations }: UserListProps) {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     {translations.noUsers}
                   </TableCell>
                 </TableRow>

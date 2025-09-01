@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 const phoneRegex = new RegExp(
@@ -11,7 +12,7 @@ export const getStudentRegistrationSchema = (t: TFunction) => z.object({
   registrationNumber: z.string().min(1, { message: t('validation.required').replace('{field}', t('form.label.regNumber')) }),
   fullName: z.string().min(2, { message: t('validation.required').replace('{field}', t('form.label.fullName')) }),
   gender: z.string({ required_error: t('validation.required').replace('{field}', t('form.label.gender')) }).min(1, { message: t('validation.required').replace('{field}', t('form.label.gender')) }),
-  serviceDepartment: z.string({ required_error: t('validation.required').replace('{field}', t('form.label.department')) }).min(1, { message: t('validation.required').replace('{field}', t('form.label.department')) }),
+  classId: z.string({ required_error: t('validation.required').replace('{field}', t('form.label.department')) }).min(1, { message: t('validation.required').replace('{field}', t('form.label.department')) }),
   baptismalName: z.string().optional(),
   mothersName: z.string().optional(),
   dateOfBirth: z.string().optional(),

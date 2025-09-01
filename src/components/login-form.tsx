@@ -42,14 +42,10 @@ export function LoginForm() {
     const result = await signIn(values);
 
     if (result.success && result.user) {
+      localStorage.setItem('userId', result.user.id)
       localStorage.setItem('username', result.user.username);
       localStorage.setItem('displayName', result.user.displayName);
       localStorage.setItem('user_role', result.user.role);
-      if (result.user.serviceDepartment) {
-        localStorage.setItem('user_service_department', result.user.serviceDepartment);
-      } else {
-        localStorage.removeItem('user_service_department');
-      }
       
       toast({
         title: t('login.success'),

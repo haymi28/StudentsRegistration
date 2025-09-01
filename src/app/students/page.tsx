@@ -12,17 +12,15 @@ export default async function StudentsPage() {
     redirect('/');
   }
   
-  const students = await getStudents(session.user.role as any, session.user.serviceDepartment);
+  const students = await getStudents(session.user.id, session.user.role as any);
   const users = await getUsers();
   const t = await getTranslations();
 
 
-  const fromServiceDepartment = session.user.role !== 'super_admin' ? session.user.serviceDepartment : undefined;
-
   const translations = {
       title: t('students.title'),
       descriptionSuperAdmin: t('students.descriptionSuperAdmin'),
-      descriptionAdmin: t('students.descriptionAdmin').replace('{department}', fromServiceDepartment || ''),
+      descriptionAdmin: t('students.descriptionAdmin'),
       searchPlaceholder: t('students.searchPlaceholder'),
       noStudents: t('students.noStudents'),
       transferButton: t('students.transferButton'),
@@ -52,7 +50,7 @@ export default async function StudentsPage() {
   return (
     <div className="container py-8 flex flex-col items-center">
        <StudentList 
-            students={students} 
+            students={students as any} 
             users={users} 
             session={session}
             translations={translations}

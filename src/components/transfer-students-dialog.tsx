@@ -14,10 +14,9 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
-import { Student } from '@prisma/client';
-import { serviceDepartmentTransferMap, UserRole, ServiceDepartment, serviceDepartments } from '@/lib/constants';
+import { Class, Student } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
-import { updateStudent } from '@/lib/data';
+import { getClasses, transferStudentsToClass } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { generateTransferReport } from '@/lib/reporting';
 import { useRouter } from 'next/navigation';
@@ -26,9 +25,7 @@ interface TransferStudentsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedStudentIds: string[];
-  students: Student[];
-  currentUserRole: UserRole;
-  currentUserDept: ServiceDepartment | null;
+  students: (Student & { class: Class | null })[];
   onTransferSuccess: () => void;
 }
 
@@ -37,83 +34,73 @@ export function TransferStudentsDialog({
   onOpenChange,
   selectedStudentIds,
   students,
-  currentUserRole,
-  currentUserDept,
   onTransferSuccess,
 }: TransferStudentsDialogProps) {
-  const [targetServiceDepartment, setTargetServiceDepartment] = useState<ServiceDepartment | ''>('');
+  const [targetClassId, setTargetClassId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [allClasses, setAllClasses] = useState<Class[]>([]);
   const { t } = useLocale();
   const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    if (open) {
+      getClasses().then(setAllClasses);
+    }
+  }, [open]);
 
   const selectedStudents = useMemo(
     () => students.filter(s => selectedStudentIds.includes(s.id)),
     [students, selectedStudentIds]
   );
   
-  const fromServiceDepartment = useMemo(() => {
-    if (currentUserRole === 'super_admin' || currentUserRole === 'admin') {
-      if (selectedStudents.length > 0) {
-        const firstStudentDepartment = selectedStudents[0].serviceDepartment;
-        if (selectedStudents.every(s => s.serviceDepartment === firstStudentDepartment)) {
-          return firstStudentDepartment;
-        }
+  const fromClass = useMemo(() => {
+    if (selectedStudents.length > 0) {
+      const firstStudentClass = selectedStudents[0].class;
+      if (selectedStudents.every(s => s.classId === firstStudentClass?.id)) {
+        return firstStudentClass;
       }
-      return t('transfer.multipleDepartments');
     }
-    return currentUserDept;
-  }, [currentUserRole, selectedStudents, t, currentUserDept]);
+    return null; // Indicates multiple or no single source class
+  }, [selectedStudents]);
 
-  const transferOptions = useMemo<ServiceDepartment[]>(() => {
-    if (fromServiceDepartment === t('transfer.multipleDepartments')) return [];
-    if (currentUserRole === 'super_admin' || currentUserRole === 'admin') {
-        return serviceDepartments.filter(d => d !== fromServiceDepartment);
-    }
-    const nextDepartment = serviceDepartmentTransferMap[fromServiceDepartment as ServiceDepartment];
-    return nextDepartment ? [nextDepartment] : [];
-  }, [fromServiceDepartment, t, currentUserRole]);
-
-  useEffect(() => {
-    if (transferOptions.length === 1 && currentUserRole !== 'super_admin' && currentUserRole !== 'admin') {
-      setTargetServiceDepartment(transferOptions[0]);
-    } else {
-      setTargetServiceDepartment('');
-    }
-  }, [transferOptions, currentUserRole]);
+  const transferOptions = useMemo(() => {
+    return allClasses.filter(c => c.id !== fromClass?.id);
+  }, [allClasses, fromClass]);
 
   const handleTransfer = async () => {
-    if (!targetServiceDepartment || !fromServiceDepartment) return;
+    if (!targetClassId || !fromClass) return;
     setIsLoading(true);
 
     try {
-        const transferPromises = selectedStudents.map(student => 
-            updateStudent(student.id, { ...student, serviceDepartment: targetServiceDepartment })
-        );
-        await Promise.all(transferPromises);
+        await transferStudentsToClass(selectedStudentIds, targetClassId);
         
+        const targetClass = allClasses.find(c => c.id === targetClassId);
+
         toast({
             title: t('transfer.successTitle'),
-            description: t('transfer.successDescription').replace('{count}', String(selectedStudents.length)).replace('{to}', targetServiceDepartment),
+            description: t('transfer.successDescription').replace('{count}', String(selectedStudents.length)).replace('{to}', targetClass?.name || ''),
         });
 
         const displayName = localStorage.getItem('displayName') || 'N/A';
-        await generateTransferReport(
-            selectedStudents,
-            fromServiceDepartment,
-            targetServiceDepartment,
-            {
-                title: t('report.title'),
-                from: t('report.from'),
-                to: t('report.to'),
-                date: t('report.date'),
-                generatedBy: t('report.generatedBy'),
-                regNumber: t('report.regNumber'),
-                fullName: t('report.fullName'),
-                gender: t('report.gender'),
-            },
-            displayName
-        );
+        if (targetClass) {
+          await generateTransferReport(
+              selectedStudents,
+              fromClass.name,
+              targetClass.name,
+              {
+                  title: t('report.title'),
+                  from: t('report.from'),
+                  to: t('report.to'),
+                  date: t('report.date'),
+                  generatedBy: t('report.generatedBy'),
+                  regNumber: t('report.regNumber'),
+                  fullName: t('report.fullName'),
+                  gender: t('report.gender'),
+              },
+              displayName
+          );
+        }
         
         onTransferSuccess();
         router.refresh();
@@ -130,30 +117,30 @@ export function TransferStudentsDialog({
     onOpenChange(false);
   };
   
-  const canTransfer = transferOptions.length > 0;
+  const canTransfer = !!fromClass;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('transfer.title')}</DialogTitle>
-          <DialogDescription dangerouslySetInnerHTML={{ __html: t('transfer.description').replace('{count}', String(selectedStudentIds.length)).replace('{from}', `<strong>${fromServiceDepartment}</strong>`) }} />
+           <DialogDescription dangerouslySetInnerHTML={{ __html: t('transfer.description').replace('{count}', String(selectedStudentIds.length)).replace('{from}', `<strong>${fromClass?.name || t('transfer.multipleDepartments')}</strong>`) }} />
         </DialogHeader>
         <div className="py-4 space-y-4">
             {canTransfer ? (
                 <div>
                     <Label htmlFor="target-department">{t('transfer.toLabel')}</Label>
                     <Select
-                        value={targetServiceDepartment}
-                        onValueChange={(value) => setTargetServiceDepartment(value as ServiceDepartment)}
+                        value={targetClassId}
+                        onValueChange={setTargetClassId}
                     >
                         <SelectTrigger id="target-department">
                         <SelectValue placeholder={t('transfer.toPlaceholder')} />
                         </SelectTrigger>
                         <SelectContent>
-                        {transferOptions.map((dep) => (
-                            <SelectItem key={dep} value={dep}>
-                            {dep}
+                        {transferOptions.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>
+                            {c.name}
                             </SelectItem>
                         ))}
                         </SelectContent>
@@ -161,10 +148,7 @@ export function TransferStudentsDialog({
                 </div>
             ) : (
                 <div className="text-sm text-destructive p-3 bg-destructive/10 rounded-md">
-                    {fromServiceDepartment === t('transfer.multipleDepartments')
-                        ? t('transfer.noOptionsMultiple')
-                        : t('transfer.noOptionsHighest')
-                    }
+                    {t('transfer.noOptionsMultiple')}
                 </div>
             )}
         </div>
@@ -172,7 +156,7 @@ export function TransferStudentsDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
             {t('transfer.cancel')}
           </Button>
-          <Button onClick={handleTransfer} disabled={isLoading || !targetServiceDepartment || !canTransfer}>
+          <Button onClick={handleTransfer} disabled={isLoading || !targetClassId || !canTransfer}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isLoading ? t('transfer.loading') : t('transfer.confirm')}
           </Button>

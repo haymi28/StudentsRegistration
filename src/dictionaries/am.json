@@ -7,6 +7,7 @@
         "export": "ላክ",
         "attendance": "የተማሪዎች ክትትል",
         "userManagement": "የተጠቃሚ አስተዳደር",
+        "classManagement": "የክፍል አስተዳደር",
         "account": "የኔ መለያ",
         "logout": "ውጣ",
         "language": "ቋንቋ"
@@ -44,7 +45,7 @@
             "regNumber": "የምዝገባ ቁጥር",
             "fullName": "ሙሉ ስም",
             "gender": "ጾታ",
-            "department": "የአገልግሎት ክፍል",
+            "department": "ክፍል",
             "baptismalName": "የክርስትና ስም",
             "mothersName": "የእናት ስም",
             "dob": "የትውልድ ዘመን (በኢትዮጵያ አቆጣጠር)",
@@ -62,7 +63,7 @@
         "placeholder": {
             "regNumber": "ለምሳሌ፦ 001/17",
             "selectGender": "ጾታ ይምረጡ",
-            "selectDepartment": "የአገልግሎት ክፍል ይምረጡ",
+            "selectDepartment": "ክፍል ይምረጡ",
             "address": "የአካባቢውን ዝርዝር መረጃ ያስገቡ",
             "day": "ቀን",
             "month": "ወር",
@@ -79,7 +80,7 @@
     "students": {
         "title": "የተማሪዎች ዝርዝር",
         "descriptionSuperAdmin": "ሁሉንም የተመዘገቡ ተማሪዎች ይመልከቱ እና ያስተዳድሩ።",
-        "descriptionAdmin": "በ {department} ውስጥ ያሉትን ተማሪዎች ይመልከቱ እና ያስተዳድሩ።",
+        "descriptionAdmin": "የተመደቡበትን ክፍል ተማሪዎች ይመልከቱ እና ያስተዳድሩ።",
         "searchPlaceholder": "በስም ወይም በምዝገባ ቁጥር ይፈልጉ...",
         "noStudents": "ምንም ተማሪዎች አልተገኙም።",
         "transferButton": "{count} ተማሪዎችን አስተላልፍ",
@@ -87,7 +88,7 @@
             "photo": "ፎቶ",
             "regNumber": "የምዝገባ ቁ.",
             "fullName": "ሙሉ ስም",
-            "department": "የአገልግሎት ክፍል",
+            "department": "ክፍል",
             "phone": "ስልክ ቁጥር",
             "actions": "ድርጊቶች"
         },
@@ -220,7 +221,8 @@
             "placeholder": {
                 "selectRole": "ሚና ይምረጡ",
                 "selectDepartment": "ክፍል ይምረጡ",
-                "password": "የይለፍ ቃል ካልቀየሩ ባዶ ይተዉት"
+                "password": "የይለፍ ቃል ካልቀየሩ ባዶ ይተዉት",
+                "passwordOptional": "የይለፍ ቃል ካልቀየሩ ባዶ ይተዉት"
             },
             "createSuccess": {
                 "title": "ተጠቃሚ ተፈጥሯል!",
@@ -233,7 +235,6 @@
             "displayName": "የሚታይ ስም",
             "username": "የተጠቃሚ ስም",
             "role": "ሚና",
-            "department": "ክፍል",
             "status": "ሁኔታ",
             "actions": "ድርጊቶች"
         },
@@ -246,6 +247,51 @@
         "deleteSuccess": {
             "title": "ተጠቃሚ ተሰርዟል!",
             "description": "ተጠቃሚ {name} በተሳካ ሁኔታ ተሰርዟል።"
+        }
+    },
+    "classes": {
+        "title": "የክፍል አስተዳደር",
+        "description": "ክፍሎችን ይግለጹ እና አስተዳዳሪዎችን ይመድቡ።",
+        "createButton": "ክፍል ፍጠር",
+        "noClasses": "ምንም ክፍሎች አልተገኙም።",
+        "form": {
+            "createTitle": "አዲስ ክፍል ፍጠር",
+            "createDescription": "አዲስ ክፍል ይግለጹ እና አስተዳዳሪ ይመድቡ።",
+            "editTitle": "ክፍልን አስተካክል",
+            "editDescription": "የክፍሉን ስም እና አስተዳዳሪ ያዘምኑ።",
+            "label": {
+                "name": "የክፍል ስም",
+                "manager": "የክፍል አስተዳዳሪ"
+            },
+            "placeholder": {
+                "name": "ለምሳሌ፦ የከፍተኛ ክፍል",
+                "manager": "አስተዳዳሪ ይምረጡ"
+            },
+            "createSuccess": {
+                "title": "ክፍል ተፈጥሯል!",
+                "description": "ክፍል {name} በተሳካ ሁኔታ ተፈጥሯል።"
+            },
+            "updateSuccess": {
+                "title": "ክፍል ዘምኗል!",
+                "description": "ክፍል {name} በተሳካ ሁኔታ ዘምኗል።"
+            }
+        },
+        "table": {
+            "name": "የክፍል ስም",
+            "manager": "አስተዳዳሪ",
+            "studentCount": "የተማሪዎች ብዛት",
+            "actions": "ድርጊቶች"
+        },
+        "deleteDialog": {
+            "title": "ይህን ክፍል ለመሰረዝ እርግጠኛ ነዎት?",
+            "description": "ይህ ክፍል {name}ን በቋሚነት ይሰርዛል። ይህ ድርጊት ሊቀለበስ አይችልም።",
+            "descriptionWithStudents": "ተማሪዎች የተመደቡበትን ክፍል መሰረዝ አይችሉም። እባክዎ መጀመሪያ ተማሪዎቹን ወደ ሌላ ክፍል ያስተላልፉ።",
+            "cancel": "ተመለስ",
+            "confirm": "አዎ፣ ሰርዝ"
+        },
+        "deleteSuccess": {
+            "title": "ክፍል ተሰርዟል!",
+            "description": "ክፍል {name} በተሳካ ሁኔታ ተሰርዟል።"
         }
     },
     "account": {
@@ -287,13 +333,6 @@
         "super_admin": "ዋና አስተዳዳሪ",
         "admin": "አስተዳዳሪ",
         "teacher": "መምህር"
-    },
-    "serviceDepartment": {
-        "children_1": "ቀዳማይ -1 ክፍል",
-        "children_2": "ቀዳማይ -2 ክፍል",
-        "junior": "ካእላይ ክፍል",
-        "senior": "ማእከላይ ክፍል",
-        "youth": "የወጣት ክፍል"
     },
     "common": {
         "error": "ስህተት",

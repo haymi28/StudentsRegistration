@@ -11,15 +11,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Student } from '@prisma/client';
+import { Student, Class } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
 import { format } from 'date-fns';
 
 const formatDateDisplay = (date: Date | string | undefined | null): string => {
   if (!date) return 'N/A';
-  // Check if it's a string that might not be a valid date representation for `new Date()`
   if (typeof date === 'string') {
-      // Simple check, can be improved. If it doesn't look like a standard date string, display as is.
       if (!/^\d{1,2} \w+ \d{4}$/.test(date) && isNaN(new Date(date).getTime())) {
           return date;
       }
@@ -31,7 +29,7 @@ const formatDateDisplay = (date: Date | string | undefined | null): string => {
 
 
 interface StudentDetailsDialogProps {
-  student: Student | null;
+  student: (Student & { class: Class | null }) | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -68,7 +66,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
             <div>
               <h2 className="text-2xl font-bold">{student.fullName}</h2>
               <p className="text-muted-foreground">{student.registrationNumber}</p>
-              <Badge variant="secondary" className="mt-2">{student.serviceDepartment}</Badge>
+              <Badge variant="secondary" className="mt-2">{student.class?.name || 'N/A'}</Badge>
             </div>
           </div>
           

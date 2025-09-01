@@ -18,9 +18,9 @@ import { Separator } from '@/components/ui/separator';
 import { ImageUpload } from './image-upload';
 import { useRouter } from 'next/navigation';
 import { useLocale } from '@/contexts/locale-provider';
-import { Student } from '@prisma/client';
-import { createStudent, updateStudent } from '@/lib/data';
-import { ServiceDepartment, UserRole, serviceDepartments as serviceDepartmentConstants } from '@/lib/constants';
+import { Student, Class, User } from '@prisma/client';
+import { createStudent, updateStudent, getClasses } from '@/lib/data';
+import { UserRole } from '@/lib/constants';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -32,7 +32,8 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
-  const [userServiceDepartment, setUserServiceDepartment] = useState<ServiceDepartment | null>(null);
+  const [userClass, setUserClass] = useState<Class | null>(null);
+  const [classes, setClasses] = useState<Class[]>([]);
   const router = useRouter();
   const isEditMode = !!studentToEdit;
   const { t } = useLocale();
@@ -51,34 +52,38 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
 
   const studentRegistrationSchema = useMemo(() => getStudentRegistrationSchema(t), [t]);
   
-  const serviceDepartments: { value: ServiceDepartment; label: string }[] = useMemo(() => [
-    { value: 'ቀዳማይ -1 ክፍል', label: t('serviceDepartment.children_1') },
-    { value: 'ቀዳማይ -2 ክፍል', label: t('serviceDepartment.children_2') },
-    { value: 'ካእላይ ክፍል', label: t('serviceDepartment.junior') },
-    { value: 'ማእከላይ ክፍል', label: t('serviceDepartment.senior') },
-    { value: 'የወጣት ክፍል', label: t('serviceDepartment.youth') },
-  ], [t]);
-
   const genders = useMemo(() => [
     { value: 'ወንድ', label: t('validation.gender.male') },
     { value: 'ሴት', label: t('validation.gender.female') },
   ], [t]);
-
+  
   useEffect(() => {
-    const role = localStorage.getItem('user_role') as UserRole | null;
-    const department = localStorage.getItem('user_service_department') as ServiceDepartment | null;
-    setUserRole(role);
-    setUserServiceDepartment(department);
+    async function fetchInitialData() {
+        const role = localStorage.getItem('user_role') as UserRole | null;
+        const userId = localStorage.getItem('userId');
+        setUserRole(role);
+
+        const fetchedClasses = await getClasses();
+        setClasses(fetchedClasses);
+        
+        if (role !== 'super_admin' && userId) {
+            const assignedClass = fetchedClasses.find(c => c.managerId === userId);
+            if(assignedClass) {
+                setUserClass(assignedClass);
+            }
+        }
+    }
+    fetchInitialData();
   }, []);
 
-  const defaultServiceDepartment = userRole !== 'super_admin' ? userServiceDepartment : '';
+  const defaultClassId = userRole !== 'super_admin' ? (userClass?.id || '') : '';
 
   const defaultFormValues = useMemo(() => ({
     photo: '',
     registrationNumber: '',
     fullName: '',
     gender: '',
-    serviceDepartment: defaultServiceDepartment || '',
+    classId: defaultClassId || '',
     baptismalName: '',
     mothersName: '',
     dateOfBirth: '',
@@ -92,7 +97,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     houseNumber: '',
     specificAddress: '',
     dateOfJoining: '',
-  }), [defaultServiceDepartment]);
+  }), [defaultClassId]);
 
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentRegistrationSchema),
@@ -172,10 +177,10 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
   }, [birthDay, birthMonth, birthYear, form]);
 
   useEffect(() => {
-    if (!isEditMode && userRole && userRole !== 'super_admin' && userServiceDepartment) {
-      form.setValue('serviceDepartment', userServiceDepartment);
+    if (!isEditMode && userRole && userRole !== 'super_admin' && userClass) {
+      form.setValue('classId', userClass.id);
     }
-  }, [userRole, userServiceDepartment, form, isEditMode]);
+  }, [userRole, userClass, form, isEditMode]);
 
   async function onSubmit(data: StudentFormValues) {
     setIsLoading(true);
@@ -207,7 +212,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     }
   }
   
-  const canChangeDepartment = userRole === 'super_admin' || userRole === 'admin';
+  const canChangeClass = userRole === 'super_admin';
 
   return (
     <Card className="w-full shadow-lg">
@@ -274,11 +279,11 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                 )} />
                  <FormField
                     control={form.control}
-                    name="serviceDepartment"
+                    name="classId"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>{t('form.label.department')}</FormLabel>
-                        {canChangeDepartment ? (
+                        {canChangeClass ? (
                             <Select onValueChange={field.onChange} value={field.value} disabled={isLoading}>
                                 <FormControl>
                                 <SelectTrigger>
@@ -286,14 +291,14 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                                 </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                {serviceDepartments.map(dep => <SelectItem key={dep.value} value={dep.value}>{dep.label}</SelectItem>)}
+                                {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         ) : (
                            <FormControl>
                              <Input
                                 readOnly
-                                value={serviceDepartments.find(d => d.value === field.value)?.label || 'Loading...'}
+                                value={userClass?.name || 'Loading...'}
                                 className="bg-muted"
                              />
                            </FormControl>

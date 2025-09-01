@@ -33,11 +33,12 @@ import { StudentDetailsDialog } from './student-details-dialog';
 import { TransferStudentsDialog } from './transfer-students-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { deleteStudent } from '@/lib/data';
-import { Student, User } from '@prisma/client';
-import { serviceDepartmentTransferMap, ServiceDepartment } from '@/lib/constants';
+import { Student, User, Class } from '@prisma/client';
+
+type StudentWithClass = Student & { class: Class | null };
 
 interface StudentListProps {
-  students: Student[];
+  students: StudentWithClass[];
   users: Partial<User>[];
   session: any;
   translations: {
@@ -112,9 +113,7 @@ export function StudentList({ students, users, session, translations }: StudentL
     return studentsToDisplay;
   }, [students, searchQuery]);
   
-  const fromServiceDepartment = session.user.role !== 'super_admin' ? session.user.serviceDepartment : undefined;
-  
-  const canTransfer = fromServiceDepartment ? !!serviceDepartmentTransferMap[fromServiceDepartment as ServiceDepartment] : session.user.role === 'super_admin';
+  const canTransfer = session.user.role === 'super_admin';
 
 
   return (
@@ -154,8 +153,6 @@ export function StudentList({ students, users, session, translations }: StudentL
             onOpenChange={setIsTransferDialogOpen}
             selectedStudentIds={Array.from(selectedRowKeys)}
             students={students}
-            currentUserRole={session.user.role}
-            currentUserDept={session.user.serviceDepartment}
             onTransferSuccess={() => {
                 setSelectedRowKeys(new Set());
                 router.refresh();
@@ -202,7 +199,7 @@ export function StudentList({ students, users, session, translations }: StudentL
                         <TableCell className="font-medium whitespace-nowrap">{student.registrationNumber}</TableCell>
                         <TableCell className="whitespace-nowrap">{student.fullName}</TableCell>
                         <TableCell>
-                          <Badge variant="secondary" className="whitespace-nowrap">{student.serviceDepartment}</Badge>
+                          <Badge variant="secondary" className="whitespace-nowrap">{student.class?.name || 'N/A'}</Badge>
                         </TableCell>
                         <TableCell className="whitespace-nowrap">{student.phoneNumber}</TableCell>
                         <TableCell className="text-right">
@@ -242,7 +239,7 @@ export function StudentList({ students, users, session, translations }: StudentL
                               <p className="font-semibold leading-tight">{student.fullName}</p>
                               <p className="text-sm text-muted-foreground">{student.registrationNumber}</p>
                               <div className="pt-1">
-                                  <Badge variant="secondary">{student.serviceDepartment}</Badge>
+                                  <Badge variant="secondary">{student.class?.name || 'N/A'}</Badge>
                               </div>
                               <p className="text-sm text-muted-foreground pt-1">{student.phoneNumber}</p>
                           </div>

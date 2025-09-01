@@ -1,25 +1,23 @@
 
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
 import { User } from '@prisma/client';
 import { getCreateUserSchema, getUpdateUserSchema } from '@/lib/validations/user';
 import { createUser, updateUser } from '@/lib/data';
-import { UserRole, serviceDepartments as serviceDepartmentConstants } from '@/lib/constants';
-import { useLocale } from '@/contexts/locale-provider';
+import { UserRole } from '@/lib/constants';
 
 type UserFormValues = z.infer<ReturnType<typeof getCreateUserSchema>>;
 
@@ -33,11 +31,10 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEditMode = !!userToEdit;
-  const { t } = useLocale();
 
   const validationSchema = useMemo(() => {
-    return isEditMode ? getUpdateUserSchema(t) : getCreateUserSchema(t);
-  }, [isEditMode, t]);
+    return isEditMode ? getUpdateUserSchema(translations.t) : getCreateUserSchema(translations.t);
+  }, [isEditMode, translations.t]);
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(validationSchema),
@@ -46,7 +43,6 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
           displayName: userToEdit.displayName,
           username: userToEdit.username,
           role: userToEdit.role as UserRole,
-          serviceDepartment: userToEdit.serviceDepartment || undefined,
           isActive: userToEdit.isActive,
           password: '',
           confirmPassword: '',
@@ -55,16 +51,10 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
           displayName: '',
           username: '',
           role: undefined,
-          serviceDepartment: undefined,
           isActive: true,
           password: '',
           confirmPassword: '',
         },
-  });
-
-  const selectedRole = useWatch({
-    control: form.control,
-    name: 'role',
   });
 
   async function onSubmit(data: UserFormValues) {
@@ -95,11 +85,6 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
       setIsLoading(false);
     }
   }
-  
-  const departmentOptions = useMemo(() => Object.entries(translations.departments).map(([key, value]) => ({
-      value: serviceDepartmentConstants[Object.keys(translations.departments).indexOf(key)],
-      label: value,
-  })), [translations.departments]);
 
   const roleOptions = useMemo(() => Object.entries(translations.roles).map(([key, value]) => ({
       value: key,
@@ -124,7 +109,7 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
                 <FormField control={form.control} name="password" render={({ field }) => (
                     <FormItem>
                         <FormLabel>{translations.labels.password}</FormLabel>
-                        <FormControl><Input type="password" {...field} placeholder={isEditMode ? translations.placeholders.password : ''} /></FormControl>
+                        <FormControl><Input type="password" {...field} placeholder={isEditMode ? translations.placeholders.passwordOptional : ''} /></FormControl>
                         {isEditMode && <FormDescription>{translations.placeholders.password}</FormDescription>}
                         <FormMessage />
                     </FormItem>
@@ -137,8 +122,6 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
                     </FormItem>
                 )} />
             </div>
-            
-            <Separator />
             
             <div className="grid md:grid-cols-2 gap-6">
                 <FormField control={form.control} name="role" render={({ field }) => (
@@ -153,38 +136,26 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
                         <FormMessage />
                     </FormItem>
                 )} />
-                 <FormField control={form.control} name="serviceDepartment" render={({ field }) => (
-                    <FormItem style={{ display: selectedRole === 'admin' || selectedRole === 'teacher' ? 'block' : 'none' }}>
-                        <FormLabel>{translations.labels.department}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder={translations.placeholders.selectDepartment} /></SelectTrigger></FormControl>
-                            <SelectContent>
-                                {departmentOptions.map(dep => <SelectItem key={dep.value} value={dep.value}>{dep.label as any}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )} />
+                 <FormField
+                    control={form.control}
+                    name="isActive"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 mt-8">
+                            <div className="space-y-0.5">
+                                <FormLabel>{translations.labels.status}</FormLabel>
+                                <FormDescription>{field.value ? translations.labels.active : translations.labels.inactive}</FormDescription>
+                            </div>
+                            <FormControl>
+                                <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    disabled={userToEdit?.username === 'superadmin'}
+                                />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
             </div>
-             <FormField
-                control={form.control}
-                name="isActive"
-                render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                            <FormLabel>{translations.labels.status}</FormLabel>
-                            <FormDescription>{field.value ? translations.labels.active : translations.labels.inactive}</FormDescription>
-                        </div>
-                        <FormControl>
-                            <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                                disabled={userToEdit?.username === 'superadmin'}
-                            />
-                        </FormControl>
-                    </FormItem>
-                )}
-            />
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={isLoading}>

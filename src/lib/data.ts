@@ -6,32 +6,42 @@ import { z } from 'zod';
 import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
 import { UserRole } from './constants';
-import { Student, User } from '@prisma/client';
+import { Student, User, Class } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { getCreateUserSchema, getUpdateUserSchema } from './validations/user';
+import { getCreateClassSchema } from './validations/class';
+
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
+type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
 
-export async function getStudents(role: UserRole, department?: string | null) {
+export async function getStudents(userId: string, role: UserRole) {
   if (role === 'super_admin') {
     return await prisma.student.findMany({
-        orderBy: { createdAt: 'desc'}
+      orderBy: { createdAt: 'desc' },
+      include: { class: true }
     });
   }
-  
-  if (!department) {
+
+  const userClass = await prisma.class.findFirst({
+    where: { managerId: userId }
+  });
+
+  if (!userClass) {
     return [];
   }
-  
+
   return await prisma.student.findMany({
-    where: { serviceDepartment: department },
-    orderBy: { createdAt: 'desc'}
+    where: { classId: userClass.id },
+    orderBy: { createdAt: 'desc' },
+    include: { class: true }
   });
 }
 
 export async function getStudentById(id: string) {
   return await prisma.student.findUnique({
     where: { id },
+    include: { class: true }
   });
 }
 
@@ -96,8 +106,9 @@ export async function deleteStudent(id: string) {
 
 
 // User Functions
-export async function getUsers() {
+export async function getUsers(excludeSuperAdmin = false) {
     return await prisma.user.findMany({
+        where: excludeSuperAdmin ? { role: { not: 'super_admin' } } : {},
         orderBy: { createdAt: 'desc' }
     });
 }
@@ -156,7 +167,8 @@ export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSc
     await prisma.user.create({
         data: {
             ...validatedData.data,
-            password: hashedPassword
+            password: hashedPassword,
+            serviceDepartment: null
         },
     });
 
@@ -164,11 +176,83 @@ export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSc
 }
 
 export async function deleteUser(id: string) {
-    // Prevent deleting the default superadmin
     const user = await prisma.user.findUnique({ where: { id }});
     if (user?.username === 'superadmin') {
         throw new Error("Cannot delete the default super administrator.");
     }
     await prisma.user.delete({ where: { id }});
     revalidatePath('/users');
+    revalidatePath('/classes');
+}
+
+
+// Class Functions
+export async function getClasses() {
+  return await prisma.class.findMany({
+    include: {
+      manager: true,
+      _count: {
+        select: { students: true },
+      },
+    },
+    orderBy: { name: 'asc' },
+  });
+}
+
+export async function getClassById(id: string) {
+    return await prisma.class.findUnique({
+        where: { id },
+        include: { manager: true }
+    });
+}
+
+export async function createClass(data: ClassData) {
+    const validationSchema = getCreateClassSchema(() => '');
+    const validatedData = validationSchema.safeParse(data);
+    
+    if (!validatedData.success) {
+        throw new Error('Invalid class data: ' + validatedData.error.message);
+    }
+    
+    await prisma.class.create({ data: validatedData.data });
+    revalidatePath('/classes');
+}
+
+export async function updateClass(id: string, data: ClassData) {
+    const validationSchema = getCreateClassSchema(() => '');
+    const validatedData = validationSchema.safeParse(data);
+
+    if (!validatedData.success) {
+        throw new Error('Invalid class data: ' + validatedData.error.message);
+    }
+
+    await prisma.class.update({
+        where: { id },
+        data: validatedData.data
+    });
+    revalidatePath('/classes');
+    revalidatePath(`/classes/edit/${id}`);
+}
+
+export async function deleteClass(id: string) {
+    const studentCount = await prisma.student.count({ where: { classId: id } });
+    if (studentCount > 0) {
+        throw new Error("Cannot delete a class with students assigned to it.");
+    }
+    await prisma.class.delete({ where: { id }});
+    revalidatePath('/classes');
+}
+
+export async function transferStudentsToClass(studentIds: string[], targetClassId: string) {
+    await prisma.student.updateMany({
+        where: {
+            id: {
+                in: studentIds,
+            },
+        },
+        data: {
+            classId: targetClassId,
+        },
+    });
+    revalidatePath('/students');
 }

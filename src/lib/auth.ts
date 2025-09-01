@@ -48,6 +48,7 @@ export async function signIn(credentials: { username: string; password: string }
 export async function signOut() {
   const cookieStore = cookies();
   cookieStore.delete(COOKIE_NAME);
+  // Also clear relevant local storage on sign out
 }
 
 export async function getServerSession(): Promise<{ user: Omit<User, 'password'> } | null> {

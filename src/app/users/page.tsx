@@ -25,7 +25,6 @@ export default async function UsersPage() {
       displayName: t('users.table.displayName'),
       username: t('users.table.username'),
       role: t('users.table.role'),
-      department: t('users.table.department'),
       status: t('users.table.status'),
       actions: t('users.table.actions'),
     },
