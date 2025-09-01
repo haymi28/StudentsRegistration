@@ -7,7 +7,7 @@ import { getUserById } from "@/lib/data";
 
 export default async function EditUserPage({ params }: { params: { id: string } }) {
     const session = await getServerSession();
-    if (session?.user.role !== 'super_admin') {
+    if (session?.user.role.name !== 'Super Admin') {
         redirect('/students');
     }
 
@@ -40,7 +40,7 @@ export default async function EditUserPage({ params }: { params: { id: string } 
         placeholders: {
             selectRole: t('users.form.placeholder.selectRole'),
             selectDepartment: t('users.form.placeholder.selectDepartment'),
-            password: t('users.form.placeholder.password')
+            password: t('users.form.placeholder.passwordOptional')
         },
         buttons: {
             submit: t('form.save'),

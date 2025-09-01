@@ -18,10 +18,11 @@ import {
 } from '@/components/ui/sidebar';
 import { useEffect, useState } from 'react';
 import { signOut } from '@/lib/auth';
+import { Role } from '@prisma/client';
 
 interface UserSession {
     id: string;
-    role: { name: string };
+    role: Role;
 }
 
 export function AppSidebar({ navTranslations }: { navTranslations: any }) {
@@ -30,10 +31,15 @@ export function AppSidebar({ navTranslations }: { navTranslations: any }) {
   const [userSession, setUserSession] = useState<UserSession | null>(null);
   
   useEffect(() => {
-    const roleName = localStorage.getItem('user_role');
+    const roleString = localStorage.getItem('user_role');
     const userId = localStorage.getItem('userId');
-    if (roleName && userId) {
-      setUserSession({ id: userId, role: { name: roleName } });
+    if (roleString && userId) {
+      try {
+        const role = JSON.parse(roleString);
+        setUserSession({ id: userId, role });
+      } catch (error) {
+        console.error("Failed to parse user role from localStorage", error);
+      }
     }
   }, []);
 
@@ -56,7 +62,7 @@ export function AppSidebar({ navTranslations }: { navTranslations: any }) {
     { href: '/students/export', label: navTranslations.export, icon: Download, roles: ['Super Admin'] },
   ];
   
-  const userRoleName = userSession?.role.name;
+  const userRoleName = userSession?.role?.name;
   const visibleNavLinks = navLinks.filter(link => !link.roles || (userRoleName && link.roles.includes(userRoleName)));
   const visibleAdminLinks = adminLinks.filter(link => !link.roles || (userRoleName && link.roles.includes(userRoleName)));
 

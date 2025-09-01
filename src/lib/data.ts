@@ -16,15 +16,8 @@ type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
 type RoleData = z.infer<ReturnType<typeof getRoleSchema>>;
 
-export async function getStudents(userId: string, roleName: string) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { role: { include: { permissions: true } } }
-  });
-
-  if (!user) return [];
-
-  const userPermissions = new Set(user.role.permissions.map(p => p.permissionId));
+export async function getStudents(userId: string, userRole: Role & { permissions: { permissionId: string }[]}) {
+  const userPermissions = new Set(userRole.permissions.map(p => p.permissionId));
   const allPermissions = await prisma.permission.findMany();
   const permNameToId = new Map(allPermissions.map(p => [p.name, p.id]));
 
@@ -142,7 +135,7 @@ export async function getUserById(id: string) {
 export async function getUserByUsername(username: string) {
     return await prisma.user.findUnique({ 
         where: { username },
-        include: { role: true }
+        include: { role: { include: { permissions: true } } }
     });
 }
 

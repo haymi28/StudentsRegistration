@@ -8,7 +8,7 @@ import { getTranslations } from '@/lib/i18n';
 export default async function UsersPage() {
   const session = await getServerSession();
   
-  if (!session || session.user.role !== 'super_admin') {
+  if (!session || session.user.role.name !== 'Super Admin') {
     redirect('/students');
   }
 

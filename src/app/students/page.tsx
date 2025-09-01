@@ -12,7 +12,7 @@ export default async function StudentsPage() {
     redirect('/');
   }
   
-  const students = await getStudents(session.user.id, session.user.role as any);
+  const students = await getStudents(session.user.id, session.user.role);
   const users = await getUsers();
   const t = await getTranslations();
 

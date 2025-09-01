@@ -7,7 +7,7 @@ import { ClassForm } from '@/components/class-form';
 
 export default async function EditClassPage({ params }: { params: { id: string } }) {
   const session = await getServerSession();
-  if (session?.user.role !== 'super_admin') {
+  if (session?.user.role.name !== 'Super Admin') {
     redirect('/students');
   }
 

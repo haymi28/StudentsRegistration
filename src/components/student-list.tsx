@@ -113,7 +113,7 @@ export function StudentList({ students, users, session, translations }: StudentL
     return studentsToDisplay;
   }, [students, searchQuery]);
   
-  const canTransfer = session.user.role === 'super_admin';
+  const canTransfer = session.user.role.name === 'Super Admin';
 
 
   return (
@@ -122,7 +122,7 @@ export function StudentList({ students, users, session, translations }: StudentL
         <div className="flex-grow">
           <CardTitle>{translations.title}</CardTitle>
           <CardDescription>
-            {session.user.role === 'super_admin'
+            {session.user.role.name === 'Super Admin'
               ? translations.descriptionSuperAdmin
               : translations.descriptionAdmin}
           </CardDescription>
@@ -296,8 +296,8 @@ function RowActions({ student, session, translations }: { student: Student, sess
         }
     };
     
-    const canEdit = session.user.role === 'super_admin' || session.user.role === 'admin';
-    const canDelete = session.user.role === 'super_admin';
+    const canEdit = session.user.role.name === 'Super Admin' || session.user.role.name === 'Admin';
+    const canDelete = session.user.role.name === 'Super Admin';
 
     return (
         <>
@@ -335,7 +335,7 @@ function RowActions({ student, session, translations }: { student: Student, sess
             </DropdownMenu>
 
             <StudentDetailsDialog
-                student={student}
+                student={student as Student & { class: Class | null }}
                 open={isDetailsDialogOpen}
                 onOpenChange={setIsDetailsDialogOpen}
             />

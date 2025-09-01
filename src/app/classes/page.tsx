@@ -8,7 +8,7 @@ import { ClassList } from '@/components/class-list';
 export default async function ClassesPage() {
   const session = await getServerSession();
   
-  if (!session || session.user.role !== 'super_admin') {
+  if (!session || session.user.role.name !== 'Super Admin') {
     redirect('/students');
   }
 

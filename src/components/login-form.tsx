@@ -45,7 +45,7 @@ export function LoginForm() {
       localStorage.setItem('userId', result.user.id)
       localStorage.setItem('username', result.user.username);
       localStorage.setItem('displayName', result.user.displayName);
-      localStorage.setItem('user_role', result.user.role);
+      localStorage.setItem('user_role', JSON.stringify(result.user.role));
       
       toast({
         title: t('login.success'),
