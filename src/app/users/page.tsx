@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/auth';
 import { getUsers } from '@/lib/data';
 import { UserList } from '@/components/user-list';
-import { getTranslations } from '@/lib/i18n';
+import { getTranslator } from '@/lib/i18n';
 
 export default async function UsersPage() {
   const session = await getServerSession();
@@ -13,7 +13,7 @@ export default async function UsersPage() {
   }
 
   const users = await getUsers();
-  const t = await getTranslations();
+  const t = await getTranslator();
 
   const translations = {
     title: t('users.title'),
@@ -43,9 +43,9 @@ export default async function UsersPage() {
         description: t('users.deleteSuccess.description')
     },
     roles: {
-      super_admin: t('roles.super_admin'),
-      admin: t('roles.admin'),
-      teacher: t('roles.teacher'),
+      'Super Admin': t('roles.super_admin'),
+      'Admin': t('roles.admin'),
+      'Teacher': t('roles.teacher'),
     },
     status: {
         active: t('users.form.label.active'),

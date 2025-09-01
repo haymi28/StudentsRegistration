@@ -2,7 +2,7 @@
 import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/auth';
 import { getUsers } from '@/lib/data';
-import { getTranslations } from '@/lib/i18n';
+import { getTranslator } from '@/lib/i18n';
 import { ClassForm } from '@/components/class-form';
 
 export default async function CreateClassPage() {
@@ -12,7 +12,7 @@ export default async function CreateClassPage() {
   }
 
   const users = await getUsers(true); // Exclude super_admin from being a manager
-  const t = await getTranslations();
+  const t = await getTranslator();
 
   const translations = {
     createTitle: t('classes.form.createTitle'),

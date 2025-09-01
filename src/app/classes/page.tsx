@@ -1,8 +1,8 @@
 
 import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/auth';
-import { getClasses, getUsers } from '@/lib/data';
-import { getTranslations } from '@/lib/i18n';
+import { getClasses } from '@/lib/data';
+import { getTranslator } from '@/lib/i18n';
 import { ClassList } from '@/components/class-list';
 
 export default async function ClassesPage() {
@@ -13,7 +13,7 @@ export default async function ClassesPage() {
   }
 
   const classes = await getClasses();
-  const t = await getTranslations();
+  const t = await getTranslator();
 
   const translations = {
     title: t('classes.title'),

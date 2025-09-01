@@ -2,7 +2,7 @@
 import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/auth';
 import { getClassById, getUsers } from '@/lib/data';
-import { getTranslations } from '@/lib/i18n';
+import { getTranslator } from '@/lib/i18n';
 import { ClassForm } from '@/components/class-form';
 
 export default async function EditClassPage({ params }: { params: { id: string } }) {
@@ -22,7 +22,7 @@ export default async function EditClassPage({ params }: { params: { id: string }
   }
 
   const users = await getUsers(true);
-  const t = await getTranslations();
+  const t = await getTranslator();
 
   const translations = {
     editTitle: t('classes.form.editTitle'),

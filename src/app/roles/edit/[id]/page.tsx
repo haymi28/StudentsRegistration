@@ -2,7 +2,7 @@
 import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/auth';
 import { getRoleById, getPermissions } from '@/lib/data';
-import { getTranslations } from '@/lib/i18n';
+import { getTranslator } from '@/lib/i18n';
 import { RoleForm } from '@/components/role-form';
 
 export default async function EditRolePage({ params }: { params: { id: string } }) {
@@ -22,7 +22,7 @@ export default async function EditRolePage({ params }: { params: { id: string } 
   }
 
   const permissions = await getPermissions();
-  const { t } = await getTranslations();
+  const t = await getTranslator();
 
   const translations = {
     editTitle: t('roles.form.editTitle'),

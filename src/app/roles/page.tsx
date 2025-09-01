@@ -2,7 +2,7 @@
 import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/auth';
 import { getRoles } from '@/lib/data';
-import { getTranslations } from '@/lib/i18n';
+import { getTranslator } from '@/lib/i18n';
 import { RoleList } from '@/components/role-list';
 
 export default async function RolesPage() {
@@ -13,7 +13,7 @@ export default async function RolesPage() {
   }
 
   const roles = await getRoles();
-  const { t } = await getTranslations();
+  const t = await getTranslator();
 
   const translations = {
     title: t('roles.title'),

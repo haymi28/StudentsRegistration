@@ -2,7 +2,7 @@
 import { StudentList } from '@/components/student-list';
 import { getServerSession } from '@/lib/auth';
 import { getStudents, getUsers } from '@/lib/data';
-import { getTranslations } from '@/lib/i18n';
+import { getTranslator } from '@/lib/i18n';
 import { redirect } from 'next/navigation';
 
 export default async function StudentsPage() {
@@ -14,7 +14,7 @@ export default async function StudentsPage() {
   
   const students = await getStudents(session.user.id, session.user.role);
   const users = await getUsers();
-  const t = await getTranslations();
+  const t = await getTranslator();
 
 
   const translations = {

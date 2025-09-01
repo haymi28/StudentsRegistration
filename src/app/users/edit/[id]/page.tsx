@@ -1,6 +1,6 @@
 
 import { UserForm } from "@/components/user-form";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslator } from "@/lib/i18n";
 import { getServerSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getUserById } from "@/lib/data";
@@ -22,7 +22,7 @@ export default async function EditUserPage({ params }: { params: { id: string } 
         );
     }
     
-    const t = await getTranslations();
+    const t = await getTranslator();
     const translations = {
         title: t('users.form.editTitle'),
         description: t('users.form.editDescription'),
@@ -32,39 +32,24 @@ export default async function EditUserPage({ params }: { params: { id: string } 
             password: t('users.form.label.password'),
             confirmPassword: t('users.form.label.confirmPassword'),
             role: t('users.form.label.role'),
-            department: t('users.form.label.department'),
             status: t('users.form.label.status'),
             active: t('users.form.label.active'),
             inactive: t('users.form.label.inactive'),
         },
         placeholders: {
             selectRole: t('users.form.placeholder.selectRole'),
-            selectDepartment: t('users.form.placeholder.selectDepartment'),
             password: t('users.form.placeholder.passwordOptional')
         },
         buttons: {
             submit: t('form.save'),
             loading: t('form.loading'),
         },
-        roles: {
-            super_admin: t('roles.super_admin'),
-            admin: t('roles.admin'),
-            teacher: t('roles.teacher'),
-        },
-        departments: {
-            children_1: t('serviceDepartment.children_1'),
-            children_2: t('serviceDepartment.children_2'),
-            junior: t('serviceDepartment.junior'),
-            senior: t('serviceDepartment.senior'),
-            youth: t('serviceDepartment.youth'),
-        },
         success: {
-            title: t('users.form.updateSuccess'),
-            description: t('users.form.updateSuccessDescription'),
+            title: t('users.form.updateSuccess.title'),
+            description: t('users.form.updateSuccess.description'),
         },
         errors: {
             passwordMismatch: t('validation.passwordMismatch'),
-            departmentRequired: t('validation.departmentRequired')
         }
     };
 

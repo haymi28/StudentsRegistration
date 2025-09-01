@@ -2,7 +2,7 @@
 import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/auth';
 import { getPermissions } from '@/lib/data';
-import { getTranslations } from '@/lib/i18n';
+import { getTranslator } from '@/lib/i18n';
 import { RoleForm } from '@/components/role-form';
 
 export default async function CreateRolePage() {
@@ -12,7 +12,7 @@ export default async function CreateRolePage() {
   }
 
   const permissions = await getPermissions();
-  const { t } = await getTranslations();
+  const t = await getTranslator();
 
   const translations = {
     createTitle: t('roles.form.createTitle'),
