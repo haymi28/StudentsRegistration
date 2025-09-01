@@ -5,24 +5,36 @@ import prisma from './prisma';
 import { z } from 'zod';
 import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
-import { UserRole } from './constants';
-import { Student, User, Class } from '@prisma/client';
+import { Student, User, Class, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { getCreateUserSchema, getUpdateUserSchema } from './validations/user';
 import { getCreateClassSchema } from './validations/class';
+import { getRoleSchema } from './validations/role';
 
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
+type RoleData = z.infer<ReturnType<typeof getRoleSchema>>;
 
-export async function getStudents(userId: string, role: UserRole) {
-  if (role === 'super_admin') {
-    return await prisma.student.findMany({
+export async function getStudents(userId: string, roleName: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { role: { include: { permissions: true } } }
+  });
+
+  if (!user) return [];
+
+  const userPermissions = new Set(user.role.permissions.map(p => p.permissionId));
+  const allPermissions = await prisma.permission.findMany();
+  const permNameToId = new Map(allPermissions.map(p => [p.name, p.id]));
+
+  if (userPermissions.has(permNameToId.get('manage_all_students')!)) {
+     return await prisma.student.findMany({
       orderBy: { createdAt: 'desc' },
       include: { class: true }
     });
   }
-
+  
   const userClass = await prisma.class.findFirst({
     where: { managerId: userId }
   });
@@ -107,18 +119,31 @@ export async function deleteStudent(id: string) {
 
 // User Functions
 export async function getUsers(excludeSuperAdmin = false) {
-    return await prisma.user.findMany({
-        where: excludeSuperAdmin ? { role: { not: 'super_admin' } } : {},
+    const users = await prisma.user.findMany({
+        include: { role: true },
         orderBy: { createdAt: 'desc' }
     });
+
+    if (excludeSuperAdmin) {
+        const superAdminRole = await prisma.role.findUnique({ where: { name: 'Super Admin' } });
+        return users.filter(user => user.roleId !== superAdminRole?.id);
+    }
+    
+    return users;
 }
 
 export async function getUserById(id: string) {
-    return await prisma.user.findUnique({ where: { id } });
+    return await prisma.user.findUnique({ 
+        where: { id },
+        include: { role: true }
+    });
 }
 
 export async function getUserByUsername(username: string) {
-    return await prisma.user.findUnique({ where: { username }});
+    return await prisma.user.findUnique({ 
+        where: { username },
+        include: { role: true }
+    });
 }
 
 export async function updateUser(id: string, data: Partial<z.infer<ReturnType<typeof getUpdateUserSchema>>>) {
@@ -168,7 +193,6 @@ export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSc
         data: {
             ...validatedData.data,
             password: hashedPassword,
-            serviceDepartment: null
         },
     });
 
@@ -176,8 +200,8 @@ export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSc
 }
 
 export async function deleteUser(id: string) {
-    const user = await prisma.user.findUnique({ where: { id }});
-    if (user?.username === 'superadmin') {
+    const user = await prisma.user.findUnique({ where: { id }, include: { role: true }});
+    if (user?.role.name === 'Super Admin') {
         throw new Error("Cannot delete the default super administrator.");
     }
     await prisma.user.delete({ where: { id }});
@@ -255,4 +279,98 @@ export async function transferStudentsToClass(studentIds: string[], targetClassI
         },
     });
     revalidatePath('/students');
+}
+
+// Role & Permission Functions
+
+export async function getRoles() {
+    return await prisma.role.findMany({
+        include: {
+            _count: { select: { users: true } },
+            permissions: { include: { permission: true } }
+        },
+        orderBy: { name: 'asc' }
+    });
+}
+
+export async function getRoleById(id: string) {
+    return await prisma.role.findUnique({
+        where: { id },
+        include: { permissions: { include: { permission: true } } }
+    });
+}
+
+export async function getPermissions() {
+    return await prisma.permission.findMany({ orderBy: { name: 'asc' } });
+}
+
+export async function createRole(data: RoleData) {
+    const validationSchema = getRoleSchema(() => '');
+    const validatedData = validationSchema.safeParse(data);
+
+    if (!validatedData.success) {
+        throw new Error('Invalid role data: ' + validatedData.error.message);
+    }
+    const { name, description, permissionIds } = validatedData.data;
+
+    await prisma.role.create({
+        data: {
+            name,
+            description,
+            permissions: {
+                create: permissionIds.map(id => ({ permissionId: id }))
+            }
+        }
+    });
+
+    revalidatePath('/roles');
+}
+
+export async function updateRole(id: string, data: RoleData) {
+    const validationSchema = getRoleSchema(() => '');
+    const validatedData = validationSchema.safeParse(data);
+     if (!validatedData.success) {
+        throw new Error('Invalid role data: ' + validatedData.error.message);
+    }
+    const { name, description, permissionIds } = validatedData.data;
+
+    // Use a transaction to ensure atomicity
+    await prisma.$transaction(async (tx) => {
+        // Update role details
+        await tx.role.update({
+            where: { id },
+            data: { name, description }
+        });
+
+        // Remove old permissions
+        await tx.rolePermission.deleteMany({
+            where: { roleId: id }
+        });
+
+        // Add new permissions
+        await tx.rolePermission.createMany({
+            data: permissionIds.map(permissionId => ({
+                roleId: id,
+                permissionId: permissionId
+            }))
+        });
+    });
+
+    revalidatePath('/roles');
+    revalidatePath(`/roles/edit/${id}`);
+}
+
+
+export async function deleteRole(id: string) {
+    const role = await prisma.role.findUnique({ where: { id } });
+    if (['Super Admin', 'Admin', 'Teacher'].includes(role?.name || '')) {
+        throw new Error("Cannot delete default system roles.");
+    }
+    const userCount = await prisma.user.count({ where: { roleId: id } });
+    if (userCount > 0) {
+        throw new Error("Cannot delete a role that is assigned to users.");
+    }
+
+    await prisma.role.delete({ where: { id } });
+    revalidatePath('/roles');
 }

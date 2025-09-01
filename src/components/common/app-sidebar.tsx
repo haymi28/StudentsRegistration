@@ -3,7 +3,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, User, UserPlus, Users, Upload, Download, Shield, Home } from 'lucide-react';
+import { LogOut, User, UserPlus, Users, Upload, Download, Shield, Home, ShieldCheck } from 'lucide-react';
 import { Logo } from './logo';
 import {
   Sidebar,
@@ -17,17 +17,24 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { useEffect, useState } from 'react';
-import { UserRole } from '@/lib/constants';
 import { signOut } from '@/lib/auth';
+
+interface UserSession {
+    id: string;
+    role: { name: string };
+}
 
 export function AppSidebar({ navTranslations }: { navTranslations: any }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
-
+  const [userSession, setUserSession] = useState<UserSession | null>(null);
+  
   useEffect(() => {
-    const role = localStorage.getItem('user_role') as UserRole;
-    setUserRole(role);
+    const roleName = localStorage.getItem('user_role');
+    const userId = localStorage.getItem('userId');
+    if (roleName && userId) {
+      setUserSession({ id: userId, role: { name: roleName } });
+    }
   }, []);
 
   const handleLogout = async () => {
@@ -39,17 +46,19 @@ export function AppSidebar({ navTranslations }: { navTranslations: any }) {
   const navLinks = [
     { href: '/students', label: navTranslations.students, icon: Users },
     { href: '/register', label: navTranslations.newStudent, icon: UserPlus },
-    { href: '/classes', label: navTranslations.classManagement, icon: Home, roles: ['super_admin'] },
-    { href: '/users', label: navTranslations.userManagement, icon: Shield, roles: ['super_admin'] },
+    { href: '/classes', label: navTranslations.classManagement, icon: Home, roles: ['Super Admin'] },
+    { href: '/users', label: navTranslations.userManagement, icon: Shield, roles: ['Super Admin'] },
+    { href: '/roles', label: navTranslations.roleManagement, icon: ShieldCheck, roles: ['Super Admin'] },
   ];
 
   const adminLinks = [
-    { href: '/students/import', label: navTranslations.import, icon: Upload, roles: ['super_admin'] },
-    { href: '/students/export', label: navTranslations.export, icon: Download, roles: ['super_admin'] },
+    { href: '/students/import', label: navTranslations.import, icon: Upload, roles: ['Super Admin'] },
+    { href: '/students/export', label: navTranslations.export, icon: Download, roles: ['Super Admin'] },
   ];
   
-  const visibleNavLinks = navLinks.filter(link => !link.roles || (userRole && link.roles.includes(userRole)));
-  const visibleAdminLinks = adminLinks.filter(link => !link.roles || (userRole && link.roles.includes(userRole)));
+  const userRoleName = userSession?.role.name;
+  const visibleNavLinks = navLinks.filter(link => !link.roles || (userRoleName && link.roles.includes(userRoleName)));
+  const visibleAdminLinks = adminLinks.filter(link => !link.roles || (userRoleName && link.roles.includes(userRoleName)));
 
 
   return (
@@ -70,7 +79,7 @@ export function AppSidebar({ navTranslations }: { navTranslations: any }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
-          {visibleAdminLinks.length > 0 && userRole === 'super_admin' && (
+          {visibleAdminLinks.length > 0 && userRoleName === 'Super Admin' && (
             <>
               <SidebarSeparator />
               {visibleAdminLinks.map((link) => (

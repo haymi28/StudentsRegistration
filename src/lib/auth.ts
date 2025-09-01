@@ -5,16 +5,18 @@ import { cookies } from 'next/headers';
 import { getUserByUsername } from './data';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { User } from '@prisma/client';
+import { User, Role } from '@prisma/client';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const COOKIE_NAME = 'session';
+
+type UserWithRole = User & { role: Role };
 
 export async function signIn(credentials: { username: string; password: string }): Promise<{ success: boolean; error?: string; user?: any }> {
   try {
     const user = await getUserByUsername(credentials.username);
 
-    if (!user) {
+    if (!user || !user.isActive) {
       return { success: false, error: 'Invalid username or password' };
     }
 
@@ -51,7 +53,7 @@ export async function signOut() {
   // Also clear relevant local storage on sign out
 }
 
-export async function getServerSession(): Promise<{ user: Omit<User, 'password'> } | null> {
+export async function getServerSession(): Promise<{ user: Omit<UserWithRole, 'password'> } | null> {
   const cookieStore = cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -60,7 +62,7 @@ export async function getServerSession(): Promise<{ user: Omit<User, 'password'>
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as Omit<User, 'password'>;
+    const decoded = jwt.verify(token, JWT_SECRET) as Omit<UserWithRole, 'password'>;
     return { user: decoded };
   } catch (error) {
     // Token is invalid or expired

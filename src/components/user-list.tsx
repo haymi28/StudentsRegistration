@@ -28,12 +28,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Edit, Trash2, MoreHorizontal, Loader2, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { User } from '@prisma/client';
-import { UserRole } from '@/lib/constants';
+import { User, Role } from '@prisma/client';
 import { deleteUser } from '@/lib/data';
 
+type UserWithRole = User & { role: Role };
+
 interface UserListProps {
-  users: User[];
+  users: UserWithRole[];
   translations: any;
 }
 
@@ -119,7 +120,7 @@ export function UserList({ users, translations }: UserListProps) {
                     <TableCell className="font-medium">{user.displayName}</TableCell>
                     <TableCell>{user.username}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{translations.roles[user.role as UserRole] || user.role}</Badge>
+                      <Badge variant="outline">{user.role.name}</Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant={user.isActive ? 'secondary' : 'destructive'}>
@@ -129,7 +130,7 @@ export function UserList({ users, translations }: UserListProps) {
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0" disabled={user.username === 'superadmin'}>
+                          <Button variant="ghost" className="h-8 w-8 p-0" disabled={user.role.name === 'Super Admin'}>
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>

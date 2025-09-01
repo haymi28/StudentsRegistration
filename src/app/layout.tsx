@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { PT_Sans, Noto_Sans_Ethiopic } from "next/font/google";
 import "./globals.css";
@@ -35,12 +36,14 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession();
   const isAuthenticated = !!session;
-  const t = await getTranslations();
+  const { t } = await getTranslations();
 
   const navTranslations = {
     students: t('nav.students'),
     newStudent: t('nav.newStudent'),
+    classManagement: t('nav.classManagement'),
     userManagement: t('nav.userManagement'),
+    roleManagement: t('nav.roleManagement'),
     import: t('nav.import'),
     export: t('nav.export'),
     account: t('nav.account'),

@@ -1,3 +1,4 @@
+
 import 'server-only';
 import { cookies } from 'next/headers';
 
@@ -15,7 +16,7 @@ export const getTranslations = async () => {
   const locale = cookieStore.get('locale')?.value || 'am';
   const dictionary = await dictionaries[locale]();
 
-  return (key: string, params?: Record<string, string | number>): string => {
+  const t = (key: string, params?: Record<string, string | number>): string => {
     let translation = getNestedTranslation(dictionary, key) || key;
     if (params) {
       Object.keys(params).forEach((paramKey) => {
@@ -23,5 +24,7 @@ export const getTranslations = async () => {
       });
     }
     return translation;
-  }
+  };
+
+  return { t, translations: dictionary };
 };

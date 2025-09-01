@@ -2,16 +2,13 @@
 'use client';
 
 import { z } from 'zod';
-import { UserRole } from '../constants';
 
 type TFunction = (key: string, params?: Record<string, string | number>) => string;
-
-const roles: [UserRole, ...UserRole[]] = ['super_admin', 'admin', 'teacher'];
 
 const baseUserSchema = (t: TFunction) => z.object({
   displayName: z.string().min(2, { message: t('validation.required', { field: t('users.form.label.displayName') }) }),
   username: z.string().min(3, { message: t('validation.min', { field: t('users.form.label.username'), length: '3' }) }),
-  role: z.enum(roles, { required_error: t('validation.required', { field: t('users.form.label.role') }) }),
+  roleId: z.string({ required_error: t('validation.required', { field: t('users.form.label.role') }) }),
   isActive: z.boolean().default(true),
 });
 

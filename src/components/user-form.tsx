@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,23 +14,27 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useRouter } from 'next/navigation';
-import { User } from '@prisma/client';
+import { User, Role } from '@prisma/client';
 import { getCreateUserSchema, getUpdateUserSchema } from '@/lib/validations/user';
-import { createUser, updateUser } from '@/lib/data';
-import { UserRole } from '@/lib/constants';
+import { createUser, updateUser, getRoles } from '@/lib/data';
 
 type UserFormValues = z.infer<ReturnType<typeof getCreateUserSchema>>;
 
 interface UserFormProps {
-  userToEdit?: User;
+  userToEdit?: User & { role: Role };
   translations: any;
 }
 
 export function UserForm({ userToEdit, translations }: UserFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [roles, setRoles] = useState<Role[]>([]);
   const router = useRouter();
   const isEditMode = !!userToEdit;
+
+  useEffect(() => {
+    getRoles().then(setRoles);
+  }, []);
 
   const validationSchema = useMemo(() => {
     return isEditMode ? getUpdateUserSchema(translations.t) : getCreateUserSchema(translations.t);
@@ -42,7 +46,7 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
       ? {
           displayName: userToEdit.displayName,
           username: userToEdit.username,
-          role: userToEdit.role as UserRole,
+          roleId: userToEdit.roleId,
           isActive: userToEdit.isActive,
           password: '',
           confirmPassword: '',
@@ -50,7 +54,7 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
       : {
           displayName: '',
           username: '',
-          role: undefined,
+          roleId: undefined,
           isActive: true,
           password: '',
           confirmPassword: '',
@@ -86,11 +90,6 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
     }
   }
 
-  const roleOptions = useMemo(() => Object.entries(translations.roles).map(([key, value]) => ({
-      value: key,
-      label: value,
-  })), [translations.roles]);
-
   return (
     <Card className="w-full shadow-lg">
       <Form {...form}>
@@ -124,13 +123,13 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="role" render={({ field }) => (
+                <FormField control={form.control} name="roleId" render={({ field }) => (
                     <FormItem>
                         <FormLabel>{translations.labels.role}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} disabled={userToEdit?.username === 'superadmin'}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={userToEdit?.role.name === 'Super Admin'}>
                             <FormControl><SelectTrigger><SelectValue placeholder={translations.placeholders.selectRole} /></SelectTrigger></FormControl>
                             <SelectContent>
-                                {roleOptions.map(option => <SelectItem key={option.value} value={option.value}>{option.label as any}</SelectItem>)}
+                                {roles.map(role => <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -149,7 +148,7 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
                                 <Switch
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
-                                    disabled={userToEdit?.username === 'superadmin'}
+                                    disabled={userToEdit?.role.name === 'Super Admin'}
                                 />
                             </FormControl>
                         </FormItem>

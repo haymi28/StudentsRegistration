@@ -8,6 +8,7 @@
         "attendance": "የተማሪዎች ክትትል",
         "userManagement": "የተጠቃሚ አስተዳደር",
         "classManagement": "የክፍል አስተዳደር",
+        "roleManagement": "የሚና አስተዳደር",
         "account": "የኔ መለያ",
         "logout": "ውጣ",
         "language": "ቋንቋ"
@@ -287,11 +288,57 @@
             "description": "ይህ ክፍል {name}ን በቋሚነት ይሰርዛል። ይህ ድርጊት ሊቀለበስ አይችልም።",
             "descriptionWithStudents": "ተማሪዎች የተመደቡበትን ክፍል መሰረዝ አይችሉም። እባክዎ መጀመሪያ ተማሪዎቹን ወደ ሌላ ክፍል ያስተላልፉ።",
             "cancel": "ተመለስ",
-            "confirm": "አዎ፣ ሰርዝ"
+            "confirm": "አዎ، ሰርዝ"
         },
         "deleteSuccess": {
             "title": "ክፍል ተሰርዟል!",
             "description": "ክፍል {name} በተሳካ ሁኔታ ተሰርዟል።"
+        }
+    },
+    "roles": {
+        "title": "የሚና አስተዳደር",
+        "description": "የስርዓት ሚናዎችን እና ፈቃዶቻቸውን ይግለጹ።",
+        "createButton": "ሚና ፍጠር",
+        "noRoles": "ምንም ሚናዎች አልተገኙም።",
+        "form": {
+            "createTitle": "አዲስ ሚና ፍጠር",
+            "createDescription": "አዲስ ሚና ይግለጹ እና ፈቃዶችን ይመድቡ።",
+            "editTitle": "ሚናን አስተካክል",
+            "editDescription": "የሚናውን ስም፣ መግለጫ እና ፈቃዶች ያዘምኑ።",
+            "label": {
+                "name": "የሚና ስም",
+                "description": "መግለጫ",
+                "permissions": "ፈቃዶች"
+            },
+            "placeholder": {
+                "name": "ለምሳሌ፦ ይዘት አርታዒ",
+                "description": "የዚህን ሚና አላማ በአጭሩ ይግለጹ"
+            },
+            "createSuccess": {
+                "title": "ሚና ተፈጥሯል!",
+                "description": "ሚና {name} በተሳካ ሁኔታ ተፈጥሯል።"
+            },
+            "updateSuccess": {
+                "title": "ሚና ዘምኗል!",
+                "description": "ሚና {name} በተሳካ ሁኔታ ዘምኗል።"
+            }
+        },
+        "table": {
+            "name": "የሚና ስም",
+            "description": "መግለጫ",
+            "usersCount": "የተጠቃሚዎች ብዛት",
+            "actions": "ድርጊቶች"
+        },
+        "deleteDialog": {
+            "title": "ይህን ሚና ለመሰረዝ እርግጠኛ ነዎት?",
+            "description": "ይህ {name}ን በቋሚነት ይሰርዛል። ይህ ድርጊት ሊቀለበስ አይችልም።",
+            "descriptionWithUsers": "ተጠቃሚዎች የተመደቡበትን ሚና መሰረዝ አይችሉም። እባክዎ መጀመሪያ የተመደቡትን ተጠቃሚዎች ያስወግዱ።",
+            "cancel": "ተመለስ",
+            "confirm": "አዎ، ሰርዝ"
+        },
+        "deleteSuccess": {
+            "title": "ሚና ተሰርዟል!",
+            "description": "ሚና {name} በተሳካ ሁኔታ ተሰርዟል።"
         }
     },
     "account": {
@@ -308,7 +355,7 @@
         "currentPassword": "የአሁኑ የይለፍ ቃል",
         "newPassword": "አዲስ የይለፍ ቃል",
         "confirmPassword": "አዲሱን የይለፍ ቃል ያረጋግጡ",
-        "changePasswordButton": "የይለፍ ቃል ቀይር",
+        "changePasswordButton": "የይለፍ ቃል ቀይр",
         "changePasswordSuccessTitle": "የይለፍ ቃል ተቀይሯል",
         "changePasswordSuccessDescription": "የይለፍ ቃልዎ በተሳካ ሁኔታ ተዘምኗል።"
     },
@@ -328,11 +375,6 @@
             "female": "ሴት"
         },
         "currentPasswordIncorrect": "የአሁኑ የይለፍ ቃል ትክክል አይደለም።"
-    },
-    "roles": {
-        "super_admin": "ዋና አስተዳዳሪ",
-        "admin": "አስተዳዳሪ",
-        "teacher": "መምህር"
     },
     "common": {
         "error": "ስህተት",
