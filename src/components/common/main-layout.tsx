@@ -1,26 +1,26 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
+import { useLocale } from '@/contexts/locale-provider';
 
-// Routes that do not require authentication
-const publicRoutes = ['/', '/login'];
 
 export function MainLayout({ 
     children,
-    isAuthenticated,
-    navTranslations
+    isAuthenticated
 }: { 
     children: React.ReactNode,
-    isAuthenticated: boolean,
-    navTranslations: any
+    isAuthenticated: boolean
 }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const { t } = useLocale();
+
+  const publicRoutes = useMemo(() => ['/', '/login'], []);
 
   useEffect(() => {
     setIsClient(true);
@@ -31,29 +31,41 @@ export function MainLayout({
 
     const isPublicPage = publicRoutes.includes(pathname);
 
-    // If user is authenticated and on a public page, redirect to students page
     if (isAuthenticated && isPublicPage) {
         router.replace('/students');
     }
 
-    // If user is not authenticated and on a protected page, redirect to login
     if (!isAuthenticated && !isPublicPage) {
         router.replace('/');
     }
 
-  }, [pathname, isAuthenticated, router, isClient]);
+  }, [pathname, isAuthenticated, router, isClient, publicRoutes]);
+
+  const navTranslations = {
+    students: t('nav.students'),
+    newStudent: t('nav.newStudent'),
+    classManagement: t('nav.classManagement'),
+    userManagement: t('nav.userManagement'),
+    roleManagement: t('nav.roleManagement'),
+    import: t('nav.import'),
+    export: t('nav.export'),
+    account: t('nav.account'),
+    logout: t('nav.logout'),
+    language: t('nav.language')
+  }
 
   if (!isClient) {
-    // Render nothing or a loading spinner on the server to avoid hydration mismatches
     return null;
   }
   
-  if (!isAuthenticated) {
-    // Only render children for unauthenticated users (i.e., the login page)
+  if (!isAuthenticated && publicRoutes.includes(pathname)) {
     return <>{children}</>;
   }
 
-  // Render the full layout for authenticated users
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
       <SidebarProvider>
         <AppSidebar navTranslations={navTranslations} />
