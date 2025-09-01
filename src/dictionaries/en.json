@@ -226,10 +226,8 @@
                 "title": "User Created!",
                 "description": "User {username} has been successfully created."
             },
-            "updateSuccess": {
-                "title": "User Updated!",
-                "description": "User {username} has been successfully updated."
-            }
+            "updateSuccess": "User Updated!",
+            "updateSuccessDescription": "User {username} has been successfully updated."
         },
         "table": {
             "displayName": "Display Name",

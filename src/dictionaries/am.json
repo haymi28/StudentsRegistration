@@ -226,10 +226,8 @@
                 "title": "ተጠቃሚ ተፈጥሯል!",
                 "description": "ተጠቃሚ {username} በተሳካ ሁኔታ ተፈጥሯል።"
             },
-            "updateSuccess": {
-                "title": "ተጠቃሚ ዘምኗል!",
-                "description": "ተጠቃሚ {username} በተሳካ ሁኔታ ዘምኗል።"
-            }
+            "updateSuccess": "ተጠቃሚ ዘምኗል!",
+            "updateSuccessDescription": "ተጠቃሚ {username} በተሳካ ሁኔታ ዘምኗል።"
         },
         "table": {
             "displayName": "የሚታይ ስም",

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { LocaleProvider } from "@/contexts/locale-provider";
 import { MainLayout } from "@/components/common/main-layout";
 import { getServerSession } from "@/lib/auth";
+import { getTranslations } from "@/lib/i18n";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -34,6 +35,18 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession();
   const isAuthenticated = !!session;
+  const t = await getTranslations();
+
+  const navTranslations = {
+    students: t('nav.students'),
+    newStudent: t('nav.newStudent'),
+    userManagement: t('nav.userManagement'),
+    import: t('nav.import'),
+    export: t('nav.export'),
+    account: t('nav.account'),
+    logout: t('nav.logout'),
+    language: t('nav.language')
+  }
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -41,7 +54,7 @@ export default async function RootLayout({
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable, notoSansEthiopic.variable)}>
         <LocaleProvider>
-            <MainLayout isAuthenticated={isAuthenticated}>
+            <MainLayout isAuthenticated={isAuthenticated} navTranslations={navTranslations}>
               {children}
             </MainLayout>
           <Toaster />

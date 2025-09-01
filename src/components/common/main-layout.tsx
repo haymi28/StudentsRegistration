@@ -11,10 +11,12 @@ const publicRoutes = ['/', '/login'];
 
 export function MainLayout({ 
     children,
-    isAuthenticated
+    isAuthenticated,
+    navTranslations
 }: { 
     children: React.ReactNode,
-    isAuthenticated: boolean
+    isAuthenticated: boolean,
+    navTranslations: any
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -54,7 +56,7 @@ export function MainLayout({
   // Render the full layout for authenticated users
   return (
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar navTranslations={navTranslations} />
         <SidebarInset>
           <Header />
           <main className="flex-1 overflow-y-auto bg-muted/30 pt-14 sm:pt-0">
