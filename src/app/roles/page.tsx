@@ -4,6 +4,7 @@ import { getServerSession } from '@/lib/auth';
 import { getRoles } from '@/lib/data';
 import { getTranslator } from '@/lib/i18n';
 import { RoleList } from '@/components/role-list';
+import { MainLayout } from '@/components/common/main-layout';
 
 export default async function RolesPage() {
   const session = await getServerSession();
@@ -44,8 +45,10 @@ export default async function RolesPage() {
   };
 
   return (
-    <div className="container py-8 flex flex-col items-center">
-      <RoleList roles={roles} translations={translations} />
-    </div>
+    <MainLayout isAuthenticated={!!session}>
+        <div className="container py-8 flex flex-col items-center">
+        <RoleList roles={roles} translations={translations} />
+        </div>
+    </MainLayout>
   );
 }

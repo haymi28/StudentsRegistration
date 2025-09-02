@@ -4,6 +4,7 @@ import { getServerSession } from '@/lib/auth';
 import { getClasses } from '@/lib/data';
 import { getTranslator } from '@/lib/i18n';
 import { ClassList } from '@/components/class-list';
+import { MainLayout } from '@/components/common/main-layout';
 
 export default async function ClassesPage() {
   const session = await getServerSession();
@@ -44,8 +45,10 @@ export default async function ClassesPage() {
   };
 
   return (
-    <div className="container py-8 flex flex-col items-center">
-      <ClassList classes={classes} translations={translations} />
-    </div>
+    <MainLayout isAuthenticated={!!session}>
+        <div className="container py-8 flex flex-col items-center">
+        <ClassList classes={classes} translations={translations} />
+        </div>
+    </MainLayout>
   );
 }

@@ -6,11 +6,13 @@ import { useLocale } from '@/contexts/locale-provider';
 import { UserRole } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { MainLayout } from '@/components/common/main-layout';
 
 export default function ImportPage() {
   const router = useRouter();
   const { t } = useLocale();
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const role = localStorage.getItem('user_role') as UserRole;
@@ -18,6 +20,8 @@ export default function ImportPage() {
       router.replace('/students');
     }
     setUserRole(role);
+    const sessionToken = document.cookie.includes('session=');
+    setIsAuthenticated(sessionToken);
   }, [router]);
   
   if (userRole !== 'super_admin') {
@@ -25,14 +29,16 @@ export default function ImportPage() {
   }
 
   return (
-    <div className="container py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold font-headline">{t('import.pageTitle')}</h1>
-          <p className="text-muted-foreground">{t('import.pageDescription')}</p>
+    <MainLayout isAuthenticated={isAuthenticated}>
+        <div className="container py-8">
+        <div className="max-w-4xl mx-auto">
+            <div className="mb-8 text-center">
+            <h1 className="text-3xl font-bold font-headline">{t('import.pageTitle')}</h1>
+            <p className="text-muted-foreground">{t('import.pageDescription')}</p>
+            </div>
+            <BulkImportForm />
         </div>
-        <BulkImportForm />
-      </div>
-    </div>
+        </div>
+    </MainLayout>
   );
 }

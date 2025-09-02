@@ -7,19 +7,22 @@ import { redirect } from 'next/navigation';
 import { ExportStudentClient } from '@/components/export-student-client';
 import { useEffect, useState } from 'react';
 import { Student } from '@prisma/client';
+import { MainLayout } from '@/components/common/main-layout';
 
 
 export default function ExportStudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   useEffect(() => {
     const checkAuthAndFetch = async () => {
         const session = await getServerSession();
-        if (!session || session.user.role !== 'super_admin') {
+        setIsAuthenticated(!!session);
+        if (!session || session.user.role.name !== 'Super Admin') {
             redirect('/students');
         } else {
-            const studentData = await getStudents('super_admin');
+            const studentData = await getStudents(session.user.id, session.user.role);
             setStudents(studentData);
         }
         setLoading(false);
@@ -32,8 +35,10 @@ export default function ExportStudentsPage() {
   }
 
   return (
-    <div className="container py-8">
-      <ExportStudentClient students={students} />
-    </div>
+    <MainLayout isAuthenticated={isAuthenticated}>
+        <div className="container py-8">
+        <ExportStudentClient students={students} />
+        </div>
+    </MainLayout>
   );
 }

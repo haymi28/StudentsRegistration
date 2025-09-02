@@ -4,6 +4,7 @@ import { getServerSession } from '@/lib/auth';
 import { getStudents, getUsers } from '@/lib/data';
 import { getTranslator } from '@/lib/i18n';
 import { redirect } from 'next/navigation';
+import { MainLayout } from '@/components/common/main-layout';
 
 export default async function StudentsPage() {
   const session = await getServerSession();
@@ -48,13 +49,15 @@ export default async function StudentsPage() {
   };
 
   return (
-    <div className="container py-8 flex flex-col items-center">
-       <StudentList 
-            students={students as any} 
-            users={users} 
-            session={session}
-            translations={translations}
-        />
-    </div>
+    <MainLayout isAuthenticated={!!session}>
+        <div className="container py-8 flex flex-col items-center">
+        <StudentList 
+                students={students as any} 
+                users={users} 
+                session={session}
+                translations={translations}
+            />
+        </div>
+    </MainLayout>
   );
 }

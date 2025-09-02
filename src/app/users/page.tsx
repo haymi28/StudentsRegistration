@@ -4,6 +4,7 @@ import { getServerSession } from '@/lib/auth';
 import { getUsers } from '@/lib/data';
 import { UserList } from '@/components/user-list';
 import { getTranslator } from '@/lib/i18n';
+import { MainLayout } from '@/components/common/main-layout';
 
 export default async function UsersPage() {
   const session = await getServerSession();
@@ -54,8 +55,10 @@ export default async function UsersPage() {
   };
 
   return (
-    <div className="container py-8 flex flex-col items-center">
-      <UserList users={users} translations={translations} />
-    </div>
+    <MainLayout isAuthenticated={!!session}>
+        <div className="container py-8 flex flex-col items-center">
+        <UserList users={users} translations={translations} />
+        </div>
+    </MainLayout>
   );
 }

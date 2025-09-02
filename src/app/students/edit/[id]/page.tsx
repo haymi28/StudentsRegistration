@@ -1,8 +1,12 @@
+
 import { getStudentById } from '@/lib/data';
 import { StudentRegistrationForm } from '@/components/student-registration-form';
 import { EditStudentClient } from '@/components/edit-student-client';
+import { getServerSession } from '@/lib/auth';
+import { MainLayout } from '@/components/common/main-layout';
 
 export default async function EditStudentPage({ params }: { params: { id: string }}) {
+  const session = await getServerSession();
   const student = await getStudentById(params.id);
 
   if (!student) {
@@ -14,5 +18,9 @@ export default async function EditStudentPage({ params }: { params: { id: string
     );
   }
 
-  return <EditStudentClient student={student} />;
+  return (
+    <MainLayout isAuthenticated={!!session}>
+        <EditStudentClient student={student} />
+    </MainLayout>
+    );
 }

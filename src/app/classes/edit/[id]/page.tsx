@@ -4,6 +4,7 @@ import { getServerSession } from '@/lib/auth';
 import { getClassById, getUsers } from '@/lib/data';
 import { getTranslator } from '@/lib/i18n';
 import { ClassForm } from '@/components/class-form';
+import { MainLayout } from '@/components/common/main-layout';
 
 export default async function EditClassPage({ params }: { params: { id: string } }) {
   const session = await getServerSession();
@@ -46,14 +47,16 @@ export default async function EditClassPage({ params }: { params: { id: string }
   };
 
   return (
-    <div className="container py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold font-headline">{translations.editTitle}</h1>
-          <p className="text-muted-foreground">{translations.editDescription}</p>
+    <MainLayout isAuthenticated={!!session}>
+        <div className="container py-8">
+        <div className="max-w-4xl mx-auto">
+            <div className="mb-8 text-center">
+            <h1 className="text-3xl font-bold font-headline">{translations.editTitle}</h1>
+            <p className="text-muted-foreground">{translations.editDescription}</p>
+            </div>
+            <ClassForm classToEdit={classToEdit} users={users} translations={translations} />
         </div>
-        <ClassForm classToEdit={classToEdit} users={users} translations={translations} />
-      </div>
-    </div>
+        </div>
+    </MainLayout>
   );
 }

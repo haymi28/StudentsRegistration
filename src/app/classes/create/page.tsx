@@ -4,6 +4,7 @@ import { getServerSession } from '@/lib/auth';
 import { getUsers } from '@/lib/data';
 import { getTranslator } from '@/lib/i18n';
 import { ClassForm } from '@/components/class-form';
+import { MainLayout } from '@/components/common/main-layout';
 
 export default async function CreateClassPage() {
   const session = await getServerSession();
@@ -36,14 +37,16 @@ export default async function CreateClassPage() {
   };
 
   return (
-    <div className="container py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold font-headline">{translations.createTitle}</h1>
-          <p className="text-muted-foreground">{translations.createDescription}</p>
+    <MainLayout isAuthenticated={!!session}>
+        <div className="container py-8">
+        <div className="max-w-4xl mx-auto">
+            <div className="mb-8 text-center">
+            <h1 className="text-3xl font-bold font-headline">{translations.createTitle}</h1>
+            <p className="text-muted-foreground">{translations.createDescription}</p>
+            </div>
+            <ClassForm users={users} translations={translations} />
         </div>
-        <ClassForm users={users} translations={translations} />
-      </div>
-    </div>
+        </div>
+    </MainLayout>
   );
 }
