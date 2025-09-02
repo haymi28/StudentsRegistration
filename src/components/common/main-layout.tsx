@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -20,7 +21,10 @@ export function MainLayout({
   const [isClient, setIsClient] = useState(false);
   const { t } = useLocale();
 
-  const publicRoutes = useMemo(() => ['/', '/login'], []);
+  const publicRoutes = useMemo(() => ['/'], []);
+  const authRoutes = useMemo(() => ['/login'], []);
+  const allPublicRoutes = useMemo(() => [...publicRoutes, ...authRoutes], [publicRoutes, authRoutes]);
+
 
   useEffect(() => {
     setIsClient(true);
@@ -29,17 +33,18 @@ export function MainLayout({
   useEffect(() => {
     if (!isClient) return;
 
-    const isPublicPage = publicRoutes.includes(pathname);
+    const isAuthPage = authRoutes.includes(pathname);
+    const isProtectedPage = !allPublicRoutes.includes(pathname);
 
-    if (isAuthenticated && isPublicPage) {
+    if (isAuthenticated && isAuthPage) {
         router.replace('/students');
     }
 
-    if (!isAuthenticated && !isPublicPage) {
+    if (!isAuthenticated && isProtectedPage) {
         router.replace('/');
     }
 
-  }, [pathname, isAuthenticated, router, isClient, publicRoutes]);
+  }, [pathname, isAuthenticated, router, isClient, allPublicRoutes, authRoutes]);
 
   const navTranslations = {
     students: t('nav.students'),
@@ -58,7 +63,9 @@ export function MainLayout({
     return null;
   }
   
-  if (!isAuthenticated && publicRoutes.includes(pathname)) {
+  const isPublicPage = allPublicRoutes.includes(pathname);
+
+  if (!isAuthenticated && isPublicPage) {
     return <>{children}</>;
   }
 
