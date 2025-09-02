@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import { User, Role } from '@prisma/client';
 import { getCreateUserSchema, getUpdateUserSchema } from '@/lib/validations/user';
 import { createUser, updateUser, getRoles } from '@/lib/data';
+import { useLocale } from '@/contexts/locale-provider';
 
 type UserFormValues = z.infer<ReturnType<typeof getCreateUserSchema>>;
 
@@ -31,7 +32,7 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
   const [roles, setRoles] = useState<Role[]>([]);
   const router = useRouter();
   const isEditMode = !!userToEdit;
-  const { t } = translations;
+  const { t } = useLocale();
 
   useEffect(() => {
     getRoles().then(setRoles);
@@ -66,8 +67,8 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
     setIsLoading(true);
     try {
       const successDescription = isEditMode 
-        ? translations.success.description.replace('{username}', data.username)
-        : translations.success.description.replace('{username}', data.username);
+        ? t('users.form.updateSuccess.description', { username: data.username })
+        : t('users.form.createSuccess.description', { username: data.username });
 
       if (isEditMode) {
         await updateUser(userToEdit.id, data);
@@ -76,7 +77,7 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
       }
 
       toast({
-          title: translations.success.title,
+          title: isEditMode ? t('users.form.updateSuccess.title') : t('users.form.createSuccess.title'),
           description: successDescription,
       });
 
@@ -111,7 +112,7 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
                 <FormField control={form.control} name="password" render={({ field }) => (
                     <FormItem>
                         <FormLabel>{translations.labels.password}</FormLabel>
-                        <FormControl><Input type="password" {...field} placeholder={isEditMode ? translations.placeholders.passwordOptional : ''} /></FormControl>
+                        <FormControl><Input type="password" {...field} placeholder={isEditMode ? translations.placeholders.password : ''} /></FormControl>
                         {isEditMode && <FormDescription>{translations.placeholders.password}</FormDescription>}
                         <FormMessage />
                     </FormItem>

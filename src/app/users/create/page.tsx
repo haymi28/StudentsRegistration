@@ -37,11 +37,7 @@ export default async function CreateUserPage() {
         success: {
             title: t('users.form.createSuccess.title'),
             description: t('users.form.createSuccess.description'),
-        },
-        errors: {
-            passwordMismatch: t('validation.passwordMismatch'),
-        },
-        t,
+        }
     };
 
     return (

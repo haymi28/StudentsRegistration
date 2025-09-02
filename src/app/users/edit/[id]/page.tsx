@@ -48,11 +48,7 @@ export default async function EditUserPage({ params }: { params: { id: string } 
         success: {
             title: t('users.form.updateSuccess.title'),
             description: t('users.form.updateSuccess.description'),
-        },
-        errors: {
-            passwordMismatch: t('validation.passwordMismatch'),
-        },
-        t,
+        }
     };
 
     return (

@@ -36,23 +36,17 @@ export default async function UsersPage() {
     deleteDialog: {
       title: t('users.deleteDialog.title'),
       description: t('users.deleteDialog.description'),
-      cancel: t('users.deleteDialog.cancel'),
-      confirm: t('users.deleteDialog.confirm'),
+      cancel: t('students.deleteDialog.cancel'),
+      confirm: t('students.deleteDialog.confirm'),
     },
     deleteSuccess: {
         title: t('users.deleteSuccess.title'),
         description: t('users.deleteSuccess.description')
     },
-    roles: {
-      'Super Admin': t('roles.super_admin'),
-      'Admin': t('roles.admin'),
-      'Teacher': t('roles.teacher'),
-    },
     status: {
         active: t('users.form.label.active'),
         inactive: t('users.form.label.inactiveShort')
     },
-    t,
   };
 
   return (

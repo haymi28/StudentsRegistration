@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2, MoreHorizontal, Loader2, ShieldCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLocale } from '@/contexts/locale-provider';
 import { Role } from '@prisma/client';
 import { deleteRole } from '@/lib/data';
 
@@ -42,7 +43,7 @@ export function RoleList({ roles, translations }: RoleListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { t } = translations;
+  const { t } = useLocale();
 
   const handleDeleteRole = async () => {
     if (!roleToDelete) return;

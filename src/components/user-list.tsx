@@ -28,6 +28,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Edit, Trash2, MoreHorizontal, Loader2, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLocale } from '@/contexts/locale-provider';
 import { User, Role } from '@prisma/client';
 import { deleteUser } from '@/lib/data';
 
@@ -44,7 +45,7 @@ export function UserList({ users, translations }: UserListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { t } = translations;
+  const { t } = useLocale();
 
   const filteredUsers = useMemo(() => {
     if (!searchQuery) return users;

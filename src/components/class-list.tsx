@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   DropdownMenu,
@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2, MoreHorizontal, Loader2, Home } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLocale } from '@/contexts/locale-provider';
 import { Class, User } from '@prisma/client';
 import { deleteClass } from '@/lib/data';
 
@@ -43,7 +44,7 @@ export function ClassList({ classes, translations }: ClassListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { t } = translations;
+  const { t } = useLocale();
 
   const handleDeleteClass = async () => {
     if (!classToDelete) return;
