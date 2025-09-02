@@ -349,7 +349,7 @@
         "displayNamePlaceholder": "የማሳያ ስምዎን ያስገቡ",
         "updateProfileSuccessTitle": "መገለጫ ተዘምኗል",
         "updateProfileSuccessDescription": "የእርስዎ የማሳያ ስም በተሳካ ሁኔታ ተዘምኗል።",
-        "changePasswordTitle": "የይለፍ ቃል ቀይር",
+        "changePasswordTitle": "የይለፍ ቃል ቀይр",
         "changePasswordDescription": "አዲስ የይለፍ ቃል ለማዘጋጀት ያረጋግጡ።",
         "currentPassword": "የአሁኑ የይለፍ ቃል",
         "newPassword": "አዲስ የይለፍ ቃል",
@@ -373,6 +373,7 @@
     "common": {
         "error": "ስህተት",
         "errorDescription": "አንድ ያልተጠበቀ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።",
-        "userNotFound": "ተጠቃሚ አልተገኘም። እባክዎ እንደገና ይግቡ።"
+        "userNotFound": "ተጠቃሚ አልተገኘም። እባክዎ እንደገና ይግቡ።",
+        "notAssigned": "አልተመደበም"
     }
 }

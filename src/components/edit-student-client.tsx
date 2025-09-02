@@ -1,15 +1,18 @@
+
 'use client';
 
 import { StudentRegistrationForm } from '@/components/student-registration-form';
-import { useLocale } from '@/contexts/locale-provider';
-import { Student } from '@prisma/client';
+import { Student, Class } from '@prisma/client';
+import { TFunction } from '@/contexts/locale-provider';
 
 interface EditStudentClientProps {
   student: Student;
+  classes: Class[];
+  session: any;
+  t: TFunction;
 }
 
-export function EditStudentClient({ student }: EditStudentClientProps) {
-  const { t } = useLocale();
+export function EditStudentClient({ student, classes, session, t }: EditStudentClientProps) {
 
   return (
     <div className="container py-8">
@@ -18,7 +21,12 @@ export function EditStudentClient({ student }: EditStudentClientProps) {
           <h1 className="text-3xl font-bold font-headline">{t('register.editPageTitle')}</h1>
           <p className="text-muted-foreground">{t('register.editPageDescription')}</p>
         </div>
-        <StudentRegistrationForm studentToEdit={student} />
+        <StudentRegistrationForm 
+          studentToEdit={student} 
+          classes={classes} 
+          session={session} 
+          t={t}
+        />
       </div>
     </div>
   );

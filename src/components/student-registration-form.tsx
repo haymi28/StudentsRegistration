@@ -17,26 +17,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Separator } from '@/components/ui/separator';
 import { ImageUpload } from './image-upload';
 import { useRouter } from 'next/navigation';
-import { useLocale } from '@/contexts/locale-provider';
 import { Student, Class } from '@prisma/client';
-import { createStudent, updateStudent, getClasses } from '@/lib/data';
-import { UserRole } from '@/lib/constants';
+import { createStudent, updateStudent } from '@/lib/data';
+import { TFunction } from '@/contexts/locale-provider';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
 interface StudentRegistrationFormProps {
   studentToEdit?: Student;
+  classes: Class[];
+  session: any;
+  t: TFunction;
 }
 
-export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFormProps) {
+export function StudentRegistrationForm({ studentToEdit, classes, session, t }: StudentRegistrationFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
-  const [userClass, setUserClass] = useState<Class | null>(null);
-  const [classes, setClasses] = useState<Class[]>([]);
   const router = useRouter();
   const isEditMode = !!studentToEdit;
-  const { t } = useLocale();
   
   const amharicMonths = useMemo(() => [
     'መስከረም', 'ጥቅምት', 'ኅዳር', 'ታኅሣሥ', 'ጥር', 'የካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜን'
@@ -56,28 +54,15 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     { value: 'ወንድ', label: t('validation.gender.male') },
     { value: 'ሴት', label: t('validation.gender.female') },
   ], [t]);
+
+  const userRole = session.user.role.name;
+  const canChangeClass = userRole === 'Super Admin';
+  const assignedClass = canChangeClass ? null : classes.find(c => c.managerId === session.user.id);
   
-  useEffect(() => {
-    async function fetchInitialData() {
-        const role = localStorage.getItem('user_role') as UserRole | null;
-        const userId = localStorage.getItem('userId');
-        setUserRole(role);
+  const defaultClassId = isEditMode 
+    ? studentToEdit.classId 
+    : (canChangeClass ? '' : (assignedClass?.id || ''));
 
-        const fetchedClasses = await getClasses();
-        setClasses(fetchedClasses);
-        
-        if (role !== 'Super Admin' && userId) {
-            const assignedClass = fetchedClasses.find(c => c.managerId === userId);
-            if(assignedClass) {
-                setUserClass(assignedClass);
-                form.setValue('classId', assignedClass.id);
-            }
-        }
-    }
-    fetchInitialData();
-  }, [isEditMode]);
-
-  const defaultClassId = userRole !== 'Super Admin' ? (userClass?.id || '') : (studentToEdit?.classId || '');
 
   const defaultFormValues = useMemo(() => ({
     photo: '',
@@ -109,6 +94,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     if (studentToEdit) {
       const valuesToReset: any = {
         ...studentToEdit,
+        classId: studentToEdit.classId || '',
         photo: studentToEdit.photo || '',
         baptismalName: studentToEdit.baptismalName || '',
         mothersName: studentToEdit.mothersName || '',
@@ -149,7 +135,10 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
         setBirthYear('');
       }
     } else {
-      form.reset(defaultFormValues);
+      form.reset({
+        ...defaultFormValues,
+        classId: defaultClassId,
+      });
       setJoinDay('');
       setJoinMonth('');
       setJoinYear('');
@@ -157,7 +146,14 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
       setBirthMonth('');
       setBirthYear('');
     }
-  }, [studentToEdit, form, defaultFormValues]);
+  }, [studentToEdit, form, defaultFormValues, defaultClassId]);
+  
+  useEffect(() => {
+    if (!canChangeClass && assignedClass) {
+        form.setValue('classId', assignedClass.id);
+    }
+  }, [canChangeClass, assignedClass, form]);
+
 
   useEffect(() => {
     if (joinDay || joinMonth || joinYear) {
@@ -206,8 +202,6 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
       setIsLoading(false);
     }
   }
-  
-  const canChangeClass = userRole === 'Super Admin';
 
   return (
     <Card className="w-full shadow-lg">
@@ -293,7 +287,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
                            <FormControl>
                              <Input
                                 readOnly
-                                value={userClass?.name || 'Loading...'}
+                                value={assignedClass?.name || t('common.notAssigned')}
                                 className="bg-muted"
                              />
                            </FormControl>
@@ -443,5 +437,3 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     </Card>
   );
 }
-
-    
