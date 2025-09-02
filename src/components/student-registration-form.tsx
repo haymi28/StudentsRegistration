@@ -18,7 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { ImageUpload } from './image-upload';
 import { useRouter } from 'next/navigation';
 import { useLocale } from '@/contexts/locale-provider';
-import { Student, Class, User } from '@prisma/client';
+import { Student, Class } from '@prisma/client';
 import { createStudent, updateStudent, getClasses } from '@/lib/data';
 import { UserRole } from '@/lib/constants';
 
@@ -66,24 +66,25 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
         const fetchedClasses = await getClasses();
         setClasses(fetchedClasses);
         
-        if (role !== 'super_admin' && userId) {
+        if (role !== 'Super Admin' && userId) {
             const assignedClass = fetchedClasses.find(c => c.managerId === userId);
             if(assignedClass) {
                 setUserClass(assignedClass);
+                form.setValue('classId', assignedClass.id);
             }
         }
     }
     fetchInitialData();
-  }, []);
+  }, [isEditMode]);
 
-  const defaultClassId = userRole !== 'super_admin' ? (userClass?.id || '') : '';
+  const defaultClassId = userRole !== 'Super Admin' ? (userClass?.id || '') : (studentToEdit?.classId || '');
 
   const defaultFormValues = useMemo(() => ({
     photo: '',
     registrationNumber: '',
     fullName: '',
     gender: '',
-    classId: defaultClassId || '',
+    classId: defaultClassId,
     baptismalName: '',
     mothersName: '',
     dateOfBirth: '',
@@ -175,13 +176,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
       form.setValue('dateOfBirth', undefined, { shouldValidate: true });
     }
   }, [birthDay, birthMonth, birthYear, form]);
-
-  useEffect(() => {
-    if (!isEditMode && userRole && userRole !== 'super_admin' && userClass) {
-      form.setValue('classId', userClass.id);
-    }
-  }, [userRole, userClass, form, isEditMode]);
-
+  
   async function onSubmit(data: StudentFormValues) {
     setIsLoading(true);
     
@@ -212,7 +207,7 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     }
   }
   
-  const canChangeClass = userRole === 'super_admin';
+  const canChangeClass = userRole === 'Super Admin';
 
   return (
     <Card className="w-full shadow-lg">
@@ -448,3 +443,5 @@ export function StudentRegistrationForm({ studentToEdit }: StudentRegistrationFo
     </Card>
   );
 }
+
+    
