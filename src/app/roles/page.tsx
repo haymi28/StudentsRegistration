@@ -42,6 +42,7 @@ export default async function RolesPage() {
         title: t('roles.deleteSuccess.title'),
         description: t('roles.deleteSuccess.description')
     },
+    t,
   };
 
   return (

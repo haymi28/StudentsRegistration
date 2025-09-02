@@ -51,7 +51,8 @@ export default async function UsersPage() {
     status: {
         active: t('users.form.label.active'),
         inactive: t('users.form.label.inactiveShort')
-    }
+    },
+    t,
   };
 
   return (

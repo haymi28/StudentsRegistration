@@ -31,14 +31,15 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
   const [roles, setRoles] = useState<Role[]>([]);
   const router = useRouter();
   const isEditMode = !!userToEdit;
+  const { t } = translations;
 
   useEffect(() => {
     getRoles().then(setRoles);
   }, []);
 
   const validationSchema = useMemo(() => {
-    return isEditMode ? getUpdateUserSchema(translations.t) : getCreateUserSchema(translations.t);
-  }, [isEditMode, translations.t]);
+    return isEditMode ? getUpdateUserSchema(t) : getCreateUserSchema(t);
+  }, [isEditMode, t]);
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(validationSchema),
@@ -64,19 +65,21 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
   async function onSubmit(data: UserFormValues) {
     setIsLoading(true);
     try {
+      const successDescription = isEditMode 
+        ? translations.success.description.replace('{username}', data.username)
+        : translations.success.description.replace('{username}', data.username);
+
       if (isEditMode) {
         await updateUser(userToEdit.id, data);
-        toast({
-            title: translations.success.title,
-            description: translations.success.description.replace('{username}', data.username),
-        });
       } else {
         await createUser(data);
-        toast({
-            title: translations.success.title,
-            description: translations.success.description.replace('{username}', data.username),
-        });
       }
+
+      toast({
+          title: translations.success.title,
+          description: successDescription,
+      });
+
       router.push('/users');
       router.refresh();
     } catch (error) {

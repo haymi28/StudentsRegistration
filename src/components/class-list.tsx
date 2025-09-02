@@ -43,6 +43,7 @@ export function ClassList({ classes, translations }: ClassListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = translations;
 
   const handleDeleteClass = async () => {
     if (!classToDelete) return;
@@ -51,7 +52,7 @@ export function ClassList({ classes, translations }: ClassListProps) {
       await deleteClass(classToDelete.id);
       toast({
         title: translations.deleteSuccess.title,
-        description: translations.deleteSuccess.description.replace('{name}', classToDelete.name),
+        description: t(translations.deleteSuccess.description, { name: classToDelete.name }),
       });
       setClassToDelete(null);
       router.refresh();
@@ -140,12 +141,11 @@ export function ClassList({ classes, translations }: ClassListProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{translations.deleteDialog.title}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {classToDelete?._count.students > 0
-                ? translations.deleteDialog.descriptionWithStudents
-                : translations.deleteDialog.description.replace('{name}', `<strong>${classToDelete?.name}</strong>`)
-              }
-            </AlertDialogDescription>
+            <AlertDialogDescription dangerouslySetInnerHTML={{
+                __html: classToDelete?._count.students > 0
+                    ? translations.deleteDialog.descriptionWithStudents
+                    : t(translations.deleteDialog.description, { name: `<strong>${classToDelete?.name}</strong>` })
+            }}/>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setClassToDelete(null)}>{translations.deleteDialog.cancel}</AlertDialogCancel>

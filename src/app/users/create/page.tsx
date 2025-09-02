@@ -40,7 +40,8 @@ export default async function CreateUserPage() {
         },
         errors: {
             passwordMismatch: t('validation.passwordMismatch'),
-        }
+        },
+        t,
     };
 
     return (

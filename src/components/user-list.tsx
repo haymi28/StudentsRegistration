@@ -44,6 +44,7 @@ export function UserList({ users, translations }: UserListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = translations;
 
   const filteredUsers = useMemo(() => {
     if (!searchQuery) return users;
@@ -61,7 +62,7 @@ export function UserList({ users, translations }: UserListProps) {
       await deleteUser(userToDelete.id);
       toast({
         title: translations.deleteSuccess.title,
-        description: translations.deleteSuccess.description.replace('{name}', userToDelete.displayName),
+        description: t(translations.deleteSuccess.description, { name: userToDelete.displayName }),
       });
       setUserToDelete(null);
       router.refresh();
@@ -170,7 +171,7 @@ export function UserList({ users, translations }: UserListProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{translations.deleteDialog.title}</AlertDialogTitle>
-            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: translations.deleteDialog.description.replace('{name}', `<strong>${userToDelete?.displayName}</strong>`) }} />
+            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: t(translations.deleteDialog.description, { name: `<strong>${userToDelete?.displayName}</strong>`}) }} />
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setUserToDelete(null)}>{translations.deleteDialog.cancel}</AlertDialogCancel>

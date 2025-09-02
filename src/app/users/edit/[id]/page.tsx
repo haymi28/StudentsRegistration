@@ -51,7 +51,8 @@ export default async function EditUserPage({ params }: { params: { id: string } 
         },
         errors: {
             passwordMismatch: t('validation.passwordMismatch'),
-        }
+        },
+        t,
     };
 
     return (

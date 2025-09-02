@@ -42,6 +42,7 @@ export default async function ClassesPage() {
         title: t('classes.deleteSuccess.title'),
         description: t('classes.deleteSuccess.description')
     },
+    t,
   };
 
   return (

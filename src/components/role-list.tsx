@@ -42,6 +42,7 @@ export function RoleList({ roles, translations }: RoleListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = translations;
 
   const handleDeleteRole = async () => {
     if (!roleToDelete) return;
@@ -50,7 +51,7 @@ export function RoleList({ roles, translations }: RoleListProps) {
       await deleteRole(roleToDelete.id);
       toast({
         title: translations.deleteSuccess.title,
-        description: translations.deleteSuccess.description.replace('{name}', roleToDelete.name),
+        description: t(translations.deleteSuccess.description, { name: roleToDelete.name }),
       });
       setRoleToDelete(null);
       router.refresh();
@@ -139,12 +140,11 @@ export function RoleList({ roles, translations }: RoleListProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{translations.deleteDialog.title}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {roleToDelete?._count.users > 0
+            <AlertDialogDescription dangerouslySetInnerHTML={{
+              __html: roleToDelete?._count.users > 0
                 ? translations.deleteDialog.descriptionWithUsers
-                : translations.deleteDialog.description.replace('{name}', `<strong>${roleToDelete?.name}</strong>`)
-              }
-            </AlertDialogDescription>
+                : t(translations.deleteDialog.description, { name: `<strong>${roleToDelete?.name}</strong>` })
+            }} />
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setRoleToDelete(null)}>{translations.deleteDialog.cancel}</AlertDialogCancel>
