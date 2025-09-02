@@ -20,7 +20,8 @@ const getLocale = async () => {
 
 export const getTranslations = async () => {
   const locale = await getLocale();
-  return dictionaries[locale]();
+  const validLocale = dictionaries[locale] ? locale : 'am';
+  return dictionaries[validLocale]();
 };
 
 export const getTranslator = async (): Promise<TFunction> => {
