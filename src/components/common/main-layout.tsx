@@ -34,7 +34,7 @@ export function MainLayout({
     if (!isClient) return;
 
     const isAuthPage = authRoutes.includes(pathname);
-    const isProtectedPage = !allPublicRoutes.includes(pathname);
+    const isProtectedPage = !allPublicRoutes.includes(pathname) && pathname !== '/register';
 
     if (isAuthenticated && isAuthPage) {
         router.replace('/students');
@@ -69,7 +69,7 @@ export function MainLayout({
     return <>{children}</>;
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && pathname !== '/register') {
     return null;
   }
 
