@@ -19,7 +19,7 @@ import { ImageUpload } from './image-upload';
 import { useRouter } from 'next/navigation';
 import { Student, Class } from '@prisma/client';
 import { createStudent, updateStudent } from '@/lib/data';
-import { TFunction } from '@/contexts/locale-provider';
+import { useLocale } from '@/contexts/locale-provider';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -27,11 +27,11 @@ interface StudentRegistrationFormProps {
   studentToEdit?: Student;
   classes: Class[];
   session: any;
-  t: TFunction;
 }
 
-export function StudentRegistrationForm({ studentToEdit, classes, session, t }: StudentRegistrationFormProps) {
+export function StudentRegistrationForm({ studentToEdit, classes, session }: StudentRegistrationFormProps) {
   const { toast } = useToast();
+  const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEditMode = !!studentToEdit;

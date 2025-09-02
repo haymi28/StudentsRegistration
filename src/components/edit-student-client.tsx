@@ -3,16 +3,16 @@
 
 import { StudentRegistrationForm } from '@/components/student-registration-form';
 import { Student, Class } from '@prisma/client';
-import { TFunction } from '@/contexts/locale-provider';
+import { useLocale } from '@/contexts/locale-provider';
 
 interface EditStudentClientProps {
   student: Student;
   classes: Class[];
   session: any;
-  t: TFunction;
 }
 
-export function EditStudentClient({ student, classes, session, t }: EditStudentClientProps) {
+export function EditStudentClient({ student, classes, session }: EditStudentClientProps) {
+  const { t } = useLocale();
 
   return (
     <div className="container py-8">
@@ -25,7 +25,6 @@ export function EditStudentClient({ student, classes, session, t }: EditStudentC
           studentToEdit={student} 
           classes={classes} 
           session={session} 
-          t={t}
         />
       </div>
     </div>

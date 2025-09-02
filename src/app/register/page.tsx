@@ -26,7 +26,6 @@ export default async function RegisterPage() {
             <StudentRegistrationForm 
               session={session}
               classes={classes} 
-              t={t}
             />
         </div>
         </div>

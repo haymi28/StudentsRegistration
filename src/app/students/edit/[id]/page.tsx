@@ -14,8 +14,7 @@ export default async function EditStudentPage({ params }: { params: { id: string
   
   const student = await getStudentById(params.id);
   const classes = await getClasses();
-  const t = await getTranslator();
-
+  
   if (!student) {
     return (
       <div className="container py-8 text-center">
@@ -27,7 +26,7 @@ export default async function EditStudentPage({ params }: { params: { id: string
 
   return (
     <MainLayout isAuthenticated={!!session}>
-        <EditStudentClient student={student} classes={classes} session={session} t={t} />
+        <EditStudentClient student={student} classes={classes} session={session} />
     </MainLayout>
     );
 }
