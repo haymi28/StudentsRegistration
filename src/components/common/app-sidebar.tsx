@@ -19,16 +19,18 @@ import {
 import { useEffect, useState } from 'react';
 import { signOut } from '@/lib/auth';
 import { Role } from '@prisma/client';
+import { useLocale } from '@/contexts/locale-provider';
 
 interface UserSession {
     id: string;
     role: Role;
 }
 
-export function AppSidebar({ navTranslations }: { navTranslations: any }) {
+export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [userSession, setUserSession] = useState<UserSession | null>(null);
+  const { t } = useLocale();
   
   useEffect(() => {
     const roleString = localStorage.getItem('user_role');
@@ -50,16 +52,16 @@ export function AppSidebar({ navTranslations }: { navTranslations: any }) {
   };
 
   const navLinks = [
-    { href: '/students', label: navTranslations.students, icon: Users },
-    { href: '/register', label: navTranslations.newStudent, icon: UserPlus },
-    { href: '/classes', label: navTranslations.classManagement, icon: Home, roles: ['Super Admin'] },
-    { href: '/users', label: navTranslations.userManagement, icon: Shield, roles: ['Super Admin'] },
-    { href: '/roles', label: navTranslations.roleManagement, icon: ShieldCheck, roles: ['Super Admin'] },
+    { href: '/students', label: t('nav.students'), icon: Users },
+    { href: '/register', label: t('nav.newStudent'), icon: UserPlus },
+    { href: '/classes', label: t('nav.class'), icon: Home, roles: ['Super Admin'] },
+    { href: '/users', label: t('nav.users'), icon: Shield, roles: ['Super Admin'] },
+    { href: '/roles', label: t('nav.role'), icon: ShieldCheck, roles: ['Super Admin'] },
   ];
 
   const adminLinks = [
-    { href: '/students/import', label: navTranslations.import, icon: Upload, roles: ['Super Admin'] },
-    { href: '/students/export', label: navTranslations.export, icon: Download, roles: ['Super Admin'] },
+    { href: '/students/import', label: t('nav.import'), icon: Upload, roles: ['Super Admin'] },
+    { href: '/students/export', label: t('nav.export'), icon: Download, roles: ['Super Admin'] },
   ];
   
   const userRoleName = userSession?.role?.name;
@@ -105,17 +107,17 @@ export function AppSidebar({ navTranslations }: { navTranslations: any }) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname === '/account'} tooltip={navTranslations.account}>
+            <SidebarMenuButton asChild isActive={pathname === '/account'} tooltip={t('nav.account')}>
               <Link href="/account">
                 <User className="h-5 w-5" />
-                <span>{navTranslations.account}</span>
+                <span>{t('nav.account')}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-              <SidebarMenuButton onClick={handleLogout} tooltip={navTranslations.logout}>
+              <SidebarMenuButton onClick={handleLogout} tooltip={t('nav.logout')}>
                   <LogOut className="h-5 w-5" />
-                  <span>{navTranslations.logout}</span>
+                  <span>{t('nav.logout')}</span>
               </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -6,9 +6,9 @@
         "import": "Import",
         "export": "Export",
         "attendance": "Attendance",
-        "userManagement": "User Management",
-        "classManagement": "Class Management",
-        "roleManagement": "Role Management",
+        "users": "Users",
+        "class": "Class",
+        "role": "Role",
         "account": "My Account",
         "logout": "Logout",
         "language": "Language"
@@ -213,7 +213,6 @@
                 "password": "Password",
                 "confirmPassword": "Confirm Password",
                 "role": "Role",
-                "department": "Service Department",
                 "status": "User Status",
                 "active": "Active",
                 "inactive": "The user will not be able to log in.",
@@ -221,16 +220,16 @@
             },
             "placeholder": {
                 "selectRole": "Select a role",
-                "selectDepartment": "Select a department",
-                "password": "Leave blank to keep current password",
                 "passwordOptional": "Leave blank to keep current password"
             },
             "createSuccess": {
                 "title": "User Created!",
                 "description": "User {username} has been successfully created."
             },
-            "updateSuccess": "User Updated!",
-            "updateSuccessDescription": "User {username} has been successfully updated."
+            "updateSuccess": {
+                "title": "User Updated!",
+                "description": "User {username} has been successfully updated."
+            }
         },
         "table": {
             "displayName": "Display Name",
@@ -369,11 +368,6 @@
         "min": "{field} must be at least {length} characters.",
         "invalidNumber": "Invalid number.",
         "passwordMismatch": "Passwords do not match.",
-        "departmentRequired": "Service department is required for this role.",
-        "gender": {
-            "male": "Male",
-            "female": "Female"
-        },
         "currentPasswordIncorrect": "Current password is incorrect."
     },
     "common": {

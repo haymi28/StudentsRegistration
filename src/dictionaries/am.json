@@ -6,9 +6,9 @@
         "import": "አስመጣ",
         "export": "ላክ",
         "attendance": "የተማሪዎች ክትትል",
-        "userManagement": "የተጠቃሚ አስተዳደር",
-        "classManagement": "የክፍል አስተዳደር",
-        "roleManagement": "የሚና አስተዳደር",
+        "users": "ተጠቃሚዎች",
+        "class": "ክፍል",
+        "role": "ሚና",
         "account": "የኔ መለያ",
         "logout": "ውጣ",
         "language": "ቋንቋ"
@@ -213,7 +213,6 @@
                 "password": "የይለፍ ቃል",
                 "confirmPassword": "የይለፍ ቃል አረጋግጥ",
                 "role": "ሚና",
-                "department": "የአገልግሎት ክፍል",
                 "status": "የተጠቃሚ ሁኔታ",
                 "active": "የነቃ",
                 "inactive": "ተጠቃሚው መግባት አይችልም።",
@@ -221,16 +220,16 @@
             },
             "placeholder": {
                 "selectRole": "ሚና ይምረጡ",
-                "selectDepartment": "ክፍል ይምረጡ",
-                "password": "የይለፍ ቃል ካልቀየሩ ባዶ ይተዉት",
                 "passwordOptional": "የይለፍ ቃል ካልቀየሩ ባዶ ይተዉት"
             },
             "createSuccess": {
                 "title": "ተጠቃሚ ተፈጥሯል!",
                 "description": "ተጠቃሚ {username} በተሳካ ሁኔታ ተፈጥሯል።"
             },
-            "updateSuccess": "ተጠቃሚ ዘምኗል!",
-            "updateSuccessDescription": "ተጠቃሚ {username} በተሳካ ሁኔታ ዘምኗል።"
+            "updateSuccess": {
+                "title": "ተጠቃሚ ዘምኗል!",
+                "description": "ተጠቃሚ {username} በተሳካ ሁኔታ ዘምኗል።"
+            }
         },
         "table": {
             "displayName": "የሚታይ ስም",
@@ -369,11 +368,6 @@
         "min": "{field} ቢያንስ {length} ፊደላት መሆን አለበት።",
         "invalidNumber": "ልክ ያልሆነ ቁጥር።",
         "passwordMismatch": "የይለፍ ቃላት አይዛመዱም።",
-        "departmentRequired": "ለዚህ ሚና የአገልግሎት ክፍል ያስፈልጋል።",
-        "gender": {
-            "male": "ወንድ",
-            "female": "ሴት"
-        },
         "currentPasswordIncorrect": "የአሁኑ የይለፍ ቃል ትክክል አይደለም።"
     },
     "common": {
