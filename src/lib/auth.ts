@@ -48,7 +48,6 @@ export async function signIn(credentials: { username: string; password: string }
 
 export async function signOut() {
   cookies().delete(COOKIE_NAME);
-  // Also clear relevant local storage on sign out
 }
 
 export async function getServerSession(): Promise<{ user: Omit<UserWithRole, 'password'> } | null> {
@@ -63,6 +62,7 @@ export async function getServerSession(): Promise<{ user: Omit<UserWithRole, 'pa
     return { user: decoded };
   } catch (error) {
     // Token is invalid or expired
+    cookies().delete(COOKIE_NAME);
     return null;
   }
 }

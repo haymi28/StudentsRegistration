@@ -8,6 +8,8 @@ import { ClassList } from '@/components/class-list';
 import { MainLayout } from '@/components/common/main-layout';
 import { useState, useEffect } from 'react';
 import { Class, User } from '@prisma/client';
+import { redirect } from 'next/navigation';
+
 
 type ClassWithDetails = Class & { manager: User | null; _count: { students: number } };
 
@@ -20,7 +22,9 @@ export default function ClassesPage() {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
       setIsAuthenticated(!!sessionData);
-      if (sessionData?.user.role.name === 'Super Admin') {
+      if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+        redirect('/students');
+      } else {
         const classData = await getClasses();
         setClasses(classData as ClassWithDetails[]);
       }

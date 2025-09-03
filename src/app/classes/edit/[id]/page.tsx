@@ -8,6 +8,8 @@ import { ClassForm } from '@/components/class-form';
 import { MainLayout } from '@/components/common/main-layout';
 import { useState, useEffect } from 'react';
 import { Class, User } from '@prisma/client';
+import { redirect } from 'next/navigation';
+
 
 export default function EditClassPage({ params }: { params: { id: string } }) {
   const { t } = useLocale();
@@ -19,7 +21,9 @@ export default function EditClassPage({ params }: { params: { id: string } }) {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
       setIsAuthenticated(!!sessionData);
-      if (sessionData?.user.role.name === 'Super Admin') {
+      if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+        redirect('/students');
+      } else {
         const [classData, userData] = await Promise.all([
           getClassById(params.id),
           getUsers(true)

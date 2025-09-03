@@ -8,6 +8,7 @@ import { RoleForm } from '@/components/role-form';
 import { MainLayout } from '@/components/common/main-layout';
 import { useState, useEffect } from 'react';
 import { Role, Permission } from '@prisma/client';
+import { redirect } from 'next/navigation';
 
 type RoleWithPermissions = Role & { permissions: { permissionId: string }[] };
 
@@ -21,7 +22,9 @@ export default function EditRolePage({ params }: { params: { id: string } }) {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
       setIsAuthenticated(!!sessionData);
-      if (sessionData?.user.role.name === 'Super Admin') {
+      if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+        redirect('/students');
+      } else {
         const [roleData, permsData] = await Promise.all([
           getRoleById(params.id),
           getPermissions()

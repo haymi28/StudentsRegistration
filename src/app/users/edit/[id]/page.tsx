@@ -8,6 +8,7 @@ import { getUserById } from "@/lib/data";
 import { MainLayout } from "@/components/common/main-layout";
 import { useState, useEffect } from 'react';
 import { User, Role } from '@prisma/client';
+import { redirect } from 'next/navigation';
 
 export default function EditUserPage({ params }: { params: { id: string } }) {
     const { t } = useLocale();
@@ -18,7 +19,9 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
       const checkAuthAndFetch = async () => {
         const sessionData = await getServerSession();
         setIsAuthenticated(!!sessionData);
-        if (sessionData?.user.role.name === 'Super Admin') {
+        if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+          redirect('/students');
+        } else {
           const userData = await getUserById(params.id);
           setUser(userData as User & { role: Role });
         }

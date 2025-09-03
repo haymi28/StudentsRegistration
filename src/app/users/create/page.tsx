@@ -6,6 +6,7 @@ import { useLocale } from "@/contexts/locale-provider";
 import { getServerSession } from "@/lib/auth";
 import { MainLayout } from "@/components/common/main-layout";
 import { useState, useEffect } from 'react';
+import { redirect } from "next/navigation";
 
 export default function CreateUserPage() {
     const { t } = useLocale();
@@ -15,6 +16,9 @@ export default function CreateUserPage() {
       const checkAuth = async () => {
         const sessionData = await getServerSession();
         setIsAuthenticated(!!sessionData);
+        if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+            redirect('/students');
+        }
       };
       checkAuth();
     }, []);

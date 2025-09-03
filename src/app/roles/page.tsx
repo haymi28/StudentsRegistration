@@ -8,6 +8,7 @@ import { RoleList } from '@/components/role-list';
 import { MainLayout } from '@/components/common/main-layout';
 import { useState, useEffect } from 'react';
 import { Role } from '@prisma/client';
+import { redirect } from 'next/navigation';
 
 type RoleWithDetails = Role & { _count: { users: number } };
 
@@ -20,7 +21,9 @@ export default function RolesPage() {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
       setIsAuthenticated(!!sessionData);
-      if (sessionData?.user.role.name === 'Super Admin') {
+      if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+        redirect('/students');
+      } else {
         const roleData = await getRoles();
         setRoles(roleData as RoleWithDetails[]);
       }
