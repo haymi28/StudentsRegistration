@@ -52,7 +52,8 @@ export async function signOut() {
 }
 
 export async function getServerSession(): Promise<{ user: Omit<UserWithRole, 'password'> } | null> {
-  const token = cookies().get(COOKIE_NAME)?.value;
+  const cookieStore = cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
 
   if (!token) {
     return null;
