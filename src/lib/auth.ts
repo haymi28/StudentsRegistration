@@ -7,10 +7,10 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User, Role } from '@prisma/client';
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key-that-is-at-least-32-bytes-long';
 const COOKIE_NAME = 'session';
 
-type UserWithRole = User & { role: Role };
+type UserWithRole = User & { role: Role & { permissions: { permission: { name: string } }[] }};
 
 export async function signIn(credentials: { username: string; password: string }): Promise<{ success: boolean; error?: string; user?: any }> {
   try {
@@ -37,6 +37,7 @@ export async function signIn(credentials: { username: string; password: string }
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24, // 1 day in seconds
       path: '/',
+      sameSite: 'lax',
     });
 
     return { success: true, user: userWithoutPassword };
