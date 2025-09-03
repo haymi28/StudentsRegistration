@@ -6,7 +6,7 @@ import { getServerSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { ExportStudentClient } from '@/components/export-student-client';
 import { useEffect, useState } from 'react';
-import { Student } from '@prisma/client';
+import { Student, Role } from '@prisma/client';
 import { MainLayout } from '@/components/common/main-layout';
 
 
@@ -22,7 +22,7 @@ export default function ExportStudentsPage() {
         if (!session || session.user.role.name !== 'Super Admin') {
             redirect('/students');
         } else {
-            const studentData = await getStudents(session.user.id, session.user.role);
+            const studentData = await getStudents(session.user.id, session.user.role as Role & { permissions: { permissionId: string }[]});
             setStudents(studentData);
         }
         setLoading(false);
