@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
-import { useLocale } from '@/contexts/locale-provider';
+import { PublicHeader } from './public-header';
 
 
 export function MainLayout({ 
@@ -19,8 +19,7 @@ export function MainLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
-  const { t } = useLocale();
-
+  
   const publicRoutes = useMemo(() => ['/'], []);
   const authRoutes = useMemo(() => ['/login'], []);
   const allPublicRoutes = useMemo(() => [...publicRoutes, ...authRoutes], [publicRoutes, authRoutes]);
@@ -34,7 +33,7 @@ export function MainLayout({
     if (!isClient) return;
 
     const isAuthPage = authRoutes.includes(pathname);
-    const isProtectedPage = !allPublicRoutes.includes(pathname) && pathname !== '/register';
+    const isProtectedPage = !allPublicRoutes.includes(pathname);
 
     if (isAuthenticated && isAuthPage) {
         router.replace('/students');
@@ -46,18 +45,6 @@ export function MainLayout({
 
   }, [pathname, isAuthenticated, router, isClient, allPublicRoutes, authRoutes]);
 
-  const navTranslations = {
-    students: t('nav.students'),
-    newStudent: t('nav.newStudent'),
-    classManagement: t('nav.classManagement'),
-    userManagement: t('nav.userManagement'),
-    roleManagement: t('nav.roleManagement'),
-    import: t('nav.import'),
-    export: t('nav.export'),
-    account: t('nav.account'),
-    logout: t('nav.logout'),
-    language: t('nav.language')
-  }
 
   if (!isClient) {
     return null;
@@ -66,16 +53,21 @@ export function MainLayout({
   const isPublicPage = allPublicRoutes.includes(pathname);
 
   if (!isAuthenticated && isPublicPage) {
-    return <>{children}</>;
+    return (
+        <div className="relative min-h-screen">
+            <PublicHeader />
+            {children}
+        </div>
+    );
   }
 
-  if (!isAuthenticated && pathname !== '/register') {
+  if (!isAuthenticated) {
     return null;
   }
 
   return (
       <SidebarProvider>
-        <AppSidebar navTranslations={navTranslations} />
+        <AppSidebar />
         <SidebarInset>
           <Header />
           <main className="flex-1 overflow-y-auto bg-muted/30 pt-14 sm:pt-0">
