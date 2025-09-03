@@ -139,15 +139,23 @@ export async function getUserByUsername(username: string) {
     });
 }
 
-export async function updateUser(id: string, data: Partial<z.infer<ReturnType<typeof getUpdateUserSchema>>>) {
+export async function updateUser(id: string, data: any) {
     const validationSchema = getUpdateUserSchema();
-    const validatedData = validationSchema.safeParse(data);
-
+    
+    // We need to handle profile updates (just displayName) separately
+    // from full user updates (which include roles, password, etc.)
+    let validatedData;
+    if (data.hasOwnProperty('displayName') && Object.keys(data).length <= 2) { // also allow password
+        validatedData = z.object({ displayName: z.string().min(2), password: z.string().optional() }).safeParse(data);
+    } else {
+        validatedData = validationSchema.safeParse(data);
+    }
+    
     if (!validatedData.success) {
         throw new Error('Invalid user data: ' + validatedData.error.message);
     }
     
-    const { password, confirmPassword, ...rest } = validatedData.data;
+    const { password, ...rest } = validatedData.data;
 
     const dataToUpdate: any = { ...rest };
 

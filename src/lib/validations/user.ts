@@ -27,12 +27,6 @@ export const getUpdateUserSchema = () =>
       path: ['confirmPassword'],
     });
 
-
-export const getUpdateProfileSchema = (t: (key: string, params?: Record<string, string | number>) => string) => z.object({
-  displayName: z.string().min(2, { message: t('validation.required', { field: t('account.displayName') }) }),
-  username: z.string(),
-});
-
 export const getChangePasswordSchema = (t: (key: string, params?: Record<string, string | number>) => string) => z.object({
   currentPassword: z.string().min(1, { message: t('validation.required', { field: t('account.currentPassword') }) }),
   newPassword: z.string().min(6, { message: t('validation.min', { field: t('account.newPassword'), length: 6 }) }),
