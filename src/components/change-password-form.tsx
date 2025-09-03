@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -51,7 +52,7 @@ export function ChangePasswordForm() {
   const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
 
-  const formSchema = getChangePasswordSchema(t);
+  const formSchema = getChangePasswordSchema();
 
   const form = useForm<PasswordFormValues>({
     resolver: zodResolver(formSchema),

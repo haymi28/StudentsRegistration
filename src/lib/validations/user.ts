@@ -31,11 +31,11 @@ export const getUpdateProfileSchema = () => z.object({
     displayName: z.string().min(2, { message: 'Display Name is required' }),
 });
 
-export const getChangePasswordSchema = (t: (key: string, params?: Record<string, string | number>) => string) => z.object({
-  currentPassword: z.string().min(1, { message: t('validation.required', { field: t('account.currentPassword') }) }),
-  newPassword: z.string().min(6, { message: t('validation.min', { field: t('account.newPassword'), length: 6 }) }),
-  confirmPassword: z.string().min(1, { message: t('validation.required', { field: t('account.confirmPassword') }) }),
+export const getChangePasswordSchema = () => z.object({
+  currentPassword: z.string().min(1, { message: 'Current Password is required' }),
+  newPassword: z.string().min(6, { message: 'New Password must be at least 6 characters' }),
+  confirmPassword: z.string().min(1, { message: 'Confirm New Password is required' }),
 }).refine(data => data.newPassword === data.confirmPassword, {
-  message: t('validation.passwordMismatch'),
+  message: 'Passwords do not match',
   path: ['confirmPassword'],
 });

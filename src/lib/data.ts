@@ -15,13 +15,13 @@ import { getRoleSchema } from './validations/role';
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
 type RoleData = z.infer<ReturnType<typeof getRoleSchema>>;
+type UserUpdateData = z.infer<ReturnType<typeof getUpdateUserSchema>>;
 
-export async function getStudents(userId: string, userRole: Role & { permissions: { permissionId: string }[]}) {
-  const userPermissions = new Set(userRole.permissions.map(p => p.permissionId));
-  const allPermissions = await prisma.permission.findMany();
-  const permNameToId = new Map(allPermissions.map(p => [p.name, p.id]));
 
-  if (userPermissions.has(permNameToId.get('manage_all_students')!)) {
+export async function getStudents(userId: string, userRole: Role & { permissions: { permission: { name: string } }[]}) {
+  const userPermissions = new Set(userRole.permissions.map(p => p.permission.name));
+
+  if (userPermissions.has('manage_all_students')) {
      return await prisma.student.findMany({
       orderBy: { createdAt: 'desc' },
       include: { class: true }
@@ -118,8 +118,7 @@ export async function getUsers(excludeSuperAdmin = false) {
     });
 
     if (excludeSuperAdmin) {
-        const superAdminRole = await prisma.role.findUnique({ where: { name: 'Super Admin' } });
-        return users.filter(user => user.roleId !== superAdminRole?.id);
+        return users.filter(user => user.role.name !== 'Super Admin');
     }
     
     return users;
@@ -135,29 +134,31 @@ export async function getUserById(id: string) {
 export async function getUserByUsername(username: string) {
     return await prisma.user.findUnique({ 
         where: { username },
-        include: { role: { include: { permissions: true } } }
+        include: { role: { include: { permissions: { include: { permission: true } } } } }
     });
 }
 
-export async function updateUser(id: string, data: any) {
-  let validatedData;
-  // Check if it's a profile update (only displayName) or a full user update
-  if (data.hasOwnProperty('displayName') && !data.hasOwnProperty('username')) {
-      validatedData = getUpdateProfileSchema().safeParse(data);
-  } else {
-      validatedData = getUpdateUserSchema().safeParse(data);
-  }
+export async function updateUser(id: string, data: Partial<UserUpdateData>) {
+  const isProfileUpdate = data.displayName && Object.keys(data).length === 1;
+
+  const validationSchema = isProfileUpdate
+    ? getUpdateProfileSchema()
+    : getUpdateUserSchema();
+
+  const validatedData = validationSchema.safeParse(data);
 
   if (!validatedData.success) {
       throw new Error('Invalid user data: ' + JSON.stringify(validatedData.error.issues, null, 2));
   }
   
-  const { password, confirmPassword, ...rest } = validatedData.data;
+  const { password, ...rest } = validatedData.data;
 
   const dataToUpdate: any = { ...rest };
 
   if (password) {
       dataToUpdate.password = await bcrypt.hash(password, 10);
+  } else {
+      delete dataToUpdate.password;
   }
   
   await prisma.user.update({
