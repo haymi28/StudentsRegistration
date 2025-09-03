@@ -48,7 +48,7 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
   const [birthMonth, setBirthMonth] = useState('');
   const [birthYear, setBirthYear] = useState('');
 
-  const studentRegistrationSchema = useMemo(() => getStudentRegistrationSchema(), []);
+  const studentRegistrationSchema = useMemo(() => getStudentRegistrationSchema(t), [t]);
   
   const genders = useMemo(() => [
     { value: 'ወንድ', label: t('validation.gender.male') },
@@ -402,7 +402,7 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
                         <FormItem><FormLabel>{t('form.label.fathersPhone')}</FormLabel><FormControl><Input type="tel" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="mothersPhoneNumber" render={({ field }) => (
-                        <FormItem><FormLabel>{t('form.label.mothersPhone')}</FormLabel><FormControl><Input type="tel" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t('form.label.mothersPhone')}</FormLabel><FormControl><Input type="tel" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </div>
             </div>
