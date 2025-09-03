@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -38,7 +38,7 @@ export function RoleForm({ roleToEdit, permissions, translations }: RoleFormProp
   const router = useRouter();
   const isEditMode = !!roleToEdit;
 
-  const validationSchema = getRoleSchema(t);
+  const validationSchema = getRoleSchema();
 
   const form = useForm<RoleFormValues>({
     resolver: zodResolver(validationSchema),

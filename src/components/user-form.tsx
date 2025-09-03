@@ -39,8 +39,8 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
   }, []);
 
   const validationSchema = useMemo(() => {
-    return isEditMode ? getUpdateUserSchema(t) : getCreateUserSchema(t);
-  }, [isEditMode, t]);
+    return isEditMode ? getUpdateUserSchema() : getCreateUserSchema();
+  }, [isEditMode]);
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(validationSchema),

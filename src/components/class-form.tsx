@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 import { User, Class } from '@prisma/client';
 import { getCreateClassSchema } from '@/lib/validations/class';
 import { createClass, updateClass } from '@/lib/data';
-import { useLocale } from '@/contexts/locale-provider';
+import { useState } from 'react';
 
 type ClassFormValues = z.infer<ReturnType<typeof getCreateClassSchema>>;
 
@@ -27,12 +27,11 @@ interface ClassFormProps {
 
 export function ClassForm({ classToEdit, users, translations }: ClassFormProps) {
   const { toast } = useToast();
-  const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEditMode = !!classToEdit;
 
-  const validationSchema = getCreateClassSchema(t);
+  const validationSchema = getCreateClassSchema();
 
   const form = useForm<ClassFormValues>({
     resolver: zodResolver(validationSchema),

@@ -51,7 +51,7 @@ export async function getStudentById(id: string) {
 }
 
 export async function createStudent(data: StudentData) {
-    const validatedData = getStudentRegistrationSchema(() => '').safeParse(data);
+    const validatedData = getStudentRegistrationSchema().safeParse(data);
     if (!validatedData.success) {
         throw new Error('Invalid student data');
     }
@@ -69,7 +69,7 @@ export async function createStudent(data: StudentData) {
 }
 
 export async function importStudents(students: Partial<Student>[]) {
-    const validationSchema = getStudentRegistrationSchema(() => '');
+    const validationSchema = getStudentRegistrationSchema();
     const validatedStudents: StudentData[] = [];
 
     for (const student of students) {
@@ -95,7 +95,7 @@ export async function importStudents(students: Partial<Student>[]) {
 
 
 export async function updateStudent(id: string, data: Partial<StudentData>) {
-    const validatedData = getStudentRegistrationSchema(() => '').partial().safeParse(data);
+    const validatedData = getStudentRegistrationSchema().partial().safeParse(data);
     if (!validatedData.success) {
         throw new Error('Invalid student data');
     }
@@ -140,7 +140,7 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUser(id: string, data: Partial<z.infer<ReturnType<typeof getUpdateUserSchema>>>) {
-    const validationSchema = getUpdateUserSchema(() => '');
+    const validationSchema = getUpdateUserSchema();
     const validatedData = validationSchema.safeParse(data);
 
     if (!validatedData.success) {
@@ -165,7 +165,7 @@ export async function updateUser(id: string, data: Partial<z.infer<ReturnType<ty
 }
 
 export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSchema>>) {
-    const validationSchema = getCreateUserSchema(() => '');
+    const validationSchema = getCreateUserSchema();
     const validatedData = validationSchema.safeParse(data);
 
     if (!validatedData.success) {
@@ -224,7 +224,7 @@ export async function getClassById(id: string) {
 }
 
 export async function createClass(data: ClassData) {
-    const validationSchema = getCreateClassSchema(() => '');
+    const validationSchema = getCreateClassSchema();
     const validatedData = validationSchema.safeParse(data);
     
     if (!validatedData.success) {
@@ -236,7 +236,7 @@ export async function createClass(data: ClassData) {
 }
 
 export async function updateClass(id: string, data: ClassData) {
-    const validationSchema = getCreateClassSchema(() => '');
+    const validationSchema = getCreateClassSchema();
     const validatedData = validationSchema.safeParse(data);
 
     if (!validatedData.success) {
@@ -298,7 +298,7 @@ export async function getPermissions() {
 }
 
 export async function createRole(data: RoleData) {
-    const validationSchema = getRoleSchema(() => '');
+    const validationSchema = getRoleSchema();
     const validatedData = validationSchema.safeParse(data);
 
     if (!validatedData.success) {
@@ -320,7 +320,7 @@ export async function createRole(data: RoleData) {
 }
 
 export async function updateRole(id: string, data: RoleData) {
-    const validationSchema = getRoleSchema(() => '');
+    const validationSchema = getRoleSchema();
     const validatedData = validationSchema.safeParse(data);
      if (!validatedData.success) {
         throw new Error('Invalid role data: ' + validatedData.error.message);
