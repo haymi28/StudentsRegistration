@@ -13,13 +13,13 @@ const getNestedTranslation = (translations: any, key: string): string | undefine
     return key.split('.').reduce((obj, k) => (obj && typeof obj[k] !== 'undefined') ? obj[k] : undefined, translations);
 }
 
-const getLocale = () => {
+const getLocale = async () => {
     const cookieStore = cookies();
     return cookieStore.get('locale')?.value || 'am';
 }
 
 export const getTranslations = async () => {
-  const locale = getLocale();
+  const locale = await getLocale();
   const validLocale = dictionaries[locale] ? locale : 'am';
   return dictionaries[validLocale]();
 };
