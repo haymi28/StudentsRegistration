@@ -39,8 +39,8 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
   }, []);
 
   const validationSchema = useMemo(() => {
-    return isEditMode ? getUpdateUserSchema() : getCreateUserSchema();
-  }, [isEditMode]);
+    return isEditMode ? getUpdateUserSchema(t) : getCreateUserSchema(t);
+  }, [isEditMode, t]);
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(validationSchema),
@@ -66,10 +66,6 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
   async function onSubmit(data: UserFormValues) {
     setIsLoading(true);
     try {
-      const successDescription = isEditMode 
-        ? t('users.form.updateSuccess.description', { username: data.username })
-        : t('users.form.createSuccess.description', { username: data.username });
-
       if (isEditMode) {
         await updateUser(userToEdit.id, data);
       } else {
@@ -77,8 +73,8 @@ export function UserForm({ userToEdit, translations }: UserFormProps) {
       }
 
       toast({
-          title: isEditMode ? t('users.form.updateSuccess.title') : t('users.form.createSuccess.title'),
-          description: successDescription,
+          title: translations.success.title,
+          description: translations.success.description.replace('{username}', data.username)
       });
 
       router.push('/users');
