@@ -147,7 +147,7 @@ export async function updateUser(id: string, data: Partial<z.infer<ReturnType<ty
         throw new Error('Invalid user data: ' + validatedData.error.message);
     }
     
-    const { password, ...rest } = validatedData.data;
+    const { password, confirmPassword, ...rest } = validatedData.data;
 
     const dataToUpdate: any = { ...rest };
 
@@ -180,11 +180,12 @@ export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSc
         throw new Error('User with this username already exists.');
     }
 
-    const hashedPassword = await bcrypt.hash(validatedData.data.password, 10);
+    const { password, confirmPassword, ...userData } = validatedData.data;
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     await prisma.user.create({
         data: {
-            ...validatedData.data,
+            ...userData,
             password: hashedPassword,
         },
     });
