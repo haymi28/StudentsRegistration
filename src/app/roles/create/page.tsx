@@ -1,19 +1,30 @@
 
-import { redirect } from 'next/navigation';
+'use client';
+
 import { getServerSession } from '@/lib/auth';
 import { getPermissions } from '@/lib/data';
-import { getTranslator } from '@/lib/i18n';
+import { useLocale } from '@/contexts/locale-provider';
 import { RoleForm } from '@/components/role-form';
 import { MainLayout } from '@/components/common/main-layout';
+import { useState, useEffect } from 'react';
+import { Permission } from '@prisma/client';
 
-export default async function CreateRolePage() {
-  const session = await getServerSession();
-  if (session?.user.role.name !== 'Super Admin') {
-    redirect('/students');
-  }
+export default function CreateRolePage() {
+  const { t } = useLocale();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
 
-  const permissions = await getPermissions();
-  const t = await getTranslator();
+  useEffect(() => {
+    const checkAuthAndFetch = async () => {
+      const sessionData = await getServerSession();
+      setIsAuthenticated(!!sessionData);
+      if (sessionData?.user.role.name === 'Super Admin') {
+        const perms = await getPermissions();
+        setPermissions(perms);
+      }
+    };
+    checkAuthAndFetch();
+  }, []);
 
   const translations = {
     createTitle: t('roles.form.createTitle'),
@@ -38,7 +49,7 @@ export default async function CreateRolePage() {
   };
 
   return (
-    <MainLayout isAuthenticated={!!session}>
+    <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8">
         <div className="max-w-4xl mx-auto">
             <div className="mb-8 text-center">

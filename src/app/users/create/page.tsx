@@ -1,17 +1,23 @@
 
-import { UserForm } from "@/components/user-form";
-import { getTranslator } from "@/lib/i18n";
-import { getServerSession } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { MainLayout } from "@/components/common/main-layout";
+'use client';
 
-export default async function CreateUserPage() {
-    const session = await getServerSession();
-    if (session?.user.role.name !== 'Super Admin') {
-        redirect('/students');
-    }
-    
-    const t = await getTranslator();
+import { UserForm } from "@/components/user-form";
+import { useLocale } from "@/contexts/locale-provider";
+import { getServerSession } from "@/lib/auth";
+import { MainLayout } from "@/components/common/main-layout";
+import { useState, useEffect } from 'react';
+
+export default function CreateUserPage() {
+    const { t } = useLocale();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+      const checkAuth = async () => {
+        const sessionData = await getServerSession();
+        setIsAuthenticated(!!sessionData);
+      };
+      checkAuth();
+    }, []);
 
     const translations = {
         title: t('users.form.createTitle'),
@@ -41,7 +47,7 @@ export default async function CreateUserPage() {
     };
 
     return (
-        <MainLayout isAuthenticated={!!session}>
+        <MainLayout isAuthenticated={isAuthenticated}>
             <div className="container py-8">
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-8 text-center">

@@ -1,30 +1,36 @@
 
-import { redirect } from 'next/navigation';
+'use client';
+
 import { getServerSession } from '@/lib/auth';
 import { getClassById, getUsers } from '@/lib/data';
-import { getTranslator } from '@/lib/i18n';
+import { useLocale } from '@/contexts/locale-provider';
 import { ClassForm } from '@/components/class-form';
 import { MainLayout } from '@/components/common/main-layout';
+import { useState, useEffect } from 'react';
+import { Class, User } from '@prisma/client';
 
-export default async function EditClassPage({ params }: { params: { id: string } }) {
-  const session = await getServerSession();
-  if (session?.user.role.name !== 'Super Admin') {
-    redirect('/students');
-  }
+export default function EditClassPage({ params }: { params: { id: string } }) {
+  const { t } = useLocale();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [classToEdit, setClassToEdit] = useState<Class | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
 
-  const classToEdit = await getClassById(params.id);
-  if (!classToEdit) {
-    return (
-        <div className="container py-8 text-center">
-            <h1 className="text-2xl font-bold">Class Not Found</h1>
-            <p className="text-muted-foreground">The class with the given ID could not be found.</p>
-        </div>
-    );
-  }
-
-  const users = await getUsers(true);
-  const t = await getTranslator();
-
+  useEffect(() => {
+    const checkAuthAndFetch = async () => {
+      const sessionData = await getServerSession();
+      setIsAuthenticated(!!sessionData);
+      if (sessionData?.user.role.name === 'Super Admin') {
+        const [classData, userData] = await Promise.all([
+          getClassById(params.id),
+          getUsers(true)
+        ]);
+        setClassToEdit(classData);
+        setUsers(userData);
+      }
+    };
+    checkAuthAndFetch();
+  }, [params.id]);
+  
   const translations = {
     editTitle: t('classes.form.editTitle'),
     editDescription: t('classes.form.editDescription'),
@@ -47,14 +53,14 @@ export default async function EditClassPage({ params }: { params: { id: string }
   };
 
   return (
-    <MainLayout isAuthenticated={!!session}>
+    <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8">
         <div className="max-w-4xl mx-auto">
             <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold font-headline">{translations.editTitle}</h1>
             <p className="text-muted-foreground">{translations.editDescription}</p>
             </div>
-            <ClassForm classToEdit={classToEdit} users={users} translations={translations} />
+            {classToEdit && <ClassForm classToEdit={classToEdit} users={users} translations={translations} />}
         </div>
         </div>
     </MainLayout>

@@ -1,29 +1,37 @@
 
-import { redirect } from 'next/navigation';
+'use client';
+
 import { getServerSession } from '@/lib/auth';
 import { getRoleById, getPermissions } from '@/lib/data';
-import { getTranslator } from '@/lib/i18n';
+import { useLocale } from '@/contexts/locale-provider';
 import { RoleForm } from '@/components/role-form';
 import { MainLayout } from '@/components/common/main-layout';
+import { useState, useEffect } from 'react';
+import { Role, Permission } from '@prisma/client';
 
-export default async function EditRolePage({ params }: { params: { id: string } }) {
-  const session = await getServerSession();
-  if (session?.user.role.name !== 'Super Admin') {
-    redirect('/students');
-  }
+type RoleWithPermissions = Role & { permissions: { permissionId: string }[] };
 
-  const roleToEdit = await getRoleById(params.id);
-  if (!roleToEdit) {
-    return (
-        <div className="container py-8 text-center">
-            <h1 className="text-2xl font-bold">Role Not Found</h1>
-            <p className="text-muted-foreground">The role with the given ID could not be found.</p>
-        </div>
-    );
-  }
+export default function EditRolePage({ params }: { params: { id: string } }) {
+  const { t } = useLocale();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [roleToEdit, setRoleToEdit] = useState<RoleWithPermissions | null>(null);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
 
-  const permissions = await getPermissions();
-  const t = await getTranslator();
+  useEffect(() => {
+    const checkAuthAndFetch = async () => {
+      const sessionData = await getServerSession();
+      setIsAuthenticated(!!sessionData);
+      if (sessionData?.user.role.name === 'Super Admin') {
+        const [roleData, permsData] = await Promise.all([
+          getRoleById(params.id),
+          getPermissions()
+        ]);
+        setRoleToEdit(roleData as RoleWithPermissions);
+        setPermissions(permsData);
+      }
+    };
+    checkAuthAndFetch();
+  }, [params.id]);
 
   const translations = {
     editTitle: t('roles.form.editTitle'),
@@ -48,14 +56,14 @@ export default async function EditRolePage({ params }: { params: { id: string } 
   };
 
   return (
-    <MainLayout isAuthenticated={!!session}>
+    <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8">
         <div className="max-w-4xl mx-auto">
             <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold font-headline">{translations.editTitle}</h1>
             <p className="text-muted-foreground">{translations.editDescription}</p>
             </div>
-            <RoleForm roleToEdit={roleToEdit} permissions={permissions} translations={translations} />
+            {roleToEdit && <RoleForm roleToEdit={roleToEdit} permissions={permissions} translations={translations} />}
         </div>
         </div>
     </MainLayout>

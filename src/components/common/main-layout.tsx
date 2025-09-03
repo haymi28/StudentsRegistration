@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Header } from '@/components/common/header';
 import { AppSidebar } from './app-sidebar';
 import { PublicHeader } from './public-header';
+import { useLocale } from '@/contexts/locale-provider';
 
 
 export function MainLayout({ 
@@ -19,6 +20,7 @@ export function MainLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const { isLoaded } = useLocale();
   
   const publicRoutes = useMemo(() => ['/'], []);
   const authRoutes = useMemo(() => ['/login'], []);
@@ -30,7 +32,7 @@ export function MainLayout({
   }, []);
   
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || !isLoaded) return;
 
     const isAuthPage = authRoutes.includes(pathname);
     const isProtectedPage = !allPublicRoutes.includes(pathname);
@@ -43,10 +45,10 @@ export function MainLayout({
         router.replace('/');
     }
 
-  }, [pathname, isAuthenticated, router, isClient, allPublicRoutes, authRoutes]);
+  }, [pathname, isAuthenticated, router, isClient, allPublicRoutes, authRoutes, isLoaded]);
 
 
-  if (!isClient) {
+  if (!isClient || !isLoaded) {
     return null;
   }
   

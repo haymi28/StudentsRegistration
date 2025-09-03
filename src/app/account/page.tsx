@@ -1,22 +1,24 @@
 
-import { redirect } from 'next/navigation';
-import { getServerSession } from '@/lib/auth';
+'use client';
+
 import { UpdateProfileForm } from '@/components/update-profile-form';
 import { ChangePasswordForm } from '@/components/change-password-form';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { MainLayout } from '@/components/common/main-layout';
-import { getTranslator } from '@/lib/i18n';
+import { useLocale } from '@/contexts/locale-provider';
+import { useState, useEffect } from 'react';
 
-export default async function AccountPage() {
-  const session = await getServerSession();
-  if (!session) {
-    redirect('/');
-  }
+export default function AccountPage() {
+  const { t } = useLocale();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const t = await getTranslator();
+  useEffect(() => {
+    const sessionToken = document.cookie.includes('session=');
+    setIsAuthenticated(sessionToken);
+  }, []);
 
   return (
-    <MainLayout isAuthenticated={!!session}>
+    <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8">
         <div className="max-w-4xl mx-auto space-y-8">
             <div className="text-center">

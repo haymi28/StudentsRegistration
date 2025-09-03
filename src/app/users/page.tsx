@@ -1,20 +1,32 @@
 
-import { redirect } from 'next/navigation';
+'use client';
+
 import { getServerSession } from '@/lib/auth';
 import { getUsers } from '@/lib/data';
 import { UserList } from '@/components/user-list';
-import { getTranslator } from '@/lib/i18n';
+import { useLocale } from '@/contexts/locale-provider';
 import { MainLayout } from '@/components/common/main-layout';
+import { useState, useEffect } from 'react';
+import { User, Role } from '@prisma/client';
 
-export default async function UsersPage() {
-  const session = await getServerSession();
-  
-  if (!session || session.user.role.name !== 'Super Admin') {
-    redirect('/students');
-  }
+type UserWithRole = User & { role: Role };
 
-  const users = await getUsers();
-  const t = await getTranslator();
+export default function UsersPage() {
+  const { t } = useLocale();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [users, setUsers] = useState<UserWithRole[]>([]);
+
+  useEffect(() => {
+    const checkAuthAndFetch = async () => {
+      const sessionData = await getServerSession();
+      setIsAuthenticated(!!sessionData);
+      if (sessionData?.user.role.name === 'Super Admin') {
+        const userData = await getUsers();
+        setUsers(userData as UserWithRole[]);
+      }
+    };
+    checkAuthAndFetch();
+  }, []);
 
   const translations = {
     title: t('users.title'),
@@ -50,9 +62,9 @@ export default async function UsersPage() {
   };
 
   return (
-    <MainLayout isAuthenticated={!!session}>
+    <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8 flex flex-col items-center">
-        <UserList users={users} translations={translations} />
+            <UserList users={users} translations={translations} />
         </div>
     </MainLayout>
   );

@@ -1,19 +1,30 @@
 
-import { redirect } from 'next/navigation';
+'use client';
+
 import { getServerSession } from '@/lib/auth';
 import { getUsers } from '@/lib/data';
-import { getTranslator } from '@/lib/i18n';
+import { useLocale } from '@/contexts/locale-provider';
 import { ClassForm } from '@/components/class-form';
 import { MainLayout } from '@/components/common/main-layout';
+import { useState, useEffect } from 'react';
+import { User } from '@prisma/client';
 
-export default async function CreateClassPage() {
-  const session = await getServerSession();
-  if (session?.user.role.name !== 'Super Admin') {
-    redirect('/students');
-  }
+export default function CreateClassPage() {
+  const { t } = useLocale();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
 
-  const users = await getUsers(true); // Exclude super_admin from being a manager
-  const t = await getTranslator();
+  useEffect(() => {
+    const checkAuthAndFetch = async () => {
+      const sessionData = await getServerSession();
+      setIsAuthenticated(!!sessionData);
+      if (sessionData?.user.role.name === 'Super Admin') {
+        const userData = await getUsers(true); // Exclude super_admin
+        setUsers(userData);
+      }
+    };
+    checkAuthAndFetch();
+  }, []);
 
   const translations = {
     createTitle: t('classes.form.createTitle'),
@@ -37,7 +48,7 @@ export default async function CreateClassPage() {
   };
 
   return (
-    <MainLayout isAuthenticated={!!session}>
+    <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8">
         <div className="max-w-4xl mx-auto">
             <div className="mb-8 text-center">

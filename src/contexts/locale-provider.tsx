@@ -12,6 +12,7 @@ interface LocaleContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   t: TFunction;
+  isLoaded: boolean;
 }
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
@@ -23,29 +24,29 @@ const getNestedTranslation = (translations: Translations, key: string): string |
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('am');
   const [translations, setTranslations] = useState<Translations>({});
-  const [isMounted, setIsMounted] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const storedLocale = localStorage.getItem('locale') as Locale | null;
     if (storedLocale) {
       setLocaleState(storedLocale);
+    } else {
+        localStorage.setItem('locale', 'am');
     }
-    setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!isMounted) return;
-
     const fetchTranslations = async () => {
       try {
         const res = await fetch(`/i18n/${locale}.json`);
         if (!res.ok) {
-          throw new Error('Failed to load translations');
+          throw new Error(`Failed to load ${locale} translations`);
         }
         const data = await res.json();
         setTranslations(data);
       } catch (error) {
         console.error(error);
+        // Fallback to English if the desired locale fails
         if (locale !== 'en') {
           try {
             const res = await fetch(`/i18n/en.json`);
@@ -55,12 +56,15 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
             console.error("Failed to load fallback translations", e)
           }
         }
+      } finally {
+        setIsLoaded(true);
       }
     };
     fetchTranslations();
-  }, [locale, isMounted]);
+  }, [locale]);
 
   const setLocale = (newLocale: Locale) => {
+    setIsLoaded(false);
     setLocaleState(newLocale);
     localStorage.setItem('locale', newLocale);
   };
@@ -75,12 +79,12 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     return translation;
   }, [translations]);
 
-  if (!isMounted) {
-    return null;
+  if (!isLoaded) {
+    return null; // Or a global loading spinner
   }
 
   return (
-    <LocaleContext.Provider value={{ locale, setLocale, t }}>
+    <LocaleContext.Provider value={{ locale, setLocale, t, isLoaded }}>
       {children}
     </LocaleContext.Provider>
   );

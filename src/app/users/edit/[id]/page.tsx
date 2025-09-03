@@ -1,29 +1,31 @@
 
+'use client';
+
 import { UserForm } from "@/components/user-form";
-import { getTranslator } from "@/lib/i18n";
+import { useLocale } from "@/contexts/locale-provider";
 import { getServerSession } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { getUserById } from "@/lib/data";
 import { MainLayout } from "@/components/common/main-layout";
+import { useState, useEffect } from 'react';
+import { User, Role } from '@prisma/client';
 
-export default async function EditUserPage({ params }: { params: { id: string } }) {
-    const session = await getServerSession();
-    if (session?.user.role.name !== 'Super Admin') {
-        redirect('/students');
-    }
+export default function EditUserPage({ params }: { params: { id: string } }) {
+    const { t } = useLocale();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState<(User & { role: Role }) | null>(null);
 
-    const user = await getUserById(params.id);
+    useEffect(() => {
+      const checkAuthAndFetch = async () => {
+        const sessionData = await getServerSession();
+        setIsAuthenticated(!!sessionData);
+        if (sessionData?.user.role.name === 'Super Admin') {
+          const userData = await getUserById(params.id);
+          setUser(userData as User & { role: Role });
+        }
+      };
+      checkAuthAndFetch();
+    }, [params.id]);
 
-    if (!user) {
-        return (
-            <div className="container py-8 text-center">
-              <h1 className="text-2xl font-bold">User Not Found</h1>
-              <p className="text-muted-foreground">The user with the given ID could not be found.</p>
-            </div>
-        );
-    }
-    
-    const t = await getTranslator();
     const translations = {
         title: t('users.form.editTitle'),
         description: t('users.form.editDescription'),
@@ -52,14 +54,14 @@ export default async function EditUserPage({ params }: { params: { id: string } 
     };
 
     return (
-        <MainLayout isAuthenticated={!!session}>
+        <MainLayout isAuthenticated={isAuthenticated}>
             <div className="container py-8">
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-8 text-center">
                         <h1 className="text-3xl font-bold font-headline">{translations.title}</h1>
                         <p className="text-muted-foreground">{translations.description}</p>
                     </div>
-                    <UserForm userToEdit={user} translations={translations} />
+                    {user && <UserForm userToEdit={user} translations={translations} />}
                 </div>
             </div>
         </MainLayout>

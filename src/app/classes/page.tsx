@@ -1,20 +1,32 @@
 
-import { redirect } from 'next/navigation';
+'use client';
+
 import { getServerSession } from '@/lib/auth';
 import { getClasses } from '@/lib/data';
-import { getTranslator } from '@/lib/i18n';
+import { useLocale } from '@/contexts/locale-provider';
 import { ClassList } from '@/components/class-list';
 import { MainLayout } from '@/components/common/main-layout';
+import { useState, useEffect } from 'react';
+import { Class, User } from '@prisma/client';
 
-export default async function ClassesPage() {
-  const session = await getServerSession();
-  
-  if (!session || session.user.role.name !== 'Super Admin') {
-    redirect('/students');
-  }
+type ClassWithDetails = Class & { manager: User | null; _count: { students: number } };
 
-  const classes = await getClasses();
-  const t = await getTranslator();
+export default function ClassesPage() {
+  const { t } = useLocale();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [classes, setClasses] = useState<ClassWithDetails[]>([]);
+
+  useEffect(() => {
+    const checkAuthAndFetch = async () => {
+      const sessionData = await getServerSession();
+      setIsAuthenticated(!!sessionData);
+      if (sessionData?.user.role.name === 'Super Admin') {
+        const classData = await getClasses();
+        setClasses(classData as ClassWithDetails[]);
+      }
+    };
+    checkAuthAndFetch();
+  }, []);
 
   const translations = {
     title: t('classes.title'),
@@ -45,9 +57,9 @@ export default async function ClassesPage() {
   };
 
   return (
-    <MainLayout isAuthenticated={!!session}>
+    <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8 flex flex-col items-center">
-        <ClassList classes={classes} translations={translations} />
+            <ClassList classes={classes} translations={translations} />
         </div>
     </MainLayout>
   );
