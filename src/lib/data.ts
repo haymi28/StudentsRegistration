@@ -7,7 +7,7 @@ import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
 import { Student, User, Class, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { getCreateUserSchema, getUpdateUserSchema } from './validations/user';
+import { getCreateUserSchema, getUpdateUserSchema, getUpdateProfileSchema } from './validations/user';
 import { getCreateClassSchema } from './validations/class';
 import { getRoleSchema } from './validations/role';
 
@@ -140,36 +140,34 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUser(id: string, data: any) {
-    const validationSchema = getUpdateUserSchema();
-    
-    // We need to handle profile updates (just displayName) separately
-    // from full user updates (which include roles, password, etc.)
-    let validatedData;
-    if (data.hasOwnProperty('displayName') && Object.keys(data).length <= 2) { // also allow password
-        validatedData = z.object({ displayName: z.string().min(2), password: z.string().optional() }).safeParse(data);
-    } else {
-        validatedData = validationSchema.safeParse(data);
-    }
-    
-    if (!validatedData.success) {
-        throw new Error('Invalid user data: ' + validatedData.error.message);
-    }
-    
-    const { password, ...rest } = validatedData.data;
+  let validatedData;
+  // Check if it's a profile update (only displayName) or a full user update
+  if (data.hasOwnProperty('displayName') && !data.hasOwnProperty('username')) {
+      validatedData = getUpdateProfileSchema().safeParse(data);
+  } else {
+      validatedData = getUpdateUserSchema().safeParse(data);
+  }
 
-    const dataToUpdate: any = { ...rest };
+  if (!validatedData.success) {
+      throw new Error('Invalid user data: ' + JSON.stringify(validatedData.error.issues, null, 2));
+  }
+  
+  const { password, confirmPassword, ...rest } = validatedData.data;
 
-    if (password) {
-        dataToUpdate.password = await bcrypt.hash(password, 10);
-    }
-    
-    await prisma.user.update({
-        where: { id },
-        data: dataToUpdate
-    });
-    revalidatePath('/account');
-    revalidatePath('/users');
-    revalidatePath(`/users/edit/${id}`);
+  const dataToUpdate: any = { ...rest };
+
+  if (password) {
+      dataToUpdate.password = await bcrypt.hash(password, 10);
+  }
+  
+  await prisma.user.update({
+      where: { id },
+      data: dataToUpdate
+  });
+
+  revalidatePath('/account');
+  revalidatePath('/users');
+  revalidatePath(`/users/edit/${id}`);
 }
 
 export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSchema>>) {

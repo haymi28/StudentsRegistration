@@ -26,6 +26,10 @@ export const getUpdateUserSchema = () =>
       message: "Passwords do not match",
       path: ['confirmPassword'],
     });
+    
+export const getUpdateProfileSchema = () => z.object({
+    displayName: z.string().min(2, { message: 'Display Name is required' }),
+});
 
 export const getChangePasswordSchema = (t: (key: string, params?: Record<string, string | number>) => string) => z.object({
   currentPassword: z.string().min(1, { message: t('validation.required', { field: t('account.currentPassword') }) }),

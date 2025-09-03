@@ -13,10 +13,7 @@ import { Loader2 } from 'lucide-react';
 import { useLocale } from '@/contexts/locale-provider';
 import { getUserByUsername, updateUser } from '@/lib/data';
 import { User } from '@prisma/client';
-
-const getUpdateProfileSchema = (t: (key: string, params?: Record<string, string | number>) => string) => z.object({
-  displayName: z.string().min(2, { message: t('validation.required', { field: t('account.displayName') }) }),
-});
+import { getUpdateProfileSchema } from '@/lib/validations/user';
 
 type ProfileFormValues = z.infer<ReturnType<typeof getUpdateProfileSchema>>;
 
@@ -26,7 +23,7 @@ export function UpdateProfileForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  const formSchema = useMemo(() => getUpdateProfileSchema(t), [t]);
+  const formSchema = useMemo(() => getUpdateProfileSchema(), []);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(formSchema),
@@ -81,19 +78,13 @@ export function UpdateProfileForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-lg">
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
+        <FormItem>
               <FormLabel>{t('login.username')}</FormLabel>
               <FormControl>
-                <Input {...field} readOnly disabled className="bg-muted" value={currentUser?.username || ''} />
+                <Input readOnly disabled className="bg-muted" value={currentUser?.username || ''} />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+        </FormItem>
         <FormField
           control={form.control}
           name="displayName"

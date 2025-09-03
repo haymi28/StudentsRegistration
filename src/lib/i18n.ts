@@ -14,8 +14,7 @@ const getNestedTranslation = (translations: any, key: string): string | undefine
 }
 
 const getLocale = async () => {
-    const cookieStore = cookies();
-    return cookieStore.get('locale')?.value || 'am';
+    return cookies().get('locale')?.value || 'am';
 }
 
 export const getTranslations = async () => {
