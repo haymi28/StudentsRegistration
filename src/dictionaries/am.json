@@ -198,6 +198,7 @@
         "gender": "ጾታ"
     },
      "settings": {
+        "pageTitle": "ቅንብሮች",
         "pageDescription": "የስርዓት-ሰፊ ቅንብሮችን እና ውቅሮችን ይድረሱ እና ያስተዳድሩ።"
     },
      "users": {

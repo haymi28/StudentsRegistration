@@ -198,6 +198,7 @@
         "gender": "Gender"
     },
      "settings": {
+        "pageTitle": "Settings",
         "pageDescription": "Access and manage system-wide settings and configurations."
     },
     "users": {

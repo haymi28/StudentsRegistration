@@ -66,8 +66,8 @@ export default function SettingsPage() {
   return (
     <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold font-headline">{t('nav.settings')}</h1>
+            <div className="mb-8 text-center">
+                <h1 className="text-3xl font-bold font-headline">{t('settings.pageTitle')}</h1>
                 <p className="text-muted-foreground">{t('settings.pageDescription')}</p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
