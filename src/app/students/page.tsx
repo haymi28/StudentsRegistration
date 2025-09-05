@@ -1,44 +1,27 @@
 
-'use client';
-
 import { StudentList } from '@/components/student-list';
 import { getServerSession } from '@/lib/auth';
 import { getStudents, getUsers } from '@/lib/data';
-import { useLocale } from '@/contexts/locale-provider';
+import { getTranslator } from '@/lib/i18n';
 import { MainLayout } from '@/components/common/main-layout';
-import { useEffect, useState } from 'react';
-import { Student, User, Class } from '@prisma/client';
+import { Student, User, Class, Role } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
 type StudentWithClass = Student & { class: Class | null };
 
-export default function StudentsPage() {
-  const { t } = useLocale();
-  const [session, setSession] = useState<any>(null);
-  const [students, setStudents] = useState<StudentWithClass[]>([]);
-  const [users, setUsers] = useState<Partial<User>[]>([]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export default async function StudentsPage() {
+  const t = await getTranslator();
+  const session = await getServerSession();
 
-  useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      const sessionData = await getServerSession();
-      if (!sessionData) {
-        redirect('/');
-        return;
-      }
-      setIsAuthenticated(true);
-      setSession(sessionData);
+  if (!session) {
+    redirect('/');
+  }
 
-      const [studentData, userData] = await Promise.all([
-        getStudents(sessionData.user.id, sessionData.user.role),
-        getUsers()
-      ]);
-      setStudents(studentData as StudentWithClass[]);
-      setUsers(userData);
-    };
-    checkAuthAndFetch();
-  }, []);
-  
+  const [students, users] = await Promise.all([
+    getStudents(session.user.id, session.user.role as Role),
+    getUsers()
+  ]);
+
   const translations = {
       title: t('students.title'),
       descriptionSuperAdmin: t('students.descriptionSuperAdmin'),
@@ -70,16 +53,14 @@ export default function StudentsPage() {
   };
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout>
         <div className="container py-8 flex flex-col items-center">
-        {session && (
              <StudentList 
-                students={students} 
+                students={students as StudentWithClass[]} 
                 users={users} 
                 session={session}
                 translations={translations}
             />
-        )}
         </div>
     </MainLayout>
   );

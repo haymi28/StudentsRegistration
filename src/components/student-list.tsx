@@ -34,6 +34,7 @@ import { TransferStudentsDialog } from './transfer-students-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { deleteStudent } from '@/lib/data';
 import { Student, User, Class } from '@prisma/client';
+import { useLocale } from '@/contexts/locale-provider';
 
 type StudentWithClass = Student & { class: Class | null };
 
@@ -82,6 +83,7 @@ export function StudentList({ students, users, session, translations }: StudentL
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLocale();
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -107,7 +109,7 @@ export function StudentList({ students, users, session, translations }: StudentL
       const lowercasedQuery = searchQuery.toLowerCase();
       studentsToDisplay = studentsToDisplay.filter(student =>
         student.fullName.toLowerCase().includes(lowercasedQuery) ||
-        student.registrationNumber.toLowerCase().includes(lowercasedQuery)
+        (student.registrationNumber && student.registrationNumber.toLowerCase().includes(lowercasedQuery))
       );
     }
     return studentsToDisplay;
@@ -204,7 +206,7 @@ export function StudentList({ students, users, session, translations }: StudentL
                         </TableCell>
                         <TableCell className="whitespace-nowrap">{student.phoneNumber}</TableCell>
                         <TableCell className="text-right">
-                           <RowActions student={student} session={session} translations={translations.rowActions}/>
+                           <RowActions student={student} session={session} translations={translations.rowActions} t={t}/>
                         </TableCell>
                       </TableRow>
                     ))
@@ -245,7 +247,7 @@ export function StudentList({ students, users, session, translations }: StudentL
                               <p className="text-sm text-muted-foreground pt-1">{student.phoneNumber}</p>
                           </div>
                           <div className="flex-shrink-0 -mr-2">
-                            <RowActions student={student} session={session} translations={translations.rowActions}/>
+                            <RowActions student={student} session={session} translations={translations.rowActions} t={t}/>
                           </div>
                       </div>
                   </Card>
@@ -262,7 +264,7 @@ export function StudentList({ students, users, session, translations }: StudentL
 }
 
 
-function RowActions({ student, session, translations }: { student: Student, session: any, translations: RowActionsTranslations }) {
+function RowActions({ student, session, translations, t }: { student: Student, session: any, translations: RowActionsTranslations, t: (key: string, params?: any) => string }) {
     const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
     const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -282,15 +284,15 @@ function RowActions({ student, session, translations }: { student: Student, sess
             toast({
                 variant: "destructive",
                 title: translations.deleteSuccess,
-                description: translations.deleteSuccessDescription.replace('{name}', studentToDelete.fullName),
+                description: t(translations.deleteSuccessDescription, { name: studentToDelete.fullName }),
             });
             setStudentToDelete(null);
             router.refresh();
         } catch (error) {
             toast({
                 variant: 'destructive',
-                title: 'Error',
-                description: 'Failed to delete student.',
+                title: t('common.error'),
+                description: t('common.errorDescription'),
             });
         } finally {
             setIsDeleting(false);
@@ -346,7 +348,7 @@ function RowActions({ student, session, translations }: { student: Student, sess
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>{translations.deleteDialog.title}</AlertDialogTitle>
-                        <AlertDialogDescription dangerouslySetInnerHTML={{ __html: translations.deleteDialog.description.replace('{name}', `<strong>${studentToDelete?.fullName}</strong>`) }} />
+                        <AlertDialogDescription dangerouslySetInnerHTML={{ __html: t(translations.deleteDialog.description, { name: `<strong>${studentToDelete?.fullName}</strong>` }) }} />
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel onClick={() => setStudentToDelete(null)}>{translations.deleteDialog.cancel}</AlertDialogCancel>

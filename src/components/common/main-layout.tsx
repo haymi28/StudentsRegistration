@@ -29,6 +29,7 @@ export function MainLayout({
   }, [pathname]); // Re-check on path change
   
   if (!isClient || !isLoaded) {
+    // A loader can be returned here. Returning null for now to avoid layout shift.
     return null;
   }
   
@@ -43,8 +44,10 @@ export function MainLayout({
     );
   }
 
+  // When a user is not authenticated and trying to access a non-public page,
+  // the server-side logic in that page should handle the redirect.
+  // We return null here to prevent the layout from flashing while the redirect happens.
   if (!isAuthenticated && !isPublicPage) {
-    // This will prevent flashing the layout for users who are being redirected
     return null;
   }
 
