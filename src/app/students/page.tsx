@@ -8,6 +8,7 @@ import { useLocale } from '@/contexts/locale-provider';
 import { MainLayout } from '@/components/common/main-layout';
 import { useEffect, useState } from 'react';
 import { Student, User, Class } from '@prisma/client';
+import { redirect } from 'next/navigation';
 
 type StudentWithClass = Student & { class: Class | null };
 
@@ -21,7 +22,10 @@ export default function StudentsPage() {
   useEffect(() => {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
-      setIsAuthenticated(!!sessionData);
+      if (!sessionData) {
+        redirect('/');
+      }
+      setIsAuthenticated(true);
       setSession(sessionData);
 
       if (sessionData) {

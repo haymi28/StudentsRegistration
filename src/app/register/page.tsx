@@ -8,6 +8,7 @@ import { getClasses } from '@/lib/data';
 import { MainLayout } from '@/components/common/main-layout';
 import { useEffect, useState } from 'react';
 import { Class } from '@prisma/client';
+import { redirect } from 'next/navigation';
 
 export default function RegisterPage() {
   const { t } = useLocale();
@@ -18,7 +19,10 @@ export default function RegisterPage() {
   useEffect(() => {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
-      setIsAuthenticated(!!sessionData);
+      if (!sessionData) {
+        redirect('/');
+      }
+      setIsAuthenticated(true);
       setSession(sessionData);
 
       if (sessionData) {

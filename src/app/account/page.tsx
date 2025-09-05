@@ -7,14 +7,22 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { MainLayout } from '@/components/common/main-layout';
 import { useLocale } from '@/contexts/locale-provider';
 import { useState, useEffect } from 'react';
+import { getServerSession } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export default function AccountPage() {
   const { t } = useLocale();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const sessionToken = document.cookie.includes('session=');
-    setIsAuthenticated(sessionToken);
+    const checkAuth = async () => {
+      const session = await getServerSession();
+      if (!session) {
+        redirect('/');
+      }
+      setIsAuthenticated(true);
+    };
+    checkAuth();
   }, []);
 
   return (

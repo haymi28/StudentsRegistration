@@ -19,12 +19,13 @@ export default function EditStudentPage({ params }: { params: { id: string }}) {
   useEffect(() => {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
-      setIsAuthenticated(!!sessionData);
-      setSession(sessionData);
-
       if (!sessionData) {
         redirect('/');
-      } else {
+      }
+      setIsAuthenticated(true);
+      setSession(sessionData);
+
+      if (sessionData) {
         const [studentData, classData] = await Promise.all([
           getStudentById(params.id),
           getClasses(),

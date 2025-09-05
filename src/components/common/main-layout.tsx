@@ -18,41 +18,20 @@ export function MainLayout({
     isAuthenticated: boolean
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   const { isLoaded } = useLocale();
   
   const publicRoutes = useMemo(() => ['/'], []);
-  const authRoutes = useMemo(() => ['/login'], []);
-  const allPublicRoutes = useMemo(() => [...publicRoutes, ...authRoutes], [publicRoutes, authRoutes]);
-
 
   useEffect(() => {
     setIsClient(true);
   }, []);
   
-  useEffect(() => {
-    if (!isClient || !isLoaded) return;
-
-    const isAuthPage = authRoutes.includes(pathname);
-    const isProtectedPage = !allPublicRoutes.includes(pathname);
-
-    if (isAuthenticated && isAuthPage) {
-        router.replace('/students');
-    }
-
-    if (!isAuthenticated && isProtectedPage) {
-        router.replace('/');
-    }
-
-  }, [pathname, isAuthenticated, router, isClient, allPublicRoutes, authRoutes, isLoaded]);
-
-
   if (!isClient || !isLoaded) {
     return null;
   }
   
-  const isPublicPage = allPublicRoutes.includes(pathname);
+  const isPublicPage = publicRoutes.includes(pathname);
 
   if (!isAuthenticated && isPublicPage) {
     return (
@@ -63,7 +42,7 @@ export function MainLayout({
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isPublicPage) {
     return null;
   }
 
