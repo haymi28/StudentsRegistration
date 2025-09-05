@@ -6,9 +6,10 @@
         "import": "አስመጣ",
         "export": "ላክ",
         "attendance": "የተማሪዎች ክትትል",
-        "users": "ተጠቃሚዎች",
-        "class": "ክፍል",
-        "role": "ሚና",
+        "settings": "ቅንብሮች",
+        "userManagement": "የተጠቃሚ አስተዳደር",
+        "classManagement": "የክፍል አስተዳደር",
+        "roleManagement": "የሚና አስተዳደር",
         "account": "የኔ መለያ",
         "logout": "ውጣ",
         "language": "ቋንቋ"

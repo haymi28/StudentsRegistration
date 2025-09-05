@@ -6,9 +6,10 @@
         "import": "Import",
         "export": "Export",
         "attendance": "Attendance",
-        "users": "Users",
-        "class": "Class",
-        "role": "Role",
+        "settings": "Settings",
+        "userManagement": "User Management",
+        "classManagement": "Class Management",
+        "roleManagement": "Role Management",
         "account": "My Account",
         "logout": "Logout",
         "language": "Language"
