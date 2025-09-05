@@ -1,36 +1,23 @@
 
-'use client';
-
 import { getServerSession } from '@/lib/auth';
 import { getClasses } from '@/lib/data';
-import { useLocale } from '@/contexts/locale-provider';
+import { getTranslator } from '@/lib/i18n';
 import { ClassList } from '@/components/class-list';
 import { MainLayout } from '@/components/common/main-layout';
-import { useState, useEffect } from 'react';
 import { Class, User } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
-
 type ClassWithDetails = Class & { manager: User | null; _count: { students: number } };
 
-export default function ClassesPage() {
-  const { t } = useLocale();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [classes, setClasses] = useState<ClassWithDetails[]>([]);
+export default async function ClassesPage() {
+  const t = await getTranslator();
+  const session = await getServerSession();
 
-  useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      const sessionData = await getServerSession();
-      setIsAuthenticated(!!sessionData);
-      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_classes !== true) {
-        redirect('/students');
-      } else {
-        const classData = await getClasses();
-        setClasses(classData as ClassWithDetails[]);
-      }
-    };
-    checkAuthAndFetch();
-  }, []);
+  if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_classes !== true) {
+    redirect('/students');
+  }
+
+  const classes = (await getClasses()) as ClassWithDetails[];
 
   const translations = {
     title: t('classes.title'),

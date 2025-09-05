@@ -1,35 +1,23 @@
 
-'use client';
-
 import { getServerSession } from '@/lib/auth';
 import { getRoles } from '@/lib/data';
-import { useLocale } from '@/contexts/locale-provider';
+import { getTranslator } from '@/lib/i18n';
 import { RoleList } from '@/components/role-list';
 import { MainLayout } from '@/components/common/main-layout';
-import { useState, useEffect } from 'react';
 import { Role } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
 type RoleWithDetails = Role & { _count: { users: number } };
 
-export default function RolesPage() {
-  const { t } = useLocale();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [roles, setRoles] = useState<RoleWithDetails[]>([]);
+export default async function RolesPage() {
+  const t = await getTranslator();
+  const session = await getServerSession();
+  
+  if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_roles !== true) {
+    redirect('/students');
+  }
 
-  useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      const sessionData = await getServerSession();
-      setIsAuthenticated(!!sessionData);
-      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_roles !== true) {
-        redirect('/students');
-      } else {
-        const roleData = await getRoles();
-        setRoles(roleData as RoleWithDetails[]);
-      }
-    };
-    checkAuthAndFetch();
-  }, []);
+  const roles = (await getRoles()) as RoleWithDetails[];
 
   const translations = {
     title: t('roles.title'),

@@ -1,35 +1,23 @@
 
-'use client';
-
 import { getServerSession } from '@/lib/auth';
 import { getUsers } from '@/lib/data';
+import { getTranslator } from '@/lib/i18n';
 import { UserList } from '@/components/user-list';
-import { useLocale } from '@/contexts/locale-provider';
 import { MainLayout } from '@/components/common/main-layout';
-import { useState, useEffect } from 'react';
 import { User, Role } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
 type UserWithRole = User & { role: Role };
 
-export default function UsersPage() {
-  const { t } = useLocale();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [users, setUsers] = useState<UserWithRole[]>([]);
+export default async function UsersPage() {
+  const t = await getTranslator();
+  const session = await getServerSession();
 
-  useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      const sessionData = await getServerSession();
-      setIsAuthenticated(!!sessionData);
-      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
-        redirect('/students');
-      } else {
-        const userData = await getUsers();
-        setUsers(userData as UserWithRole[]);
-      }
-    };
-    checkAuthAndFetch();
-  }, []);
+  if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
+    redirect('/students');
+  }
+  
+  const users = (await getUsers()) as UserWithRole[];
 
   const translations = {
     title: t('users.title'),

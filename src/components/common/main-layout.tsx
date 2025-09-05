@@ -1,7 +1,7 @@
 
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Header } from '@/components/common/header';
@@ -12,12 +12,11 @@ import { useLocale } from '@/contexts/locale-provider';
 
 export function MainLayout({ 
     children,
-    isAuthenticated
 }: { 
     children: React.ReactNode,
-    isAuthenticated: boolean
 }) {
   const pathname = usePathname();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const { isLoaded } = useLocale();
   
@@ -25,7 +24,9 @@ export function MainLayout({
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    const sessionToken = document.cookie.includes('session=');
+    setIsAuthenticated(sessionToken);
+  }, [pathname]); // Re-check on path change
   
   if (!isClient || !isLoaded) {
     return null;
@@ -43,6 +44,7 @@ export function MainLayout({
   }
 
   if (!isAuthenticated && !isPublicPage) {
+    // This will prevent flashing the layout for users who are being redirected
     return null;
   }
 
