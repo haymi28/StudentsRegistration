@@ -197,6 +197,9 @@
         "fullName": "Full Name",
         "gender": "Gender"
     },
+     "settings": {
+        "pageDescription": "Access and manage system-wide settings and configurations."
+    },
     "users": {
         "title": "User Management",
         "description": "Create, view, and manage system users and their roles.",
