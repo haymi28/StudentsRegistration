@@ -18,28 +18,36 @@ type RoleData = z.infer<ReturnType<typeof getRoleSchema>>;
 type UserUpdateData = z.infer<ReturnType<typeof getUpdateUserSchema>>;
 
 
-export async function getStudents(userId: string, userRole: Role & { permissions: { permission: { name: string } }[]}) {
-  const userPermissions = new Set(userRole.permissions.map(p => p.permission.name));
-
-  if (userPermissions.has('manage_all_students')) {
-     return await prisma.student.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: { class: true }
-    });
-  }
-  
-  const userClass = await prisma.class.findFirst({
-    where: { managerId: userId }
+// Updated getStudents function
+export async function getStudents(userId: string, roleName: string) {
+  // Fetch role with permissions from DB
+  const role = await prisma.role.findUnique({
+    where: { name: roleName },
+    include: { permissions: { include: { permission: true } } },
   });
 
-  if (!userClass) {
-    return [];
+  // Safely map permissions; fallback to empty array if missing
+  const userPermissions = new Set(
+    (role?.permissions || []).map(p => p.permission?.name).filter(Boolean)
+  );
+
+  if (userPermissions.has('manage_all_students')) {
+    return await prisma.student.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { class: true },
+    });
   }
+
+  const userClass = await prisma.class.findFirst({
+    where: { managerId: userId },
+  });
+
+  if (!userClass) return [];
 
   return await prisma.student.findMany({
     where: { classId: userClass.id },
     orderBy: { createdAt: 'desc' },
-    include: { class: true }
+    include: { class: true },
   });
 }
 
