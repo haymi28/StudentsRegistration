@@ -22,7 +22,7 @@ export default function ClassesPage() {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
       setIsAuthenticated(!!sessionData);
-      if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_classes !== true) {
         redirect('/students');
       } else {
         const classData = await getClasses();
@@ -61,7 +61,7 @@ export default function ClassesPage() {
   };
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout>
         <div className="container py-8 flex flex-col items-center">
             <ClassList classes={classes} translations={translations} />
         </div>

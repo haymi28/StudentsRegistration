@@ -10,17 +10,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model Student {
   id                    String    @id @default(cuid())
-  registrationNumber  String    @unique
+  registrationNumber    String    @unique
   fullName              String
   gender                String
-  classId               String
-  class                 Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId               String?
+  photo                 String?
   baptismalName         String?
   mothersName           String?
   dateOfBirth           String?
-  educationLevel        String
+  educationLevel        String?
   phoneNumber           String
   additionalPhoneNumber String?
   fathersPhoneNumber    String?
@@ -30,59 +31,44 @@ model Student {
   houseNumber           String?
   specificAddress       String?
   dateOfJoining         String?
-  photo                 String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  
+  class                 Class?    @relation(fields: [classId], references: [id], onDelete: SetNull)
 }
 
 model User {
-  id           String    @id @default(cuid())
-  username     String    @unique
-  password     String
-  displayName  String
-  roleId       String
-  role         Role      @relation(fields: [roleId], references: [id])
-  isActive     Boolean   @default(true)
-  managedClass Class?    @relation("ClassManager")
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  username      String    @unique
+  password      String
+  displayName   String
+  roleId        String
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  role          Role      @relation(fields: [roleId], references: [id])
+  managedClass  Class?    @relation("ClassManager")
 }
-
-model Role {
-  id          String           @id @default(cuid())
-  name        String           @unique
-  description String?
-  permissions RolePermission[]
-  users       User[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-}
-
-model Permission {
-  id          String           @id @default(cuid())
-  name        String           @unique // e.g., "manage_users", "delete_students"
-  description String?
-  roles       RolePermission[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-}
-
-model RolePermission {
-  roleId       String
-  permissionId String
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@id([roleId, permissionId])
-}
-
 
 model Class {
   id        String    @id @default(cuid())
   name      String    @unique
   managerId String?   @unique
-  manager   User?     @relation("ClassManager", fields: [managerId], references: [id], onDelete: SetNull)
-  students  Student[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  students  Student[]
+  manager   User?     @relation("ClassManager", fields: [managerId], references: [id])
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  permissions Json     @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
 }

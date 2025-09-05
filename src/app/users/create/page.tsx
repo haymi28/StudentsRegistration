@@ -10,13 +10,11 @@ import { redirect } from "next/navigation";
 
 export default function CreateUserPage() {
     const { t } = useLocale();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
       const checkAuth = async () => {
         const sessionData = await getServerSession();
-        setIsAuthenticated(!!sessionData);
-        if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+        if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
             redirect('/students');
         }
       };
@@ -51,7 +49,7 @@ export default function CreateUserPage() {
     };
 
     return (
-        <MainLayout isAuthenticated={isAuthenticated}>
+        <MainLayout>
             <div className="container py-8">
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-8 text-center">

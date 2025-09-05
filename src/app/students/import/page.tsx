@@ -3,7 +3,7 @@
 
 import { BulkImportForm } from '@/components/bulk-import-form';
 import { useLocale } from '@/contexts/locale-provider';
-import { UserRole } from '@/lib/constants';
+import { getServerSession } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/common/main-layout';
@@ -11,25 +11,25 @@ import { MainLayout } from '@/components/common/main-layout';
 export default function ImportPage() {
   const router = useRouter();
   const { t } = useLocale();
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const role = localStorage.getItem('user_role') as UserRole;
-    if (role !== 'super_admin') {
-      router.replace('/students');
-    }
-    setUserRole(role);
-    const sessionToken = document.cookie.includes('session=');
-    setIsAuthenticated(sessionToken);
+    const checkAuth = async () => {
+        const session = await getServerSession();
+        if (!session) {
+            router.replace('/');
+            return;
+        }
+        const permissions = session.user.role.permissions as Record<string, boolean>;
+        if (!permissions?.import_students) {
+            router.replace('/students');
+        }
+    };
+    checkAuth();
   }, [router]);
   
-  if (userRole !== 'super_admin') {
-    return null; // Or a loading/access denied component
-  }
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout>
         <div className="container py-8">
         <div className="max-w-4xl mx-auto">
             <div className="mb-8 text-center">

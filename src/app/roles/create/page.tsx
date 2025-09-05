@@ -2,28 +2,22 @@
 'use client';
 
 import { getServerSession } from '@/lib/auth';
-import { getPermissions } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
 import { RoleForm } from '@/components/role-form';
 import { MainLayout } from '@/components/common/main-layout';
 import { useState, useEffect } from 'react';
-import { Permission } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
 export default function CreateRolePage() {
   const { t } = useLocale();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [permissions, setPermissions] = useState<Permission[]>([]);
 
   useEffect(() => {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
       setIsAuthenticated(!!sessionData);
-      if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_roles !== true) {
         redirect('/students');
-      } else {
-        const perms = await getPermissions();
-        setPermissions(perms);
       }
     };
     checkAuthAndFetch();
@@ -59,7 +53,7 @@ export default function CreateRolePage() {
             <h1 className="text-3xl font-bold font-headline">{translations.createTitle}</h1>
             <p className="text-muted-foreground">{translations.createDescription}</p>
             </div>
-            <RoleForm permissions={permissions} translations={translations} />
+            <RoleForm translations={translations} />
         </div>
         </div>
     </MainLayout>

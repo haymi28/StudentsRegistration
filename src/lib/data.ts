@@ -7,7 +7,7 @@ import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
 import { Student, User, Class, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { getCreateUserSchema, getUpdateUserSchema, getUpdateProfileSchema } from './validations/user';
+import { getCreateUserSchema, getUpdateUserSchema } from './validations/user';
 import { getCreateClassSchema } from './validations/class';
 import { getRoleSchema } from './validations/role';
 
@@ -19,19 +19,10 @@ type UserUpdateData = z.infer<ReturnType<typeof getUpdateUserSchema>>;
 
 
 // Updated getStudents function
-export async function getStudents(userId: string, roleName: string) {
-  // Fetch role with permissions from DB
-  const role = await prisma.role.findUnique({
-    where: { name: roleName },
-    include: { permissions: { include: { permission: true } } },
-  });
+export async function getStudents(userId: string, role: Role) {
+  const userPermissions = role.permissions as Record<string, boolean> || {};
 
-  // Safely map permissions; fallback to empty array if missing
-  const userPermissions = new Set(
-    (role?.permissions || []).map(p => p.permission?.name).filter(Boolean)
-  );
-
-  if (userPermissions.has('manage_all_students')) {
+  if (userPermissions.manage_all_students) {
     return await prisma.student.findMany({
       orderBy: { createdAt: 'desc' },
       include: { class: true },
@@ -142,16 +133,12 @@ export async function getUserById(id: string) {
 export async function getUserByUsername(username: string) {
     return await prisma.user.findUnique({ 
         where: { username },
-        include: { role: { include: { permissions: { include: { permission: true } } } } }
+        include: { role: true }
     });
 }
 
 export async function updateUser(id: string, data: Partial<UserUpdateData>) {
-  const isProfileUpdate = data.displayName && Object.keys(data).length === 1;
-
-  const validationSchema = isProfileUpdate
-    ? getUpdateProfileSchema()
-    : getUpdateUserSchema();
+  const validationSchema = getUpdateUserSchema();
 
   const validatedData = validationSchema.safeParse(data);
 
@@ -165,8 +152,6 @@ export async function updateUser(id: string, data: Partial<UserUpdateData>) {
 
   if (password) {
       dataToUpdate.password = await bcrypt.hash(password, 10);
-  } else {
-      delete dataToUpdate.password;
   }
   
   await prisma.user.update({
@@ -195,7 +180,7 @@ export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSc
         throw new Error('User with this username already exists.');
     }
 
-    const { password, confirmPassword, ...userData } = validatedData.data;
+    const { password, ...userData } = validatedData.data;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await prisma.user.create({
@@ -296,7 +281,6 @@ export async function getRoles() {
     return await prisma.role.findMany({
         include: {
             _count: { select: { users: true } },
-            permissions: { include: { permission: true } }
         },
         orderBy: { name: 'asc' }
     });
@@ -305,12 +289,7 @@ export async function getRoles() {
 export async function getRoleById(id: string) {
     return await prisma.role.findUnique({
         where: { id },
-        include: { permissions: { include: { permission: true } } }
     });
-}
-
-export async function getPermissions() {
-    return await prisma.permission.findMany({ orderBy: { name: 'asc' } });
 }
 
 export async function createRole(data: RoleData) {
@@ -320,15 +299,13 @@ export async function createRole(data: RoleData) {
     if (!validatedData.success) {
         throw new Error('Invalid role data: ' + validatedData.error.message);
     }
-    const { name, description, permissionIds } = validatedData.data;
+    const { name, description, permissions } = validatedData.data;
 
     await prisma.role.create({
         data: {
             name,
             description,
-            permissions: {
-                create: permissionIds.map(id => ({ permissionId: id }))
-            }
+            permissions
         }
     });
 
@@ -341,29 +318,13 @@ export async function updateRole(id: string, data: RoleData) {
      if (!validatedData.success) {
         throw new Error('Invalid role data: ' + validatedData.error.message);
     }
-    const { name, description, permissionIds } = validatedData.data;
+    const { name, description, permissions } = validatedData.data;
 
-    // Use a transaction to ensure atomicity
-    await prisma.$transaction(async (tx) => {
-        // Update role details
-        await tx.role.update({
-            where: { id },
-            data: { name, description }
-        });
-
-        // Remove old permissions
-        await tx.rolePermission.deleteMany({
-            where: { roleId: id }
-        });
-
-        // Add new permissions
-        await tx.rolePermission.createMany({
-            data: permissionIds.map(permissionId => ({
-                roleId: id,
-                permissionId: permissionId
-            }))
-        });
+    await prisma.role.update({
+        where: { id },
+        data: { name, description, permissions }
     });
+
 
     revalidatePath('/roles');
     revalidatePath(`/roles/edit/${id}`);

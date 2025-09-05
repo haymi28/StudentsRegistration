@@ -13,30 +13,41 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { Role, Permission } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { getRoleSchema } from '@/lib/validations/role';
 import { createRole, updateRole } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 type RoleFormValues = z.infer<ReturnType<typeof getRoleSchema>>;
 
-type RoleWithPermissions = Role & {
-    permissions: { permissionId: string }[];
-}
+const allPermissionsList = [
+    { id: 'manage_users', description: 'Create, edit, and delete users' },
+    { id: 'manage_roles', description: 'Create, edit, and delete roles and their permissions' },
+    { id: 'manage_classes', description: 'Create, edit, and delete classes and assign managers' },
+    { id: 'manage_all_students', description: 'View, edit, and delete any student in any class' },
+    { id: 'manage_class_students', description: 'View, edit, and delete students in their own class' },
+    { id: 'view_students', description: 'View students in their own class' },
+    { id: 'import_students', description: 'Bulk import students from a file' },
+    { id: 'export_students', description: 'Export student data' },
+];
 
 interface RoleFormProps {
-  roleToEdit?: RoleWithPermissions;
-  permissions: Permission[];
+  roleToEdit?: Role;
   translations: any;
 }
 
-export function RoleForm({ roleToEdit, permissions, translations }: RoleFormProps) {
+export function RoleForm({ roleToEdit, translations }: RoleFormProps) {
   const { toast } = useToast();
-  const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEditMode = !!roleToEdit;
+  const currentPermissions = useMemo(() => {
+    if (roleToEdit?.permissions && typeof roleToEdit.permissions === 'object') {
+        return roleToEdit.permissions as Record<string, boolean>;
+    }
+    return {};
+  }, [roleToEdit]);
 
   const validationSchema = getRoleSchema();
 
@@ -46,12 +57,12 @@ export function RoleForm({ roleToEdit, permissions, translations }: RoleFormProp
       ? {
           name: roleToEdit.name,
           description: roleToEdit.description || '',
-          permissionIds: roleToEdit.permissions.map(p => p.permissionId),
+          permissions: currentPermissions,
         }
       : {
           name: '',
           description: '',
-          permissionIds: [],
+          permissions: {},
         },
   });
 
@@ -111,61 +122,50 @@ export function RoleForm({ roleToEdit, permissions, translations }: RoleFormProp
                 <FormItem>
                   <FormLabel>{translations.labels.description}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder={translations.placeholders.description} {...field} readOnly={isDefaultRole} />
+                    <Textarea placeholder={translations.placeholders.description} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
-              control={form.control}
-              name="permissionIds"
-              render={() => (
-                <FormItem>
-                    <div className="mb-4">
-                        <FormLabel className="text-base">{translations.labels.permissions}</FormLabel>
-                        <FormDescription>Select the permissions for this role.</FormDescription>
-                    </div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {permissions.map((permission) => (
-                        <FormField
-                            key={permission.id}
-                            control={form.control}
-                            name="permissionIds"
-                            render={({ field }) => {
-                                return (
-                                <FormItem
-                                    key={permission.id}
-                                    className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
-                                >
-                                    <FormControl>
-                                    <Checkbox
-                                        checked={field.value?.includes(permission.id)}
-                                        onCheckedChange={(checked) => {
-                                        return checked
-                                            ? field.onChange([...field.value, permission.id])
-                                            : field.onChange(
-                                                field.value?.filter(
-                                                (value) => value !== permission.id
-                                                )
-                                            )
-                                        }}
-                                        disabled={isDefaultRole}
-                                    />
-                                    </FormControl>
-                                    <div className="space-y-1 leading-none">
-                                        <FormLabel className="font-normal">{permission.name.replace(/_/g, ' ')}</FormLabel>
-                                        <FormDescription>{permission.description}</FormDescription>
-                                    </div>
-                                </FormItem>
-                                )
-                            }}
-                        />
-                    ))}
-                    </div>
-                  <FormMessage />
-                </FormItem>
-              )}
+                control={form.control}
+                name="permissions"
+                render={() => (
+                    <FormItem>
+                        <div className="mb-4">
+                            <FormLabel className="text-base">{translations.labels.permissions}</FormLabel>
+                            <FormDescription>Select the permissions for this role.</FormDescription>
+                        </div>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {allPermissionsList.map((permission) => (
+                            <FormField
+                                key={permission.id}
+                                control={form.control}
+                                name={`permissions.${permission.id}`}
+                                render={({ field }) => (
+                                    <FormItem
+                                        className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+                                    >
+                                        <FormControl>
+                                        <Checkbox
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                            disabled={isDefaultRole}
+                                        />
+                                        </FormControl>
+                                        <div className="space-y-1 leading-none">
+                                            <FormLabel className="font-normal">{permission.id.replace(/_/g, ' ')}</FormLabel>
+                                            <FormDescription>{permission.description}</FormDescription>
+                                        </div>
+                                    </FormItem>
+                                )}
+                            />
+                        ))}
+                        </div>
+                    <FormMessage />
+                    </FormItem>
+                )}
             />
           </CardContent>
           <CardFooter>

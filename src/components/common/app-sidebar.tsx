@@ -17,7 +17,7 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { useEffect, useState } from 'react';
-import { signOut } from '@/lib/auth';
+import { signOut, getServerSession } from '@/lib/auth';
 import { Role } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
 
@@ -33,16 +33,13 @@ export function AppSidebar() {
   const { t } = useLocale();
   
   useEffect(() => {
-    const roleString = localStorage.getItem('user_role');
-    const userId = localStorage.getItem('userId');
-    if (roleString && userId) {
-      try {
-        const role = JSON.parse(roleString);
-        setUserSession({ id: userId, role });
-      } catch (error) {
-        console.error("Failed to parse user role from localStorage", error);
+    const fetchSession = async () => {
+      const session = await getServerSession();
+      if (session) {
+        setUserSession(session.user);
       }
     }
+    fetchSession();
   }, []);
 
   const handleLogout = async () => {
@@ -51,23 +48,23 @@ export function AppSidebar() {
     router.refresh();
   };
 
+  const permissions = userSession?.role?.permissions as Record<string, boolean> || {};
+
   const navLinks = [
-    { href: '/students', label: t('nav.students'), icon: Users },
-    { href: '/register', label: t('nav.newStudent'), icon: UserPlus },
-    { href: '/classes', label: t('nav.class'), icon: Home, roles: ['Super Admin'] },
-    { href: '/users', label: t('nav.users'), icon: Shield, roles: ['Super Admin'] },
-    { href: '/roles', label: t('nav.role'), icon: ShieldCheck, roles: ['Super Admin'] },
+    { href: '/students', label: t('nav.students'), icon: Users, permission: 'view_students' },
+    { href: '/register', label: t('nav.newStudent'), icon: UserPlus, permission: 'manage_class_students' },
+    { href: '/classes', label: t('nav.class'), icon: Home, permission: 'manage_classes' },
+    { href: '/users', label: t('nav.users'), icon: Shield, permission: 'manage_users' },
+    { href: '/roles', label: t('nav.role'), icon: ShieldCheck, permission: 'manage_roles' },
   ];
 
   const adminLinks = [
-    { href: '/students/import', label: t('nav.import'), icon: Upload, roles: ['Super Admin'] },
-    { href: '/students/export', label: t('nav.export'), icon: Download, roles: ['Super Admin'] },
+    { href: '/students/import', label: t('nav.import'), icon: Upload, permission: 'import_students' },
+    { href: '/students/export', label: t('nav.export'), icon: Download, permission: 'export_students' },
   ];
   
-  const userRoleName = userSession?.role?.name;
-  const visibleNavLinks = navLinks.filter(link => !link.roles || (userRoleName && link.roles.includes(userRoleName)));
-  const visibleAdminLinks = adminLinks.filter(link => !link.roles || (userRoleName && link.roles.includes(userRoleName)));
-
+  const visibleNavLinks = navLinks.filter(link => permissions[link.permission]);
+  const visibleAdminLinks = adminLinks.filter(link => permissions[link.permission]);
 
   return (
     <Sidebar collapsible="icon">
@@ -87,7 +84,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
-          {visibleAdminLinks.length > 0 && userRoleName === 'Super Admin' && (
+          {visibleAdminLinks.length > 0 && (
             <>
               <SidebarSeparator />
               {visibleAdminLinks.map((link) => (

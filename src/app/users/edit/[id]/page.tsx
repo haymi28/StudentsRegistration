@@ -12,14 +12,12 @@ import { redirect } from 'next/navigation';
 
 export default function EditUserPage({ params }: { params: { id: string } }) {
     const { t } = useLocale();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState<(User & { role: Role }) | null>(null);
 
     useEffect(() => {
       const checkAuthAndFetch = async () => {
         const sessionData = await getServerSession();
-        setIsAuthenticated(!!sessionData);
-        if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+        if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
           redirect('/students');
         } else {
           const userData = await getUserById(params.id);
@@ -57,7 +55,7 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
     };
 
     return (
-        <MainLayout isAuthenticated={isAuthenticated}>
+        <MainLayout>
             <div className="container py-8">
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-8 text-center">

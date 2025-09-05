@@ -13,18 +13,23 @@ import { MainLayout } from '@/components/common/main-layout';
 export default function ExportStudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   useEffect(() => {
     const checkAuthAndFetch = async () => {
         const session = await getServerSession();
-        setIsAuthenticated(!!session);
-        if (!session || session.user.role.name !== 'Super Admin') {
-            redirect('/students');
-        } else {
-            const studentData = await getStudents(session.user.id, session.user.role as Role & { permissions: { permissionId: string }[]});
-            setStudents(studentData);
+        if (!session) {
+            redirect('/');
+            return;
         }
+
+        const permissions = session.user.role.permissions as Record<string, boolean>;
+        if (!permissions.export_students) {
+             redirect('/students');
+             return;
+        }
+
+        const studentData = await getStudents(session.user.id, session.user.role as Role);
+        setStudents(studentData);
         setLoading(false);
     }
     checkAuthAndFetch();
@@ -35,7 +40,7 @@ export default function ExportStudentsPage() {
   }
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout>
         <div className="container py-8">
         <ExportStudentClient students={students} />
         </div>

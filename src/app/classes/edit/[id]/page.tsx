@@ -21,7 +21,7 @@ export default function EditClassPage({ params }: { params: { id: string } }) {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
       setIsAuthenticated(!!sessionData);
-      if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_classes !== true) {
         redirect('/students');
       } else {
         const [classData, userData] = await Promise.all([
@@ -57,7 +57,7 @@ export default function EditClassPage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout>
         <div className="container py-8">
         <div className="max-w-4xl mx-auto">
             <div className="mb-8 text-center">

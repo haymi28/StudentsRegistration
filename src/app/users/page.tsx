@@ -21,7 +21,7 @@ export default function UsersPage() {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
       setIsAuthenticated(!!sessionData);
-      if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
         redirect('/students');
       } else {
         const userData = await getUsers();
@@ -65,7 +65,7 @@ export default function UsersPage() {
   };
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout>
         <div className="container py-8 flex flex-col items-center">
             <UserList users={users} translations={translations} />
         </div>

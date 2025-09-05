@@ -7,14 +7,13 @@ import { getStudents, getUsers } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
 import { MainLayout } from '@/components/common/main-layout';
 import { useEffect, useState } from 'react';
-import { Student, User, Class } from '@prisma/client';
+import { Student, User, Class, Role } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
 type StudentWithClass = Student & { class: Class | null };
 
 export default function StudentsPage() {
   const { t } = useLocale();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [students, setStudents] = useState<StudentWithClass[]>([]);
   const [users, setUsers] = useState<Partial<User>[]>([]);
@@ -24,18 +23,16 @@ export default function StudentsPage() {
       const sessionData = await getServerSession();
       if (!sessionData) {
         redirect('/');
+        return;
       }
-      setIsAuthenticated(true);
       setSession(sessionData);
 
-      if (sessionData) {
-        const [studentData, userData] = await Promise.all([
-          getStudents(sessionData.user.id, sessionData.user.role),
-          getUsers()
-        ]);
-        setStudents(studentData as StudentWithClass[]);
-        setUsers(userData);
-      }
+      const [studentData, userData] = await Promise.all([
+        getStudents(sessionData.user.id, sessionData.user.role as Role),
+        getUsers()
+      ]);
+      setStudents(studentData as StudentWithClass[]);
+      setUsers(userData);
     };
     checkAuthAndFetch();
   }, []);
@@ -71,7 +68,7 @@ export default function StudentsPage() {
   };
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout>
         <div className="container py-8 flex flex-col items-center">
         {session && (
              <StudentList 

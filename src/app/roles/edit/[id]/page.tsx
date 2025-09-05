@@ -2,35 +2,28 @@
 'use client';
 
 import { getServerSession } from '@/lib/auth';
-import { getRoleById, getPermissions } from '@/lib/data';
+import { getRoleById } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
 import { RoleForm } from '@/components/role-form';
 import { MainLayout } from '@/components/common/main-layout';
 import { useState, useEffect } from 'react';
-import { Role, Permission } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { redirect } from 'next/navigation';
-
-type RoleWithPermissions = Role & { permissions: { permissionId: string }[] };
 
 export default function EditRolePage({ params }: { params: { id: string } }) {
   const { t } = useLocale();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [roleToEdit, setRoleToEdit] = useState<RoleWithPermissions | null>(null);
-  const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [roleToEdit, setRoleToEdit] = useState<Role | null>(null);
 
   useEffect(() => {
     const checkAuthAndFetch = async () => {
       const sessionData = await getServerSession();
       setIsAuthenticated(!!sessionData);
-      if (!sessionData || sessionData.user.role.name !== 'Super Admin') {
+      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_roles !== true) {
         redirect('/students');
       } else {
-        const [roleData, permsData] = await Promise.all([
-          getRoleById(params.id),
-          getPermissions()
-        ]);
-        setRoleToEdit(roleData as RoleWithPermissions);
-        setPermissions(permsData);
+        const roleData = await getRoleById(params.id);
+        setRoleToEdit(roleData);
       }
     };
     checkAuthAndFetch();
@@ -66,7 +59,7 @@ export default function EditRolePage({ params }: { params: { id: string } }) {
             <h1 className="text-3xl font-bold font-headline">{translations.editTitle}</h1>
             <p className="text-muted-foreground">{translations.editDescription}</p>
             </div>
-            {roleToEdit && <RoleForm roleToEdit={roleToEdit} permissions={permissions} translations={translations} />}
+            {roleToEdit && <RoleForm roleToEdit={roleToEdit} translations={translations} />}
         </div>
         </div>
     </MainLayout>
