@@ -1,12 +1,12 @@
-
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import en from '@/dictionaries/en.json';
+import am from '@/dictionaries/am.json';
 
 export type Locale = 'en' | 'am';
 export type Translations = Record<string, any>;
 export type TFunction = (key: string, params?: Record<string, string | number>) => string;
-
 
 interface LocaleContextType {
   locale: Locale;
@@ -21,51 +21,24 @@ const getNestedTranslation = (translations: Translations, key: string): string |
   return key.split('.').reduce((obj, k) => (obj && typeof obj[k] !== 'undefined') ? obj[k] : undefined, translations);
 }
 
+const dictionaries: Record<Locale, Translations> = { en, am };
+
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('am');
-  const [translations, setTranslations] = useState<Translations>({});
+  const [translations, setTranslations] = useState<Translations>(dictionaries['am']);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const storedLocale = localStorage.getItem('locale') as Locale | null;
-    if (storedLocale) {
-      setLocaleState(storedLocale);
-    } else {
-        localStorage.setItem('locale', 'am');
-    }
+    const activeLocale = storedLocale ?? 'am';
+    setLocaleState(activeLocale);
+    setTranslations(dictionaries[activeLocale]);
+    setIsLoaded(true);
   }, []);
 
-  useEffect(() => {
-    const fetchTranslations = async () => {
-      try {
-        const res = await fetch(`/i18n/${locale}.json`);
-        if (!res.ok) {
-          throw new Error(`Failed to load ${locale} translations`);
-        }
-        const data = await res.json();
-        setTranslations(data);
-      } catch (error) {
-        console.error(error);
-        // Fallback to English if the desired locale fails
-        if (locale !== 'en') {
-          try {
-            const res = await fetch(`/i18n/en.json`);
-            const data = await res.json();
-            setTranslations(data);
-          } catch (e) {
-            console.error("Failed to load fallback translations", e)
-          }
-        }
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-    fetchTranslations();
-  }, [locale]);
-
   const setLocale = (newLocale: Locale) => {
-    setIsLoaded(false);
     setLocaleState(newLocale);
+    setTranslations(dictionaries[newLocale]);
     localStorage.setItem('locale', newLocale);
   };
 
@@ -80,7 +53,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   }, [translations]);
 
   if (!isLoaded) {
-    return null; // Or a global loading spinner
+    return <div>Loading...</div>;
   }
 
   return (

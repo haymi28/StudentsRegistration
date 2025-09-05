@@ -52,7 +52,7 @@ export async function signIn(credentials: { username: string; password: string }
     };
     const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '1d' });
 
-    cookies().set(COOKIE_NAME, token, {
+    (await cookies()).set(COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24,
@@ -69,12 +69,12 @@ export async function signIn(credentials: { username: string; password: string }
 
 // -------------------- SIGN OUT --------------------
 export async function signOut() {
-  cookies().delete(COOKIE_NAME);
+  (await cookies()).delete(COOKIE_NAME);
 }
 
 // -------------------- GET SERVER SESSION --------------------
 export async function getServerSession(): Promise<{ user: TokenPayload } | null> {
-  const token = cookies().get(COOKIE_NAME)?.value;
+  const token = (await cookies()).get(COOKIE_NAME)?.value;
 
   if (!token) {
     return null;
@@ -85,7 +85,7 @@ export async function getServerSession(): Promise<{ user: TokenPayload } | null>
     return { user: decoded };
   } catch (error) {
     console.error('JWT verify error:', error);
-    cookies().delete(COOKIE_NAME);
+    (await cookies()).delete(COOKIE_NAME);
     return null;
   }
 }
