@@ -72,18 +72,20 @@ export default function SettingsPage() {
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {visibleCards.map((card) => (
-                    <Link href={card.href} key={card.href}>
-                        <Card className="h-full hover:bg-muted/50 transition-colors">
-                            <CardHeader>
-                                <div className="flex items-center gap-4">
-                                    <card.icon className="h-8 w-8 text-primary" />
-                                    <div>
-                                        <CardTitle>{card.label}</CardTitle>
-                                        <CardDescription className="mt-1">{card.description}</CardDescription>
+                    <Link href={card.href} key={card.href} passHref>
+                        <a className="block h-full">
+                            <Card className="h-full hover:bg-muted/50 transition-colors">
+                                <CardHeader>
+                                    <div className="flex items-center gap-4">
+                                        <card.icon className="h-8 w-8 text-primary" />
+                                        <div>
+                                            <CardTitle>{card.label}</CardTitle>
+                                            <CardDescription className="mt-1">{card.description}</CardDescription>
+                                        </div>
                                     </div>
-                                </div>
-                            </CardHeader>
-                        </Card>
+                                </CardHeader>
+                            </Card>
+                        </a>
                     </Link>
                 ))}
             </div>
