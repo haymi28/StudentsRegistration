@@ -14,23 +14,13 @@ export function MainLayout({
     children: React.ReactNode,
     isAuthenticated: boolean,
 }) {
-  const pathname = usePathname();
-  const isPublicPage = pathname === '/';
-
-  if (!isAuthenticated && isPublicPage) {
-    return (
+  if (!isAuthenticated) {
+     return (
         <div className="relative min-h-screen">
             <PublicHeader />
             {children}
         </div>
     );
-  }
-
-  // When a user is not authenticated and trying to access a non-public page,
-  // the server-side logic in that page will handle the redirect.
-  // We return null here to prevent the layout from flashing while the redirect happens.
-  if (!isAuthenticated && !isPublicPage) {
-    return null;
   }
 
   return (

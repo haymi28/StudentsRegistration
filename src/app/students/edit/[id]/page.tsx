@@ -21,18 +21,17 @@ export default function EditStudentPage({ params }: { params: { id: string }}) {
       const sessionData = await getServerSession();
       if (!sessionData) {
         redirect('/');
+        return;
       }
       setIsAuthenticated(true);
       setSession(sessionData);
 
-      if (sessionData) {
-        const [studentData, classData] = await Promise.all([
-          getStudentById(params.id),
-          getClasses(),
-        ]);
-        setStudent(studentData);
-        setClasses(classData);
-      }
+      const [studentData, classData] = await Promise.all([
+        getStudentById(params.id),
+        getClasses(),
+      ]);
+      setStudent(studentData);
+      setClasses(classData);
       setLoading(false);
     };
     checkAuthAndFetch();

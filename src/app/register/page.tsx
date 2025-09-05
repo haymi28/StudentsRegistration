@@ -21,17 +21,20 @@ export default function RegisterPage() {
       const sessionData = await getServerSession();
       if (!sessionData) {
         redirect('/');
+        return;
       }
       setIsAuthenticated(true);
       setSession(sessionData);
 
-      if (sessionData) {
-        const classData = await getClasses();
-        setClasses(classData);
-      }
+      const classData = await getClasses();
+      setClasses(classData);
     };
     checkAuthAndFetch();
   }, []);
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <MainLayout isAuthenticated={isAuthenticated}>

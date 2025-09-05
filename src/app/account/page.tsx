@@ -19,11 +19,16 @@ export default function AccountPage() {
       const session = await getServerSession();
       if (!session) {
         redirect('/');
+      } else {
+        setIsAuthenticated(true);
       }
-      setIsAuthenticated(true);
     };
     checkAuth();
   }, []);
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <MainLayout isAuthenticated={isAuthenticated}>
