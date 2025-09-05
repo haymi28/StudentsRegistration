@@ -19,8 +19,8 @@ type UserUpdateData = z.infer<ReturnType<typeof getUpdateUserSchema>>;
 
 
 // Updated getStudents function
-export async function getStudents(userId: string, role: {name: string, permissions: Record<string, boolean>}) {
-  const userPermissions = role.permissions || {};
+export async function getStudents(userId: string, role: Role) {
+  const userPermissions = role.permissions as Record<string, boolean> || {};
 
   if (userPermissions.manage_all_students) {
     return await prisma.student.findMany({

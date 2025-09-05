@@ -1,24 +1,22 @@
 
-'use client';
-
 import { LoginForm } from "@/components/login-form";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { useLocale } from "@/contexts/locale-provider";
-import Image from "next/image";
 import { MainLayout } from "@/components/common/main-layout";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { getTranslator } from "@/lib/i18n";
+import { getServerSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function HomePage() {
-  const { t } = useLocale();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export default async function HomePage() {
+  const t = await getTranslator();
+  const session = await getServerSession();
 
-  useEffect(() => {
-    const sessionToken = document.cookie.includes('session=');
-    setIsAuthenticated(sessionToken);
-  }, []);
+  if (session) {
+    redirect('/students');
+  }
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout isAuthenticated={!session}>
         <div className="flex flex-col items-center justify-center min-h-screen p-4 pt-20 sm:pt-4">
             <div className="text-center mb-8">
                 <Image 

@@ -33,14 +33,13 @@ import { StudentDetailsDialog } from './student-details-dialog';
 import { TransferStudentsDialog } from './transfer-students-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { deleteStudent } from '@/lib/data';
-import { Student, User, Class } from '@prisma/client';
+import { Student, Class } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
 
 type StudentWithClass = Student & { class: Class | null };
 
 interface StudentListProps {
   students: StudentWithClass[];
-  users: Partial<User>[];
   session: any;
   translations: {
     title: string;
@@ -78,7 +77,7 @@ interface TableTranslations {
 }
 
 
-export function StudentList({ students, users, session, translations }: StudentListProps) {
+export function StudentList({ students, session, translations }: StudentListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);

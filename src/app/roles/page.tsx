@@ -48,7 +48,7 @@ export default async function RolesPage() {
   };
 
   return (
-    <MainLayout>
+    <MainLayout isAuthenticated={!!session}>
         <div className="container py-8 flex flex-col items-center">
             <RoleList roles={roles} translations={translations} />
         </div>

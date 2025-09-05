@@ -3,7 +3,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, User, UserPlus, Users, Upload, Download, Shield, Home, ShieldCheck, Settings } from 'lucide-react';
+import { LogOut, User, UserPlus, Users, Upload, Download, Settings } from 'lucide-react';
 import { Logo } from './logo';
 import {
   Sidebar,
@@ -36,7 +36,7 @@ export function AppSidebar() {
     const fetchSession = async () => {
       const session = await getServerSession();
       if (session) {
-        setUserSession(session.user);
+        setUserSession(session.user as UserSession);
       }
     }
     fetchSession();

@@ -1,7 +1,7 @@
 
 import { StudentList } from '@/components/student-list';
 import { getServerSession } from '@/lib/auth';
-import { getStudents, getUsers } from '@/lib/data';
+import { getStudents } from '@/lib/data';
 import { getTranslator } from '@/lib/i18n';
 import { MainLayout } from '@/components/common/main-layout';
 import { Student, User, Class, Role } from '@prisma/client';
@@ -17,10 +17,7 @@ export default async function StudentsPage() {
     redirect('/');
   }
 
-  const [students, users] = await Promise.all([
-    getStudents(session.user.id, session.user.role as Role),
-    getUsers()
-  ]);
+  const students = await getStudents(session.user.id, session.user.role as Role);
 
   const translations = {
       title: t('students.title'),
@@ -53,11 +50,10 @@ export default async function StudentsPage() {
   };
 
   return (
-    <MainLayout>
+    <MainLayout isAuthenticated={!!session}>
         <div className="container py-8 flex flex-col items-center">
              <StudentList 
                 students={students as StudentWithClass[]} 
-                users={users} 
                 session={session}
                 translations={translations}
             />

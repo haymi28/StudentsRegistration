@@ -48,7 +48,7 @@ export default async function ClassesPage() {
   };
 
   return (
-    <MainLayout>
+    <MainLayout isAuthenticated={!!session}>
         <div className="container py-8 flex flex-col items-center">
             <ClassList classes={classes} translations={translations} />
         </div>
