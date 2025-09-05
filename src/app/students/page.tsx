@@ -7,7 +7,7 @@ import { getStudents, getUsers } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
 import { MainLayout } from '@/components/common/main-layout';
 import { useEffect, useState } from 'react';
-import { Student, User, Class, Role } from '@prisma/client';
+import { Student, User, Class } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
 type StudentWithClass = Student & { class: Class | null };
@@ -17,6 +17,7 @@ export default function StudentsPage() {
   const [session, setSession] = useState<any>(null);
   const [students, setStudents] = useState<StudentWithClass[]>([]);
   const [users, setUsers] = useState<Partial<User>[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuthAndFetch = async () => {
@@ -25,10 +26,11 @@ export default function StudentsPage() {
         redirect('/');
         return;
       }
+      setIsAuthenticated(true);
       setSession(sessionData);
 
       const [studentData, userData] = await Promise.all([
-        getStudents(sessionData.user.id, sessionData.user.role as Role),
+        getStudents(sessionData.user.id, sessionData.user.role),
         getUsers()
       ]);
       setStudents(studentData as StudentWithClass[]);
@@ -68,7 +70,7 @@ export default function StudentsPage() {
   };
 
   return (
-    <MainLayout>
+    <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8 flex flex-col items-center">
         {session && (
              <StudentList 

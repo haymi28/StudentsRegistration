@@ -113,7 +113,7 @@ export function StudentList({ students, users, session, translations }: StudentL
     return studentsToDisplay;
   }, [students, searchQuery]);
   
-  const permissions = session.user.role.permissions as Record<string, boolean>;
+  const permissions = session.user.role.permissions as Record<string, boolean> || {};
   const canTransfer = permissions?.manage_all_students;
 
 
@@ -297,7 +297,7 @@ function RowActions({ student, session, translations }: { student: Student, sess
         }
     };
     
-    const permissions = session.user.role.permissions as Record<string, boolean>;
+    const permissions = session.user.role.permissions as Record<string, boolean> || {};
     const canEdit = permissions?.manage_all_students || permissions?.manage_class_students;
     const canDelete = permissions?.manage_all_students;
 

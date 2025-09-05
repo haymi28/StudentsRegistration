@@ -15,7 +15,11 @@ type UserWithRole = User & { role: Role };
 type TokenPayload = {
   id: string;
   username: string;
-  role: Role;
+  displayName: string;
+  role: {
+    name: string;
+    permissions: Record<string, boolean>;
+  };
 };
 
 // -------------------- SIGN IN --------------------
@@ -40,7 +44,11 @@ export async function signIn(credentials: { username: string; password: string }
     const tokenPayload: TokenPayload = {
       id: user.id,
       username: user.username,
-      role: user.role,
+      displayName: user.displayName,
+      role: {
+        name: user.role.name,
+        permissions: user.role.permissions as Record<string, boolean>,
+      },
     };
     const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '1d' });
 
