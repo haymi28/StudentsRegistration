@@ -11,6 +11,7 @@ import { getCreateUserSchema, getUpdateUserSchema } from './validations/user';
 import { getCreateClassSchema } from './validations/class';
 import { getRoleSchema } from './validations/role';
 import { Prisma } from '@prisma/client';
+import { TFunction } from '@/contexts/locale-provider';
 
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
@@ -58,7 +59,7 @@ export async function getStudentById(id: string) {
 }
 
 export async function createStudent(data: StudentData) {
-    const validatedData = getStudentRegistrationSchema().safeParse(data);
+    const validatedData = getStudentRegistrationSchema(() => '').safeParse(data);
     if (!validatedData.success) {
         throw new Error('Invalid student data');
     }
@@ -76,7 +77,7 @@ export async function createStudent(data: StudentData) {
 }
 
 export async function importStudents(students: Partial<Student>[]) {
-    const validationSchema = getStudentRegistrationSchema();
+    const validationSchema = getStudentRegistrationSchema(() => '');
     const validatedStudents: StudentData[] = [];
 
     for (const student of students) {
@@ -102,7 +103,7 @@ export async function importStudents(students: Partial<Student>[]) {
 
 
 export async function updateStudent(id: string, data: Partial<StudentData>) {
-    const validatedData = getStudentRegistrationSchema().partial().safeParse(data);
+    const validatedData = getStudentRegistrationSchema(() => '').partial().safeParse(data);
     if (!validatedData.success) {
         throw new Error('Invalid student data');
     }
@@ -146,7 +147,7 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUser(id: string, data: Partial<UserUpdateData>) {
-  const validationSchema = getUpdateUserSchema();
+  const validationSchema = getUpdateUserSchema(() => '');
 
   const validatedData = validationSchema.safeParse(data);
 
@@ -179,7 +180,7 @@ export async function updateUser(id: string, data: Partial<UserUpdateData>) {
 }
 
 export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSchema>>) {
-    const validationSchema = getCreateUserSchema();
+    const validationSchema = getCreateUserSchema(() => '');
     const validatedData = validationSchema.safeParse(data);
 
     if (!validatedData.success) {

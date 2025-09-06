@@ -71,7 +71,7 @@ export function BulkImportForm() {
         const result = studentValidationSchema.safeParse(studentWithClassId);
         const errors: string[] = [];
         if (!result.success) {
-          errors.push(...result.error.errors.map(e => `${studentHeaders(t).find(h => h.key === e.path[0])?.label || e.path[0]}: ${e.message}`));
+          errors.push(...result.error.errors.map(e => e.message));
         }
         if (student.registrationNumber && existingRegNumbers.has(student.registrationNumber)) {
           errors.push(t('import.errors.duplicateRegNumber').replace('{regNumber}', student.registrationNumber));
@@ -246,5 +246,3 @@ export function BulkImportForm() {
     </div>
   );
 }
-
-    
