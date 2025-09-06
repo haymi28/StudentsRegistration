@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -43,40 +43,40 @@ export function RoleForm({ roleToEdit, translations }: RoleFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEditMode = !!roleToEdit;
-  const currentPermissions = useMemo(() => {
-    if (roleToEdit?.permissions && typeof roleToEdit.permissions === 'object') {
-        return roleToEdit.permissions as Record<string, boolean>;
-    }
-    return {};
-  }, [roleToEdit]);
 
   const validationSchema = getRoleSchema();
 
+  const defaultPermissions = useMemo(() => {
+    if (roleToEdit?.permissions && typeof roleToEdit.permissions === 'object') {
+        return Object.keys(roleToEdit.permissions).filter(
+            key => (roleToEdit.permissions as Record<string, boolean>)[key]
+        );
+    }
+    return [];
+  }, [roleToEdit]);
+
+
   const form = useForm<RoleFormValues>({
     resolver: zodResolver(validationSchema),
-    defaultValues: isEditMode
-      ? {
-          name: roleToEdit.name,
-          description: roleToEdit.description || '',
-          permissions: currentPermissions,
-        }
-      : {
-          name: '',
-          description: '',
-          permissions: {},
-        },
+    defaultValues: {
+      name: roleToEdit?.name || '',
+      description: roleToEdit?.description || '',
+      permissions: defaultPermissions,
+    },
   });
 
   async function onSubmit(data: RoleFormValues) {
     setIsLoading(true);
     try {
-      const permissionsToSave = Object.fromEntries(
-        Object.entries(data.permissions || {}).filter(([, value]) => value === true)
-      );
-      
+      const permissionsObject = data.permissions?.reduce((acc, perm) => {
+        acc[perm] = true;
+        return acc;
+      }, {} as Record<string, boolean>) || {};
+
       const dataToSubmit = {
-        ...data,
-        permissions: permissionsToSave
+        name: data.name,
+        description: data.description,
+        permissions: permissionsObject,
       };
 
       if (isEditMode) {
@@ -138,45 +138,48 @@ export function RoleForm({ roleToEdit, translations }: RoleFormProps) {
                 </FormItem>
               )}
             />
-            <FormField
-                control={form.control}
-                name="permissions"
-                render={() => (
-                    <FormItem>
-                        <div className="mb-4">
-                            <FormLabel className="text-base">{translations.labels.permissions}</FormLabel>
-                            <FormDescription>{t('roles.form.permissionsDescription')}</FormDescription>
-                        </div>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <FormItem>
+                <div className="mb-4">
+                    <FormLabel className="text-base">{translations.labels.permissions}</FormLabel>
+                    <FormDescription>{t('roles.form.permissionsDescription')}</FormDescription>
+                </div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <Controller
+                    control={form.control}
+                    name="permissions"
+                    render={({ field }) => (
+                        <>
                         {allPermissionsList.map((permissionId) => (
-                            <FormField
+                            <FormItem
                                 key={permissionId}
-                                control={form.control}
-                                name={`permissions.${permissionId}`}
-                                render={({ field }) => (
-                                    <FormItem
-                                        className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
-                                    >
-                                        <FormControl>
-                                        <Checkbox
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                            disabled={isDefaultRole}
-                                        />
-                                        </FormControl>
-                                        <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal">{t(`permissions.${permissionId}.title`)}</FormLabel>
-                                            <FormDescription>{t(`permissions.${permissionId}.description`)}</FormDescription>
-                                        </div>
-                                    </FormItem>
-                                )}
-                            />
+                                className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+                            >
+                                <FormControl>
+                                <Checkbox
+                                    checked={field.value?.includes(permissionId)}
+                                    onCheckedChange={(checked) => {
+                                        const currentValue = field.value || [];
+                                        if (checked) {
+                                            field.onChange([...currentValue, permissionId]);
+                                        } else {
+                                            field.onChange(currentValue.filter(id => id !== permissionId));
+                                        }
+                                    }}
+                                    disabled={isDefaultRole}
+                                />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                    <FormLabel className="font-normal">{t(`permissions.${permissionId}.title`)}</FormLabel>
+                                    <FormDescription>{t(`permissions.${permissionId}.description`)}</FormDescription>
+                                </div>
+                            </FormItem>
                         ))}
-                        </div>
-                    <FormMessage />
-                    </FormItem>
-                )}
-            />
+                        </>
+                    )}
+                />
+                </div>
+                <FormMessage />
+            </FormItem>
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={isLoading || isDefaultRole}>

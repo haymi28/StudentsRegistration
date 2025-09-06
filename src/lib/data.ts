@@ -10,11 +10,16 @@ import bcrypt from 'bcryptjs';
 import { getCreateUserSchema, getUpdateUserSchema } from './validations/user';
 import { getCreateClassSchema } from './validations/class';
 import { getRoleSchema } from './validations/role';
+import { Prisma } from '@prisma/client';
 
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
-type RoleData = z.infer<ReturnType<typeof getRoleSchema>>;
+type RoleData = {
+    name: string;
+    description?: string | undefined;
+    permissions: Prisma.JsonValue;
+}
 type UserUpdateData = z.infer<ReturnType<typeof getUpdateUserSchema>>;
 
 
@@ -293,13 +298,7 @@ export async function getRoleById(id: string) {
 }
 
 export async function createRole(data: RoleData) {
-    const validationSchema = getRoleSchema();
-    const validatedData = validationSchema.safeParse(data);
-
-    if (!validatedData.success) {
-        throw new Error('Invalid role data: ' + validatedData.error.message);
-    }
-    const { name, description, permissions } = validatedData.data;
+    const { name, description, permissions } = data;
 
     await prisma.role.create({
         data: {
@@ -313,12 +312,7 @@ export async function createRole(data: RoleData) {
 }
 
 export async function updateRole(id: string, data: RoleData) {
-    const validationSchema = getRoleSchema();
-    const validatedData = validationSchema.safeParse(data);
-     if (!validatedData.success) {
-        throw new Error('Invalid role data: ' + validatedData.error.message);
-    }
-    const { name, description, permissions } = validatedData.data;
+    const { name, description, permissions } = data;
 
     await prisma.role.update({
         where: { id },
