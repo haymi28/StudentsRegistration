@@ -15,11 +15,7 @@ import { Prisma } from '@prisma/client';
 
 type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
-type RoleData = {
-    name: string;
-    description?: string | undefined;
-    permissions: Prisma.JsonValue;
-}
+type RoleData = z.infer<ReturnType<typeof getRoleSchema>>;
 type UserUpdateData = z.infer<ReturnType<typeof getUpdateUserSchema>>;
 
 
@@ -185,7 +181,7 @@ export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSc
         throw new Error('User with this username already exists.');
     }
 
-    const { password, ...userData } = validatedData.data;
+    const { password, confirmPassword, ...userData } = validatedData.data;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await prisma.user.create({
@@ -299,12 +295,17 @@ export async function getRoleById(id: string) {
 
 export async function createRole(data: RoleData) {
     const { name, description, permissions } = data;
+    
+    const permissionsObject = permissions?.reduce((acc, perm) => {
+        acc[perm] = true;
+        return acc;
+    }, {} as Record<string, boolean>) || {};
 
     await prisma.role.create({
         data: {
             name,
             description,
-            permissions
+            permissions: permissionsObject,
         }
     });
 
@@ -314,9 +315,19 @@ export async function createRole(data: RoleData) {
 export async function updateRole(id: string, data: RoleData) {
     const { name, description, permissions } = data;
 
+    const permissionsObject = permissions?.reduce((acc, perm) => {
+        acc[perm] = true;
+        return acc;
+    }, {} as Record<string, boolean>) || {};
+
+
     await prisma.role.update({
         where: { id },
-        data: { name, description, permissions }
+        data: { 
+            name, 
+            description, 
+            permissions: permissionsObject,
+        }
     });
 
 
@@ -338,3 +349,5 @@ export async function deleteRole(id: string) {
     await prisma.role.delete({ where: { id } });
     revalidatePath('/roles');
 }
+
+    
