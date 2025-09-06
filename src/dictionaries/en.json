@@ -318,6 +318,8 @@
                 "name": "e.g., Content Editor",
                 "description": "Briefly describe the purpose of this role"
             },
+            "permissionsDescription": "Select the permissions for this role.",
+            "createButton": "Create Role",
             "createSuccess": {
                 "title": "Role Created!",
                 "description": "Role {name} has been successfully created."
@@ -343,6 +345,40 @@
         "deleteSuccess": {
             "title": "Role Deleted!",
             "description": "Role {name} has been successfully deleted."
+        }
+    },
+    "permissions": {
+        "manage_users": {
+            "title": "Manage Users",
+            "description": "Create, edit, and delete users"
+        },
+        "manage_roles": {
+            "title": "Manage Roles",
+            "description": "Create, edit, and delete roles and their permissions"
+        },
+        "manage_classes": {
+            "title": "Manage Classes",
+            "description": "Create, edit, and delete classes and assign managers"
+        },
+        "manage_all_students": {
+            "title": "Manage All Students",
+            "description": "View, edit, and delete any student in any class"
+        },
+        "manage_class_students": {
+            "title": "Manage Class Students",
+            "description": "View, edit, and delete students in their own class"
+        },
+        "view_students": {
+            "title": "View Students",
+            "description": "View students in their own class"
+        },
+        "import_students": {
+            "title": "Import Students",
+            "description": "Bulk import students from a file"
+        },
+        "export_students": {
+            "title": "Export Students",
+            "description": "Export student data"
         }
     },
     "account": {

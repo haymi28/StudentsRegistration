@@ -26,7 +26,7 @@ export default async function CreateRolePage() {
         description: t('roles.form.placeholder.description'),
     },
     buttons: {
-        submit: t('form.submit'),
+        submit: t('roles.form.createButton'),
         loading: t('form.loading'),
     },
     success: {

@@ -318,6 +318,8 @@
                 "name": "ለምሳሌ፦ ይዘት አርታዒ",
                 "description": "የዚህን ሚና አላማ በአጭሩ ይግለጹ"
             },
+            "permissionsDescription": "ለዚህ ሚና ፈቃዶችን ይምረጡ።",
+            "createButton": "ሚና ፍጠር",
             "createSuccess": {
                 "title": "ሚና ተፈጥሯል!",
                 "description": "ሚና {name} በተሳካ ሁኔታ ተፈጥሯል።"
@@ -343,6 +345,40 @@
         "deleteSuccess": {
             "title": "ሚና ተሰርዟል!",
             "description": "ሚና {name} በተሳካ ሁኔታ ተሰርዟል።"
+        }
+    },
+    "permissions": {
+        "manage_users": {
+            "title": "ተጠቃሚዎችን አስተዳድር",
+            "description": "ተጠቃሚዎችን ይፍጠሩ፣ ያርትዑ እና ይሰርዙ"
+        },
+        "manage_roles": {
+            "title": "ሚናዎችን አስተዳድር",
+            "description": "ሚናዎችን እና ፈቃዶቻቸውን ይፍጠሩ፣ ያርትዑ እና ይሰርዙ"
+        },
+        "manage_classes": {
+            "title": "ክፍሎችን አስተዳድር",
+            "description": "ክፍሎችን ይፍጠሩ፣ ያርትዑ እና ይሰርዙ እና አስተዳዳሪዎችን ይመድቡ"
+        },
+        "manage_all_students": {
+            "title": "ሁሉንም ተማሪዎች አስተዳድር",
+            "description": "በማንኛውም ክፍል ውስጥ ማንኛውንም ተማሪ ይመልከቱ፣ ያርትዑ እና ይሰርዙ"
+        },
+        "manage_class_students": {
+            "title": "የክፍል ተማሪዎችን አስተዳድር",
+            "description": "በራሳቸው ክፍል ውስጥ ያሉ ተማሪዎችን ይመልከቱ፣ ያርትዑ እና ይሰርዙ"
+        },
+        "view_students": {
+            "title": "ተማሪዎችን ይመልከቱ",
+            "description": "በራሳቸው ክፍል ውስጥ ያሉ ተማሪዎችን ይመልከቱ"
+        },
+        "import_students": {
+            "title": "ተማሪዎችን አስመጣ",
+            "description": "ተማሪዎችን ከፋይል በብዛት ያስመጡ"
+        },
+        "export_students": {
+            "title": "ተማሪዎችን ላክ",
+            "description": "የተማሪ መረጃን ላክ"
         }
     },
     "account": {

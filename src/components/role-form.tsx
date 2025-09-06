@@ -22,14 +22,14 @@ import { useState, useMemo } from 'react';
 type RoleFormValues = z.infer<ReturnType<typeof getRoleSchema>>;
 
 const allPermissionsList = [
-    { id: 'manage_users', description: 'Create, edit, and delete users' },
-    { id: 'manage_roles', description: 'Create, edit, and delete roles and their permissions' },
-    { id: 'manage_classes', description: 'Create, edit, and delete classes and assign managers' },
-    { id: 'manage_all_students', description: 'View, edit, and delete any student in any class' },
-    { id: 'manage_class_students', description: 'View, edit, and delete students in their own class' },
-    { id: 'view_students', description: 'View students in their own class' },
-    { id: 'import_students', description: 'Bulk import students from a file' },
-    { id: 'export_students', description: 'Export student data' },
+    'manage_users',
+    'manage_roles',
+    'manage_classes',
+    'manage_all_students',
+    'manage_class_students',
+    'view_students',
+    'import_students',
+    'export_students',
 ];
 
 interface RoleFormProps {
@@ -38,6 +38,7 @@ interface RoleFormProps {
 }
 
 export function RoleForm({ roleToEdit, translations }: RoleFormProps) {
+  const { t } = useLocale();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -135,14 +136,14 @@ export function RoleForm({ roleToEdit, translations }: RoleFormProps) {
                     <FormItem>
                         <div className="mb-4">
                             <FormLabel className="text-base">{translations.labels.permissions}</FormLabel>
-                            <FormDescription>Select the permissions for this role.</FormDescription>
+                            <FormDescription>{t('roles.form.permissionsDescription')}</FormDescription>
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {allPermissionsList.map((permission) => (
+                        {allPermissionsList.map((permissionId) => (
                             <FormField
-                                key={permission.id}
+                                key={permissionId}
                                 control={form.control}
-                                name={`permissions.${permission.id}`}
+                                name={`permissions.${permissionId}`}
                                 render={({ field }) => (
                                     <FormItem
                                         className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
@@ -155,8 +156,8 @@ export function RoleForm({ roleToEdit, translations }: RoleFormProps) {
                                         />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel className="font-normal">{permission.id.replace(/_/g, ' ')}</FormLabel>
-                                            <FormDescription>{permission.description}</FormDescription>
+                                            <FormLabel className="font-normal">{t(`permissions.${permissionId}.title`)}</FormLabel>
+                                            <FormDescription>{t(`permissions.${permissionId}.description`)}</FormDescription>
                                         </div>
                                     </FormItem>
                                 )}
