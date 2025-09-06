@@ -76,7 +76,7 @@ export async function createStudent(data: StudentData) {
     revalidatePath('/students');
 }
 
-export async function importStudents(students: Partial<Student>[]) {
+export async function importStudents(students: Partial<Student & { className: string }>[]) {
     const validationSchema = getStudentRegistrationSchema(() => '');
     const validatedStudents: StudentData[] = [];
 
@@ -147,36 +147,36 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUser(id: string, data: Partial<UserUpdateData>) {
-  const validationSchema = getUpdateUserSchema(() => '');
+    const validationSchema = getUpdateUserSchema(() => '');
+    const validatedData = validationSchema.safeParse(data);
 
-  const validatedData = validationSchema.safeParse(data);
+    if (!validatedData.success) {
+        throw new Error('Invalid user data: ' + JSON.stringify(validatedData.error.issues, null, 2));
+    }
+    
+    const { password, confirmPassword, ...rest } = validatedData.data;
 
-  if (!validatedData.success) {
-      throw new Error('Invalid user data: ' + JSON.stringify(validatedData.error.issues, null, 2));
-  }
-  
-  const { password, confirmPassword, roleId, ...rest } = validatedData.data;
+    const dataToUpdate: Prisma.UserUpdateInput = { ...rest };
 
-  const dataToUpdate: Prisma.UserUpdateInput = { ...rest };
+    if (password) {
+        dataToUpdate.password = await bcrypt.hash(password, 10);
+    }
+    
+    if (rest.roleId) {
+        dataToUpdate.role = {
+            connect: { id: rest.roleId }
+        };
+        delete (dataToUpdate as any).roleId;
+    }
+    
+    await prisma.user.update({
+        where: { id },
+        data: dataToUpdate
+    });
 
-  if (password) {
-      dataToUpdate.password = await bcrypt.hash(password, 10);
-  }
-
-  if (roleId) {
-    dataToUpdate.role = {
-        connect: { id: roleId }
-    };
-  }
-  
-  await prisma.user.update({
-      where: { id },
-      data: dataToUpdate
-  });
-
-  revalidatePath('/account');
-  revalidatePath('/users');
-  revalidatePath(`/users/edit/${id}`);
+    revalidatePath('/account');
+    revalidatePath('/users');
+    revalidatePath(`/users/edit/${id}`);
 }
 
 export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSchema>>) {
@@ -310,10 +310,11 @@ export async function getRoleById(id: string) {
 export async function createRole(data: RoleData) {
     const { name, description, permissions } = data;
     
-    const permissionsObject = permissions?.reduce((acc, perm) => {
+    const safePermissions = Array.isArray(permissions) ? permissions : [];
+    const permissionsObject = safePermissions.reduce((acc, perm) => {
         acc[perm] = true;
         return acc;
-    }, {} as Record<string, boolean>) || {};
+    }, {} as Record<string, boolean>);
 
     await prisma.role.create({
         data: {
@@ -329,11 +330,11 @@ export async function createRole(data: RoleData) {
 export async function updateRole(id: string, data: RoleData) {
     const { name, description, permissions } = data;
 
-    const permissionsObject = permissions?.reduce((acc, perm) => {
+    const safePermissions = Array.isArray(permissions) ? permissions : [];
+    const permissionsObject = safePermissions.reduce((acc, perm) => {
         acc[perm] = true;
         return acc;
-    }, {} as Record<string, boolean>) || {};
-
+    }, {} as Record<string, boolean>);
 
     await prisma.role.update({
         where: { id },
@@ -343,7 +344,6 @@ export async function updateRole(id: string, data: RoleData) {
             permissions: permissionsObject,
         }
     });
-
 
     revalidatePath('/roles');
     revalidatePath(`/roles/edit/${id}`);
