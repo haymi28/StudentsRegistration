@@ -23,7 +23,7 @@ import {
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, MoreHorizontal, Loader2, ShieldCheck } from 'lucide-react';
+import { Edit, Trash2, MoreHorizontal, Loader2, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/locale-provider';
 import { Role } from '@prisma/client';
@@ -69,6 +69,12 @@ export function RoleList({ roles }: RoleListProps) {
   return (
     <Card className="w-full">
       <CardHeader>
+        <div className="flex justify-between items-start mb-4">
+            <Button variant="outline" onClick={() => router.push('/settings')}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                {t('common.back')}
+            </Button>
+        </div>
         <div className="flex justify-between items-start">
           <div>
             <CardTitle>{t('roles.title')}</CardTitle>

@@ -420,8 +420,7 @@
         "error": "Error",
         "errorDescription": "An unexpected error occurred. Please try again.",
         "userNotFound": "User not found. Please log in again.",
-        "notAssigned": "Not Assigned"
+        "notAssigned": "Not Assigned",
+        "back": "Back"
     }
 }
-
-    

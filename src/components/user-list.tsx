@@ -26,7 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Edit, Trash2, MoreHorizontal, Loader2, UserPlus } from 'lucide-react';
+import { Search, Edit, Trash2, MoreHorizontal, Loader2, UserPlus, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/locale-provider';
 import { User, Role } from '@prisma/client';
@@ -80,6 +80,12 @@ export function UserList({ users }: UserListProps) {
   return (
     <Card className="w-full">
       <CardHeader>
+        <div className="flex justify-between items-start mb-4">
+            <Button variant="outline" onClick={() => router.push('/settings')}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                {t('common.back')}
+            </Button>
+        </div>
         <div className="flex justify-between items-start">
           <div>
             <CardTitle>{t('users.title')}</CardTitle>

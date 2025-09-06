@@ -172,7 +172,7 @@
     },
     "export": {
         "pageTitle": "የተማሪዎችን መረጃ ላክ",
-        "pageDescription": "የተማሪዎችን መረጃ ወደ ኤክሴል ወይም ፒዲኤፍ ለመላክ ተማሪዎችን ይምረጡ።",
+        "pageDescription": "የተማሪዎችን መረጃ ወደ ኤክሴል ወይም ፒዲኤፍ ለመላк ተማሪዎችን ይምረጡ።",
         "button": "{count} የተመረጡትን ላк",
         "noSelectionTitle": "ምንም ተማሪ አልተመረጠም",
         "noSelectionDescription": "እባክዎ ለመላክ ቢያንስ አንድ ተማሪ ይምረጡ።",
@@ -278,7 +278,7 @@
                 "manager": "አስተዳዳሪ ይምረጡ"
             },
             "createSuccess": {
-                "title": "ክፍል ተፈጥሯል!",
+                "title": "ክፍל ተፈጥሯል!",
                 "description": "ክፍል {name} በተሳካ ሁኔታ ተፈጥሯል።"
             },
             "updateSuccess": {
@@ -294,7 +294,7 @@
         },
         "deleteDialog": {
             "title": "ይህን ክፍል ለመሰረז እርግጠኛ ነዎት?",
-            "description": "ይህ ክፍል {name}ን በቋሚነት ይሰርዛል። ይህ ድርጊት ሊቀለበስ አይችልም።",
+            "description": "ይህ ክፍል {name}ን በቋሚነት ይሰרዛል። ይህ ድርጊት ሊቀለበስ አይችልም።",
             "descriptionWithStudents": "ተማሪዎች የተመደቡበትን ክፍል መሰረז አይችሉም። እባክዎ መጀመሪያ ተማሪዎቹን ወደ ሌላ ክፍል ያስተላልፉ።",
             "cancel": "ተመለስ",
             "confirm": "አዎ، ሰርዝ"
@@ -420,8 +420,7 @@
         "error": "ስህተት",
         "errorDescription": "አንድ ያልተጠበቀ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።",
         "userNotFound": "ተጠቃሚ አልተገኘም። እባክዎ እንደገና ይግቡ።",
-        "notAssigned": "አልተመደበም"
+        "notAssigned": "አልተመደበም",
+        "back": "ተመለስ"
     }
 }
-
-    
