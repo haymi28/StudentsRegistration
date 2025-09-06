@@ -70,14 +70,23 @@ export function RoleForm({ roleToEdit, translations }: RoleFormProps) {
   async function onSubmit(data: RoleFormValues) {
     setIsLoading(true);
     try {
+      const permissionsToSave = Object.fromEntries(
+        Object.entries(data.permissions || {}).filter(([, value]) => value === true)
+      );
+      
+      const dataToSubmit = {
+        ...data,
+        permissions: permissionsToSave
+      };
+
       if (isEditMode) {
-        await updateRole(roleToEdit.id, data);
+        await updateRole(roleToEdit.id, dataToSubmit);
         toast({
           title: translations.success.title,
           description: translations.success.description.replace('{name}', data.name),
         });
       } else {
-        await createRole(data);
+        await createRole(dataToSubmit);
         toast({
           title: translations.success.title,
           description: translations.success.description.replace('{name}', data.name),
