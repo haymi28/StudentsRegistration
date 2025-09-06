@@ -1,31 +1,25 @@
 
-'use client';
-
 import { UserForm } from "@/components/user-form";
-import { useLocale } from "@/contexts/locale-provider";
+import { getTranslator } from "@/lib/i18n";
 import { getServerSession } from "@/lib/auth";
 import { getUserById } from "@/lib/data";
 import { MainLayout } from "@/components/common/main-layout";
-import { useState, useEffect } from 'react';
 import { User, Role } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
-export default function EditUserPage({ params }: { params: { id: string } }) {
-    const { t } = useLocale();
-    const [user, setUser] = useState<(User & { role: Role }) | null>(null);
+export default async function EditUserPage({ params }: { params: { id: string } }) {
+    const t = await getTranslator();
+    const session = await getServerSession();
 
-    useEffect(() => {
-      const checkAuthAndFetch = async () => {
-        const sessionData = await getServerSession();
-        if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
-          redirect('/students');
-        } else {
-          const userData = await getUserById(params.id);
-          setUser(userData as User & { role: Role });
-        }
-      };
-      checkAuthAndFetch();
-    }, [params.id]);
+    if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
+      redirect('/students');
+    }
+
+    const user = (await getUserById(params.id)) as User & { role: Role };
+
+    if (!user) {
+        redirect('/users');
+    }
 
     const translations = {
         title: t('users.form.editTitle'),
@@ -62,7 +56,7 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
                         <h1 className="text-3xl font-bold font-headline">{translations.title}</h1>
                         <p className="text-muted-foreground">{translations.description}</p>
                     </div>
-                    {user && <UserForm userToEdit={user} translations={translations} />}
+                    <UserForm userToEdit={user} translations={translations} />
                 </div>
             </div>
         </MainLayout>

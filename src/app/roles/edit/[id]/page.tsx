@@ -1,33 +1,24 @@
 
-'use client';
-
 import { getServerSession } from '@/lib/auth';
 import { getRoleById } from '@/lib/data';
-import { useLocale } from '@/contexts/locale-provider';
+import { getTranslator } from '@/lib/i18n';
 import { RoleForm } from '@/components/role-form';
 import { MainLayout } from '@/components/common/main-layout';
-import { useState, useEffect } from 'react';
-import { Role } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
-export default function EditRolePage({ params }: { params: { id: string } }) {
-  const { t } = useLocale();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [roleToEdit, setRoleToEdit] = useState<Role | null>(null);
+export default async function EditRolePage({ params }: { params: { id: string } }) {
+  const t = await getTranslator();
+  const session = await getServerSession();
 
-  useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      const sessionData = await getServerSession();
-      setIsAuthenticated(!!sessionData);
-      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_roles !== true) {
-        redirect('/students');
-      } else {
-        const roleData = await getRoleById(params.id);
-        setRoleToEdit(roleData);
-      }
-    };
-    checkAuthAndFetch();
-  }, [params.id]);
+  if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_roles !== true) {
+    redirect('/students');
+  }
+
+  const roleToEdit = await getRoleById(params.id);
+
+  if (!roleToEdit) {
+    redirect('/roles');
+  }
 
   const translations = {
     editTitle: t('roles.form.editTitle'),
@@ -52,14 +43,14 @@ export default function EditRolePage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout>
         <div className="container py-8">
         <div className="max-w-4xl mx-auto">
             <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold font-headline">{translations.editTitle}</h1>
             <p className="text-muted-foreground">{translations.editDescription}</p>
             </div>
-            {roleToEdit && <RoleForm roleToEdit={roleToEdit} translations={translations} />}
+            <RoleForm roleToEdit={roleToEdit} translations={translations} />
         </div>
         </div>
     </MainLayout>

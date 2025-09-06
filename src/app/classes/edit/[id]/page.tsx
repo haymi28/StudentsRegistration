@@ -1,39 +1,28 @@
 
-'use client';
-
 import { getServerSession } from '@/lib/auth';
 import { getClassById, getUsers } from '@/lib/data';
-import { useLocale } from '@/contexts/locale-provider';
+import { getTranslator } from '@/lib/i18n';
 import { ClassForm } from '@/components/class-form';
 import { MainLayout } from '@/components/common/main-layout';
-import { useState, useEffect } from 'react';
-import { Class, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
+export default async function EditClassPage({ params }: { params: { id: string } }) {
+  const t = await getTranslator();
+  const session = await getServerSession();
 
-export default function EditClassPage({ params }: { params: { id: string } }) {
-  const { t } = useLocale();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [classToEdit, setClassToEdit] = useState<Class | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
+  if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_classes !== true) {
+    redirect('/students');
+  }
 
-  useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      const sessionData = await getServerSession();
-      setIsAuthenticated(!!sessionData);
-      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_classes !== true) {
-        redirect('/students');
-      } else {
-        const [classData, userData] = await Promise.all([
-          getClassById(params.id),
-          getUsers(true)
-        ]);
-        setClassToEdit(classData);
-        setUsers(userData);
-      }
-    };
-    checkAuthAndFetch();
-  }, [params.id]);
+  const [classToEdit, users] = await Promise.all([
+    getClassById(params.id),
+    getUsers(true)
+  ]);
+
+  if (!classToEdit) {
+    redirect('/classes');
+  }
   
   const translations = {
     editTitle: t('classes.form.editTitle'),
@@ -64,7 +53,7 @@ export default function EditClassPage({ params }: { params: { id: string } }) {
             <h1 className="text-3xl font-bold font-headline">{translations.editTitle}</h1>
             <p className="text-muted-foreground">{translations.editDescription}</p>
             </div>
-            {classToEdit && <ClassForm classToEdit={classToEdit} users={users} translations={translations} />}
+            <ClassForm classToEdit={classToEdit} users={users} translations={translations} />
         </div>
         </div>
     </MainLayout>
