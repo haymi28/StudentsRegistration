@@ -49,7 +49,7 @@ export const exportToExcel = (students: Student[], fileName: string, t: TFunctio
 };
 
 
-export const readExcelFile = (file: File, t: TFunction): Promise<Partial<Student & { className: string }[]>> => {
+export const readExcelFile = (file: File, t: TFunction): Promise<Partial<Student & { className: string }>[]> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => {

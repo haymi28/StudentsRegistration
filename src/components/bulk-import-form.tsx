@@ -34,7 +34,7 @@ export function BulkImportForm() {
   const [classes, setClasses] = useState<Class[]>([]);
   const { t } = useLocale();
   const { toast } = useToast();
-  const studentValidationSchema = getStudentRegistrationSchema();
+  const studentValidationSchema = getStudentRegistrationSchema(t);
 
   useEffect(() => {
     getClasses().then(setClasses);
