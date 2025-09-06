@@ -1,25 +1,17 @@
 
-'use client';
-
 import { UserForm } from "@/components/user-form";
-import { useLocale } from "@/contexts/locale-provider";
+import { getTranslator } from "@/lib/i18n";
 import { getServerSession } from "@/lib/auth";
 import { MainLayout } from "@/components/common/main-layout";
-import { useState, useEffect } from 'react';
 import { redirect } from "next/navigation";
 
-export default function CreateUserPage() {
-    const { t } = useLocale();
+export default async function CreateUserPage() {
+    const t = await getTranslator();
+    const session = await getServerSession();
 
-    useEffect(() => {
-      const checkAuth = async () => {
-        const sessionData = await getServerSession();
-        if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
-            redirect('/students');
-        }
-      };
-      checkAuth();
-    }, []);
+    if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
+        redirect('/students');
+    }
 
     const translations = {
         title: t('users.form.createTitle'),
