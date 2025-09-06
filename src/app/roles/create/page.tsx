@@ -43,12 +43,12 @@ export default async function CreateRolePage() {
         <div className="container py-8">
         <div className="max-w-4xl mx-auto">
             <div className="mb-4">
-              <Link href="/roles">
-                <Button variant="outline" size="sm">
+              <Button asChild variant="outline" size="sm">
+                <Link href="/roles">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   {t('common.back')}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
             <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold font-headline">{translations.createTitle}</h1>
