@@ -8,6 +8,7 @@ import { User, Role } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
 export default async function EditUserPage({ params }: { params: { id: string } }) {
+    const { id } = params;
     const t = await getTranslator();
     const session = await getServerSession();
 
@@ -15,7 +16,7 @@ export default async function EditUserPage({ params }: { params: { id: string } 
       redirect('/students');
     }
 
-    const user = (await getUserById(params.id)) as User & { role: Role };
+    const user = (await getUserById(id)) as User & { role: Role };
 
     if (!user) {
         redirect('/users');

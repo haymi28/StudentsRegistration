@@ -147,12 +147,18 @@ export async function updateUser(id: string, data: Partial<UserUpdateData>) {
       throw new Error('Invalid user data: ' + JSON.stringify(validatedData.error.issues, null, 2));
   }
   
-  const { password, ...rest } = validatedData.data;
+  const { password, confirmPassword, roleId, ...rest } = validatedData.data;
 
-  const dataToUpdate: any = { ...rest };
+  const dataToUpdate: Prisma.UserUpdateInput = { ...rest };
 
   if (password) {
       dataToUpdate.password = await bcrypt.hash(password, 10);
+  }
+
+  if (roleId) {
+    dataToUpdate.role = {
+        connect: { id: roleId }
+    };
   }
   
   await prisma.user.update({
@@ -349,5 +355,3 @@ export async function deleteRole(id: string) {
     await prisma.role.delete({ where: { id } });
     revalidatePath('/roles');
 }
-
-    
