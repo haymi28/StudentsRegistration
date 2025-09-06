@@ -10,7 +10,7 @@ export const studentHeaders = (t: TFunction) => [
   { key: 'registrationNumber', label: t('form.label.regNumber') },
   { key: 'fullName', label: t('form.label.fullName') },
   { key: 'gender', label: t('form.label.gender') },
-  { key: 'serviceDepartment', label: t('form.label.department') },
+  { key: 'className', label: t('classes.form.label.name') },
   { key: 'baptismalName', label: t('form.label.baptismalName') },
   { key: 'mothersName', label: t('form.label.mothersName') },
   { key: 'dateOfBirth', label: t('form.label.dob') },
@@ -49,7 +49,7 @@ export const exportToExcel = (students: Student[], fileName: string, t: TFunctio
 };
 
 
-export const readExcelFile = (file: File, t: TFunction): Promise<Partial<Student>[]> => {
+export const readExcelFile = (file: File, t: TFunction): Promise<Partial<Student & { className: string }[]>> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -97,3 +97,5 @@ export const downloadTemplate = (t: TFunction) => {
 
     XLSX.writeFile(workbook, 'student_import_template.xlsx');
 };
+
+    

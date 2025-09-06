@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,10 +14,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AlertCircle, CheckCircle, Download, Loader2, UploadCloud } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/locale-provider';
-import { Student } from '@prisma/client';
+import { Student, Class } from '@prisma/client';
 import { readExcelFile, downloadTemplate, studentHeaders } from '@/lib/excel-utils';
 import { getStudentRegistrationSchema } from '@/lib/validations/student';
-import { getStudents, importStudents } from '@/lib/data';
+import { getStudents, importStudents, getClasses } from '@/lib/data';
 
 const formSchema = z.object({
   file: z.instanceof(File).refine(file => file.size > 0, 'File is required.'),
@@ -31,9 +31,14 @@ type ValidationResult = {
 export function BulkImportForm() {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [classes, setClasses] = useState<Class[]>([]);
   const { t } = useLocale();
   const { toast } = useToast();
   const studentValidationSchema = getStudentRegistrationSchema();
+
+  useEffect(() => {
+    getClasses().then(setClasses);
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,9 +59,16 @@ export function BulkImportForm() {
       const studentsFromFile = await readExcelFile(file, t);
       const currentStudents = await getStudents();
       const existingRegNumbers = new Set(currentStudents.map((s: Student) => s.registrationNumber));
+      const classMap = new Map(classes.map(c => [c.name.toLowerCase(), c.id]));
 
       const validationPromises = studentsFromFile.map((student, index) => {
-        const result = studentValidationSchema.safeParse(student);
+        const studentWithClassId = { ...student };
+        const className = (student as any).className?.toLowerCase();
+        if (className && classMap.has(className)) {
+          studentWithClassId.classId = classMap.get(className);
+        }
+
+        const result = studentValidationSchema.safeParse(studentWithClassId);
         const errors: string[] = [];
         if (!result.success) {
           errors.push(...result.error.errors.map(e => `${studentHeaders(t).find(h => h.key === e.path[0])?.label || e.path[0]}: ${e.message}`));
@@ -64,7 +76,10 @@ export function BulkImportForm() {
         if (student.registrationNumber && existingRegNumbers.has(student.registrationNumber)) {
           errors.push(t('import.errors.duplicateRegNumber').replace('{regNumber}', student.registrationNumber));
         }
-        return { student, errors, row: index + 2 };
+        if ((student as any).className && !classMap.has((student as any).className.toLowerCase())) {
+          errors.push(t('import.errors.invalidClassName').replace('{className}', (student as any).className));
+        }
+        return { student: result.success ? result.data : studentWithClassId, errors, row: index + 2 };
       });
       
       const results = await Promise.all(validationPromises);
@@ -204,15 +219,15 @@ export function BulkImportForm() {
                     <TableRow>
                       <TableHead>{t('students.table.regNumber')}</TableHead>
                       <TableHead>{t('students.table.fullName')}</TableHead>
-                      <TableHead>{t('students.table.department')}</TableHead>
+                      <TableHead>{t('classes.table.name')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {validationResult.validStudents.map((student, index) => (
+                    {validationResult.validStudents.map((student: any, index) => (
                       <TableRow key={index}>
                         <TableCell>{student.registrationNumber}</TableCell>
                         <TableCell>{student.fullName}</TableCell>
-                        <TableCell>{student.serviceDepartment}</TableCell>
+                        <TableCell>{classes.find(c => c.id === student.classId)?.name || student.className}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -231,3 +246,5 @@ export function BulkImportForm() {
     </div>
   );
 }
+
+    

@@ -84,7 +84,7 @@
         "updateSuccessDescription": "የ{name} መረጃ በተሳካ ሁኔታ ተስተካክሏል።"
     },
     "students": {
-        "title": "የተማሪዎች ዝርዝር",
+        "title": "የተማሪዎች ዝርዝר",
         "descriptionSuperAdmin": "ሁሉንም የተመዘገቡ ተማሪዎች ይመልከቱ እና ያስተዳድሩ።",
         "descriptionAdmin": "የተመደቡበትን ክፍል ተማሪዎች ይመልከቱ እና ያስተዳድሩ።",
         "searchPlaceholder": "በስም ወይም በምዝገባ ቁጥር ይፈልጉ...",
@@ -109,7 +109,7 @@
             "cancel": "ተመለስ",
             "confirm": "አዎ፣ ሰርዝ"
         },
-        "deleteSuccess": "ተማሪ ተሰርዟል!",
+        "deleteSuccess": "ተማሪ ተሰרዟል!",
         "deleteSuccessDescription": "{name} በተሳካ ሁኔታ ተሰርዟል።"
     },
     "studentDetails": {
@@ -166,13 +166,14 @@
             "title": "የማረጋገጫ ስህተቶች",
             "fileReadError": "ፋይሉን ማንበብ ላይ ስህተት ተፈጥሯል።",
             "fileParseError": "የኤክሴል ፋይሉን መተንተን አልተቻለም።",
-            "duplicateRegNumber": "የምዝገባ ቁጥር '{regNumber}' አስቀድሞ አለ።"
+            "duplicateRegNumber": "የምዝገባ ቁጥር '{regNumber}' አስቀድሞ አለ።",
+            "invalidClassName": "ክፍል '{className}' የለም።"
         }
     },
     "export": {
         "pageTitle": "የተማሪዎችን መረጃ ላክ",
         "pageDescription": "የተማሪዎችን መረጃ ወደ ኤክሴል ወይም ፒዲኤፍ ለመላክ ተማሪዎችን ይምረጡ።",
-        "button": "{count} የተመረጡትን ላክ",
+        "button": "{count} የተመረጡትን ላк",
         "noSelectionTitle": "ምንም ተማሪ አልተመረጠም",
         "noSelectionDescription": "እባክዎ ለመላክ ቢያንስ አንድ ተማሪ ይምረጡ።",
         "successTitle": "መላክ ተሳክቷል!",
@@ -203,11 +204,11 @@
     },
      "settings": {
         "pageTitle": "ቅንብሮች",
-        "pageDescription": "የስርዓት-ሰፊ ቅንብሮችን እና ውቅሮችን ይድረሱ እና ያስተዳድሩ።"
+        "pageDescription": "የስርዓት-ሰፊ ቅንብሮችን እና ውቅሮችን ይድረሱ እና ያስተዳדሩ።"
     },
      "users": {
         "title": "የተጠቃሚ አስተዳደር",
-        "description": "የስርዓት ተጠቃሚዎችን እና ሚናዎቻቸውን ይፍጠሩ፣ ይመልከቱ እና ያስተዳድሩ።",
+        "description": "የسርዓት ተጠቃሚዎችን እና ሚናዎቻቸውን ይፍጠሩ، ይመልከቱ እና ያስተዳድሩ።",
         "searchPlaceholder": "በስም ወይም በተጠቃሚ ስም ይፈልጉ...",
         "noUsers": "ምንም ተጠቃሚዎች አልተገኙም።",
         "createUserButton": "ተጠቃሚ ፍጠር",
@@ -248,13 +249,13 @@
             "actions": "ድርጊቶች"
         },
         "deleteDialog": {
-            "title": "ይህን ተጠቃሚ ለመሰረዝ እርግጠኛ ነዎት?",
-            "description": "ይህ ድርጊት ሊቀለበስ አይችልም። ይህ ተጠቃሚ {name}ን በቋሚነት ይሰርዛል እና መዳረሻቸውን ያስወግዳል።",
+            "title": "ይህን ተጠቃሚ ለመሰረז እርግጠኛ ነዎት?",
+            "description": "ይህ ድርጊት ሊቀለበስ አይችልም። ይህ ተጠቃሚ {name}ን በቋሚነት ይሰርዛל እና መዳረሻቸውን ያስወግዳል።",
             "cancel": "ተመለስ",
             "confirm": "አዎ፣ ሰርዝ"
         },
         "deleteSuccess": {
-            "title": "ተጠቃሚ ተሰርዟል!",
+            "title": "ተጠቃሚ ተሰרዟል!",
             "description": "ተጠቃሚ {name} በተሳካ ሁኔታ ተሰርዟል።"
         }
     },
@@ -292,15 +293,15 @@
             "actions": "ድርጊቶች"
         },
         "deleteDialog": {
-            "title": "ይህን ክፍል ለመሰረዝ እርግጠኛ ነዎት?",
+            "title": "ይህን ክፍል ለመሰረז እርግጠኛ ነዎት?",
             "description": "ይህ ክፍል {name}ን በቋሚነት ይሰርዛል። ይህ ድርጊት ሊቀለበስ አይችልም።",
-            "descriptionWithStudents": "ተማሪዎች የተመደቡበትን ክፍል መሰረዝ አይችሉም። እባክዎ መጀመሪያ ተማሪዎቹን ወደ ሌላ ክፍል ያስተላልፉ።",
+            "descriptionWithStudents": "ተማሪዎች የተመደቡበትን ክፍል መሰረז አይችሉም። እባክዎ መጀመሪያ ተማሪዎቹን ወደ ሌላ ክፍል ያስተላልፉ።",
             "cancel": "ተመለስ",
             "confirm": "አዎ، ሰርዝ"
         },
         "deleteSuccess": {
-            "title": "ክፍል ተሰርዟል!",
-            "description": "ክፍል {name} በተሳካ ሁኔታ ተሰርዟል።"
+            "title": "ክፍል ተሰרዟል!",
+            "description": "ክፍል {name} በተሳካ ሁኔታ ተሰרዟል።"
         }
     },
     "roles": {
@@ -319,7 +320,7 @@
                 "permissions": "ፈቃዶች"
             },
             "placeholder": {
-                "name": "ለምሳሌ፦ ይዘት አርታዒ",
+                "name": "ለምሳሌ፦ ይዘት አרታዒ",
                 "description": "የዚህን ሚና አላማ በአጭሩ ይግለጹ"
             },
             "permissionsDescription": "ለዚህ ሚና ፈቃዶችን ይምረጡ።",
@@ -340,41 +341,41 @@
             "actions": "ድርጊቶች"
         },
         "deleteDialog": {
-            "title": "ይህን ሚና ለመሰረዝ እርግጠኛ ነዎት?",
-            "description": "ይህ {name}ን በቋሚነት ይሰርዛል። ይህ ድርጊት ሊቀለበስ አይችልም።",
-            "descriptionWithUsers": "ተጠቃሚዎች የተመደቡበትን ሚና መሰረዝ አይችሉም። እባክዎ መጀመሪያ የተመደቡትን ተጠቃሚዎች ያስወግዱ።",
+            "title": "ይህን ሚና ለመሰረז እርግጠኛ ነዎት?",
+            "description": "ይህ {name}ን በቋሚነት ይሰרዛል። ይህ ድርጊት ሊቀለበስ አይችልም።",
+            "descriptionWithUsers": "ተጠቃሚዎች የተመደቡበትን ሚና መሰרז አይችሉም። እባክዎ መጀመሪያ የተመደቡትን ተጠቃሚዎች ያስወግዱ።",
             "cancel": "ተመለስ",
-            "confirm": "አዎ، ሰርዝ"
+            "confirm": "አዎ، ሰרז"
         },
         "deleteSuccess": {
-            "title": "ሚና ተሰርዟል!",
-            "description": "ሚና {name} በተሳካ ሁኔታ ተሰርዟል።"
+            "title": "ሚና ተሰרዟል!",
+            "description": "ሚና {name} በተሳካ ሁኔታ ተሰרዟል።"
         }
     },
     "permissions": {
         "manage_users": {
             "title": "ተጠቃሚዎችን አስተዳድር",
-            "description": "ተጠቃሚዎችን ይፍጠሩ፣ ያርትዑ እና ይሰርዙ"
+            "description": "ተጠቃሚዎችን ይፍጠሩ፣ ያርትዑ እና ይሰרዙ"
         },
         "manage_roles": {
             "title": "ሚናዎችን አስተዳድር",
-            "description": "ሚናዎችን እና ፈቃዶቻቸውን ይፍጠሩ፣ ያርትዑ እና ይሰርዙ"
+            "description": "ሚናዎችን እና ፈቃዶቻቸውን ይፍጠሩ، ያርትዑ እና ይሰרዙ"
         },
         "manage_classes": {
             "title": "ክፍሎችን አስተዳድር",
-            "description": "ክፍሎችን ይፍጠሩ፣ ያርትዑ እና ይሰርዙ እና አስተዳዳሪዎችን ይመድቡ"
+            "description": "ክፍሎችን ይፍጠሩ، ያርትዑ እና ይሰרዙ እና አስተዳዳሪዎችን ይመድቡ"
         },
         "manage_all_students": {
             "title": "ሁሉንም ተማሪዎች አስተዳድር",
-            "description": "በማንኛውም ክፍል ውስጥ ማንኛውንም ተማሪ ይመልከቱ፣ ያርትዑ እና ይሰርዙ"
+            "description": "በማንኛውም ክፍል ውስጥ ማንኛውንም ተማሪ ይመልከቱ፣ ያርትዑ እና ይሰרዙ"
         },
         "manage_class_students": {
-            "title": "የክፍል ተማሪዎችን አስተዳድር",
-            "description": "በራሳቸው ክፍል ውስጥ ያሉ ተማሪዎችን ይመልከቱ፣ ያርትዑ እና ይሰርዙ"
+            "title": "የክፍל ተማሪዎችን አስተዳድር",
+            "description": "በራሳቸው ክፍል ውስጥ ያሉ ተማሪዎችን ይመלከቱ፣ ያርትዑ እና ይሰרዙ"
         },
         "view_students": {
             "title": "ተማሪዎችን ይመልከቱ",
-            "description": "በራሳቸው ክፍል ውስጥ ያሉ ተማሪዎችን ይመልከቱ"
+            "description": "በራሳቸው ክፍል ውስጥ ያሉ ተማሪዎችን ይመלከቱ"
         },
         "import_students": {
             "title": "ተማሪዎችን አስመጣ",
@@ -398,7 +399,7 @@
         "changePasswordDescription": "አዲስ የይለፍ ቃል ለማዘጋጀት ያረጋግጡ።",
         "currentPassword": "የአሁኑ የይለፍ ቃል",
         "newPassword": "አዲስ የይለፍ ቃል",
-        "confirmPassword": "አዲሱን የይለፍ ቃል ያረጋግጡ",
+        "confirmPassword": "አዲሱን የይለፍ ቃል ያረጋгጡ",
         "changePasswordButton": "የይለፍ ቃል ቀይр",
         "changePasswordSuccessTitle": "የይለፍ ቃል ተቀይሯል",
         "changePasswordSuccessDescription": "የይለፍ ቃልዎ በተሳካ ሁኔታ ተዘምኗል።"
@@ -422,3 +423,5 @@
         "notAssigned": "አልተመደበም"
     }
 }
+
+    

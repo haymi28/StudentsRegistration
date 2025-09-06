@@ -166,7 +166,8 @@
             "title": "Validation Errors",
             "fileReadError": "Error reading the file.",
             "fileParseError": "Could not parse the Excel file.",
-            "duplicateRegNumber": "Registration number '{regNumber}' already exists."
+            "duplicateRegNumber": "Registration number '{regNumber}' already exists.",
+            "invalidClassName": "Class '{className}' does not exist."
         }
     },
     "export": {
@@ -422,3 +423,5 @@
         "notAssigned": "Not Assigned"
     }
 }
+
+    
