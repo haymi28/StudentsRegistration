@@ -35,10 +35,9 @@ type RoleWithDetails = Role & {
 
 interface RoleListProps {
   roles: RoleWithDetails[];
-  translations: any;
 }
 
-export function RoleList({ roles, translations }: RoleListProps) {
+export function RoleList({ roles }: RoleListProps) {
   const [roleToDelete, setRoleToDelete] = useState<RoleWithDetails | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
@@ -51,8 +50,8 @@ export function RoleList({ roles, translations }: RoleListProps) {
     try {
       await deleteRole(roleToDelete.id);
       toast({
-        title: translations.deleteSuccess.title,
-        description: t(translations.deleteSuccess.description, { name: roleToDelete.name }),
+        title: t('roles.deleteSuccess.title'),
+        description: t('roles.deleteSuccess.description', { name: roleToDelete.name }),
       });
       setRoleToDelete(null);
       router.refresh();
@@ -72,12 +71,12 @@ export function RoleList({ roles, translations }: RoleListProps) {
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle>{translations.title}</CardTitle>
-            <CardDescription>{translations.description}</CardDescription>
+            <CardTitle>{t('roles.title')}</CardTitle>
+            <CardDescription>{t('roles.description')}</CardDescription>
           </div>
           <Button onClick={() => router.push('/roles/create')}>
             <ShieldCheck className="mr-2 h-4 w-4" />
-            {translations.createButton}
+            {t('roles.createButton')}
           </Button>
         </div>
       </CardHeader>
@@ -86,10 +85,10 @@ export function RoleList({ roles, translations }: RoleListProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{translations.table.name}</TableHead>
-                <TableHead>{translations.table.description}</TableHead>
-                <TableHead>{translations.table.usersCount}</TableHead>
-                <TableHead className="text-right">{translations.table.actions}</TableHead>
+                <TableHead>{t('roles.table.name')}</TableHead>
+                <TableHead>{t('roles.table.description')}</TableHead>
+                <TableHead>{t('roles.table.usersCount')}</TableHead>
+                <TableHead className="text-right">{t('roles.table.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -108,10 +107,10 @@ export function RoleList({ roles, translations }: RoleListProps) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>{translations.table.actions}</DropdownMenuLabel>
+                          <DropdownMenuLabel>{t('roles.table.actions')}</DropdownMenuLabel>
                           <DropdownMenuItem onClick={() => router.push(`/roles/edit/${role.id}`)}>
                             <Edit className="mr-2 h-4 w-4" />
-                            <span>{translations.actions.edit}</span>
+                            <span>{t('students.actions.edit')}</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive focus:bg-destructive/10"
@@ -119,7 +118,7 @@ export function RoleList({ roles, translations }: RoleListProps) {
                             disabled={isDeleting}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            <span>{translations.actions.delete}</span>
+                            <span>{t('students.actions.delete')}</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -129,7 +128,7 @@ export function RoleList({ roles, translations }: RoleListProps) {
               ) : (
                 <TableRow>
                   <TableCell colSpan={4} className="h-24 text-center">
-                    {translations.noRoles}
+                    {t('roles.noRoles')}
                   </TableCell>
                 </TableRow>
               )}
@@ -140,22 +139,22 @@ export function RoleList({ roles, translations }: RoleListProps) {
       <AlertDialog open={!!roleToDelete} onOpenChange={(open) => !open && setRoleToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{translations.deleteDialog.title}</AlertDialogTitle>
+            <AlertDialogTitle>{t('roles.deleteDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription dangerouslySetInnerHTML={{
               __html: roleToDelete?._count.users > 0
-                ? translations.deleteDialog.descriptionWithUsers
-                : t(translations.deleteDialog.description, { name: `<strong>${roleToDelete?.name}</strong>` })
+                ? t('roles.deleteDialog.descriptionWithUsers')
+                : t('roles.deleteDialog.description', { name: `<strong>${roleToDelete?.name}</strong>` })
             }} />
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setRoleToDelete(null)}>{translations.deleteDialog.cancel}</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setRoleToDelete(null)}>{t('students.deleteDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteRole} 
               disabled={isDeleting || (roleToDelete?._count.users ?? 0) > 0} 
               className="bg-destructive hover:bg-destructive/90"
             >
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {translations.deleteDialog.confirm}
+              {t('students.deleteDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

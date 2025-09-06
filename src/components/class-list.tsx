@@ -36,10 +36,9 @@ type ClassWithDetails = Class & {
 
 interface ClassListProps {
   classes: ClassWithDetails[];
-  translations: any;
 }
 
-export function ClassList({ classes, translations }: ClassListProps) {
+export function ClassList({ classes }: ClassListProps) {
   const [classToDelete, setClassToDelete] = useState<ClassWithDetails | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
@@ -52,8 +51,8 @@ export function ClassList({ classes, translations }: ClassListProps) {
     try {
       await deleteClass(classToDelete.id);
       toast({
-        title: translations.deleteSuccess.title,
-        description: t(translations.deleteSuccess.description, { name: classToDelete.name }),
+        title: t('classes.deleteSuccess.title'),
+        description: t('classes.deleteSuccess.description', { name: classToDelete.name }),
       });
       setClassToDelete(null);
       router.refresh();
@@ -73,12 +72,12 @@ export function ClassList({ classes, translations }: ClassListProps) {
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle>{translations.title}</CardTitle>
-            <CardDescription>{translations.description}</CardDescription>
+            <CardTitle>{t('classes.title')}</CardTitle>
+            <CardDescription>{t('classes.description')}</CardDescription>
           </div>
           <Button onClick={() => router.push('/classes/create')}>
             <Home className="mr-2 h-4 w-4" />
-            {translations.createButton}
+            {t('classes.createButton')}
           </Button>
         </div>
       </CardHeader>
@@ -87,10 +86,10 @@ export function ClassList({ classes, translations }: ClassListProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{translations.table.name}</TableHead>
-                <TableHead>{translations.table.manager}</TableHead>
-                <TableHead>{translations.table.studentCount}</TableHead>
-                <TableHead className="text-right">{translations.table.actions}</TableHead>
+                <TableHead>{t('classes.table.name')}</TableHead>
+                <TableHead>{t('classes.table.manager')}</TableHead>
+                <TableHead>{t('classes.table.studentCount')}</TableHead>
+                <TableHead className="text-right">{t('classes.table.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -109,10 +108,10 @@ export function ClassList({ classes, translations }: ClassListProps) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>{translations.table.actions}</DropdownMenuLabel>
+                          <DropdownMenuLabel>{t('classes.table.actions')}</DropdownMenuLabel>
                           <DropdownMenuItem onClick={() => router.push(`/classes/edit/${c.id}`)}>
                             <Edit className="mr-2 h-4 w-4" />
-                            <span>{translations.actions.edit}</span>
+                            <span>{t('students.actions.edit')}</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive focus:bg-destructive/10"
@@ -120,7 +119,7 @@ export function ClassList({ classes, translations }: ClassListProps) {
                             disabled={isDeleting}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            <span>{translations.actions.delete}</span>
+                            <span>{t('students.actions.delete')}</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -130,7 +129,7 @@ export function ClassList({ classes, translations }: ClassListProps) {
               ) : (
                 <TableRow>
                   <TableCell colSpan={4} className="h-24 text-center">
-                    {translations.noClasses}
+                    {t('classes.noClasses')}
                   </TableCell>
                 </TableRow>
               )}
@@ -141,22 +140,22 @@ export function ClassList({ classes, translations }: ClassListProps) {
       <AlertDialog open={!!classToDelete} onOpenChange={(open) => !open && setClassToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{translations.deleteDialog.title}</AlertDialogTitle>
+            <AlertDialogTitle>{t('classes.deleteDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription dangerouslySetInnerHTML={{
                 __html: classToDelete?._count.students > 0
-                    ? translations.deleteDialog.descriptionWithStudents
-                    : t(translations.deleteDialog.description, { name: `<strong>${classToDelete?.name}</strong>` })
+                    ? t('classes.deleteDialog.descriptionWithStudents')
+                    : t('classes.deleteDialog.description', { name: `<strong>${classToDelete?.name}</strong>` })
             }}/>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setClassToDelete(null)}>{translations.deleteDialog.cancel}</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setClassToDelete(null)}>{t('students.deleteDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteClass} 
               disabled={isDeleting || (classToDelete?._count.students ?? 0) > 0} 
               className="bg-destructive hover:bg-destructive/90"
             >
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {translations.deleteDialog.confirm}
+              {t('students.deleteDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

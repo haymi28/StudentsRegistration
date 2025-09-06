@@ -36,10 +36,9 @@ type UserWithRole = User & { role: Role };
 
 interface UserListProps {
   users: UserWithRole[];
-  translations: any;
 }
 
-export function UserList({ users, translations }: UserListProps) {
+export function UserList({ users }: UserListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -62,8 +61,8 @@ export function UserList({ users, translations }: UserListProps) {
     try {
       await deleteUser(userToDelete.id);
       toast({
-        title: translations.deleteSuccess.title,
-        description: t(translations.deleteSuccess.description, { name: userToDelete.displayName }),
+        title: t('users.deleteSuccess.title'),
+        description: t('users.deleteSuccess.description', { name: userToDelete.displayName }),
       });
       setUserToDelete(null);
       router.refresh();
@@ -83,12 +82,12 @@ export function UserList({ users, translations }: UserListProps) {
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle>{translations.title}</CardTitle>
-            <CardDescription>{translations.description}</CardDescription>
+            <CardTitle>{t('users.title')}</CardTitle>
+            <CardDescription>{t('users.description')}</CardDescription>
           </div>
           <Button onClick={() => router.push('/users/create')}>
             <UserPlus className="mr-2 h-4 w-4" />
-            {translations.createUserButton}
+            {t('users.createUserButton')}
           </Button>
         </div>
       </CardHeader>
@@ -97,7 +96,7 @@ export function UserList({ users, translations }: UserListProps) {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder={translations.searchPlaceholder}
+              placeholder={t('users.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 w-full max-w-sm"
@@ -108,11 +107,11 @@ export function UserList({ users, translations }: UserListProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{translations.table.displayName}</TableHead>
-                <TableHead>{translations.table.username}</TableHead>
-                <TableHead>{translations.table.role}</TableHead>
-                <TableHead>{translations.table.status}</TableHead>
-                <TableHead className="text-right">{translations.table.actions}</TableHead>
+                <TableHead>{t('users.table.displayName')}</TableHead>
+                <TableHead>{t('users.table.username')}</TableHead>
+                <TableHead>{t('users.table.role')}</TableHead>
+                <TableHead>{t('users.table.status')}</TableHead>
+                <TableHead className="text-right">{t('users.table.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -126,7 +125,7 @@ export function UserList({ users, translations }: UserListProps) {
                     </TableCell>
                     <TableCell>
                       <Badge variant={user.isActive ? 'secondary' : 'destructive'}>
-                        {user.isActive ? translations.status.active : translations.status.inactive}
+                        {user.isActive ? t('users.form.label.active') : t('users.form.label.inactiveShort')}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -138,10 +137,10 @@ export function UserList({ users, translations }: UserListProps) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>{translations.table.actions}</DropdownMenuLabel>
+                          <DropdownMenuLabel>{t('users.table.actions')}</DropdownMenuLabel>
                           <DropdownMenuItem onClick={() => router.push(`/users/edit/${user.id}`)}>
                             <Edit className="mr-2 h-4 w-4" />
-                            <span>{translations.actions.edit}</span>
+                            <span>{t('students.actions.edit')}</span>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
@@ -150,7 +149,7 @@ export function UserList({ users, translations }: UserListProps) {
                             disabled={isDeleting}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            <span>{translations.actions.delete}</span>
+                            <span>{t('students.actions.delete')}</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -160,7 +159,7 @@ export function UserList({ users, translations }: UserListProps) {
               ) : (
                 <TableRow>
                   <TableCell colSpan={5} className="h-24 text-center">
-                    {translations.noUsers}
+                    {t('users.noUsers')}
                   </TableCell>
                 </TableRow>
               )}
@@ -171,14 +170,14 @@ export function UserList({ users, translations }: UserListProps) {
       <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{translations.deleteDialog.title}</AlertDialogTitle>
-            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: t(translations.deleteDialog.description, { name: `<strong>${userToDelete?.displayName}</strong>`}) }} />
+            <AlertDialogTitle>{t('users.deleteDialog.title')}</AlertDialogTitle>
+            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: t('users.deleteDialog.description', { name: `<strong>${userToDelete?.displayName}</strong>`}) }} />
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setUserToDelete(null)}>{translations.deleteDialog.cancel}</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setUserToDelete(null)}>{t('students.deleteDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteUser} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {translations.deleteDialog.confirm}
+              {t('students.deleteDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
