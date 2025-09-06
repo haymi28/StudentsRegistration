@@ -71,6 +71,10 @@
             "month": "Month",
             "year": "Year"
         },
+        "gender": {
+            "male": "Male",
+            "female": "Female"
+        },
         "submit": "Register",
         "save": "Save Changes",
         "loading": "Submitting...",

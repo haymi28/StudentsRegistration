@@ -51,8 +51,8 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
   const studentRegistrationSchema = useMemo(() => getStudentRegistrationSchema(t), [t]);
   
   const genders = useMemo(() => [
-    { value: 'ወንድ', label: t('validation.gender.male') },
-    { value: 'ሴት', label: t('validation.gender.female') },
+    { value: 'Male', label: t('form.gender.male') },
+    { value: 'Female', label: t('form.gender.female') },
   ], [t]);
 
   const userRole = session.user.role.name;

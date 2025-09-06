@@ -71,6 +71,10 @@
             "month": "ወር",
             "year": "ዓመት"
         },
+        "gender": {
+            "male": "ወንድ",
+            "female": "ሴት"
+        },
         "submit": "መዝግብ",
         "save": "አስቀምጥ",
         "loading": "እያስገባ ነው...",
