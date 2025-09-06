@@ -6,6 +6,9 @@ import { getUserById } from "@/lib/data";
 import { MainLayout } from "@/components/common/main-layout";
 import { User, Role } from '@prisma/client';
 import { redirect } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function EditUserPage({ params }: { params: { id: string } }) {
     const { id } = params;
@@ -53,6 +56,14 @@ export default async function EditUserPage({ params }: { params: { id: string } 
         <MainLayout>
             <div className="container py-8">
                 <div className="max-w-4xl mx-auto">
+                    <div className="mb-4">
+                      <Button asChild variant="outline" size="sm">
+                        <Link href="/users">
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          {t('common.back')}
+                        </Link>
+                      </Button>
+                    </div>
                     <div className="mb-8 text-center">
                         <h1 className="text-3xl font-bold font-headline">{translations.title}</h1>
                         <p className="text-muted-foreground">{translations.description}</p>
