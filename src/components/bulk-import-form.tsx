@@ -52,7 +52,7 @@ export function BulkImportForm() {
 
     try {
       const studentsFromFile = await readExcelFile(file, t);
-      const currentStudents = await getStudents('super_admin');
+      const currentStudents = await getStudents();
       const existingRegNumbers = new Set(currentStudents.map((s: Student) => s.registrationNumber));
 
       const validationPromises = studentsFromFile.map((student, index) => {
