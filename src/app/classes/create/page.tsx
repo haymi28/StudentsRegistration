@@ -1,33 +1,21 @@
 
-'use client';
-
 import { getServerSession } from '@/lib/auth';
 import { getUsers } from '@/lib/data';
-import { useLocale } from '@/contexts/locale-provider';
+import { getTranslator } from '@/lib/i18n';
 import { ClassForm } from '@/components/class-form';
 import { MainLayout } from '@/components/common/main-layout';
-import { useState, useEffect } from 'react';
 import { User } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
-export default function CreateClassPage() {
-  const { t } = useLocale();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
+export default async function CreateClassPage() {
+  const t = await getTranslator();
+  const session = await getServerSession();
 
-  useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      const sessionData = await getServerSession();
-      setIsAuthenticated(!!sessionData);
-      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_classes !== true) {
-        redirect('/students');
-      } else {
-        const userData = await getUsers(true); // Exclude super_admin
-        setUsers(userData);
-      }
-    };
-    checkAuthAndFetch();
-  }, []);
+  if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_classes !== true) {
+    redirect('/students');
+  }
+
+  const users = await getUsers(true); // Exclude super_admin
 
   const translations = {
     createTitle: t('classes.form.createTitle'),
