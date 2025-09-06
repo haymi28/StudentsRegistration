@@ -16,7 +16,7 @@ export default async function HomePage() {
   }
 
   return (
-    <MainLayout isAuthenticated={!session}>
+    <MainLayout isAuthenticated={false}>
         <div className="flex flex-col items-center justify-center min-h-screen p-4 pt-20 sm:pt-4">
             <div className="text-center mb-8">
                 <Image 
