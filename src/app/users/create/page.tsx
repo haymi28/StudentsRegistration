@@ -44,7 +44,7 @@ export default async function CreateUserPage() {
     };
 
     return (
-        <MainLayout>
+        <MainLayout isAuthenticated={!!session}>
             <div className="container py-8">
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-4">
