@@ -1,7 +1,9 @@
 
+'use client';
+
 import { getServerSession } from '@/lib/auth';
 import { getUsers } from '@/lib/data';
-import { getTranslator } from '@/lib/i18n';
+import { useLocale } from '@/contexts/locale-provider';
 import { ClassForm } from '@/components/class-form';
 import { MainLayout } from '@/components/common/main-layout';
 import { User } from '@prisma/client';
@@ -9,16 +11,41 @@ import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
-export default async function CreateClassPage() {
-  const t = await getTranslator();
-  const session = await getServerSession();
+export default function CreateClassPage() {
+  const { t } = useLocale();
+  const [session, setSession] = useState<any>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_classes !== true) {
-    redirect('/students');
+  useEffect(() => {
+    const checkAuthAndFetchData = async () => {
+      const sessionData = await getServerSession();
+      if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_classes !== true) {
+        redirect('/students');
+        return;
+      }
+      setSession(sessionData);
+      setIsAuthenticated(true);
+      
+      const userData = await getUsers(true); // Exclude super_admin
+      setUsers(userData);
+      setLoading(false);
+    };
+    checkAuthAndFetchData();
+  }, []);
+
+  if (loading) {
+    return (
+        <MainLayout isAuthenticated={true}>
+            <div className="flex items-center justify-center h-screen">
+                Loading...
+            </div>
+        </MainLayout>
+    )
   }
-
-  const users = await getUsers(true); // Exclude super_admin
 
   const translations = {
     createTitle: t('classes.form.createTitle'),
@@ -42,7 +69,7 @@ export default async function CreateClassPage() {
   };
 
   return (
-    <MainLayout isAuthenticated={!!session}>
+    <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8">
         <div className="max-w-4xl mx-auto">
             <div className="mb-4">
@@ -57,7 +84,7 @@ export default async function CreateClassPage() {
             <h1 className="text-3xl font-bold font-headline">{translations.createTitle}</h1>
             <p className="text-muted-foreground">{translations.createDescription}</p>
             </div>
-            <ClassForm users={users} translations={translations} />
+            <ClassForm users={users} />
         </div>
         </div>
     </MainLayout>

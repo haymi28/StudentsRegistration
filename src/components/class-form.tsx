@@ -16,20 +16,40 @@ import { User, Class } from '@prisma/client';
 import { getCreateClassSchema } from '@/lib/validations/class';
 import { createClass, updateClass } from '@/lib/data';
 import { useState } from 'react';
+import { useLocale } from '@/contexts/locale-provider';
 
 type ClassFormValues = z.infer<ReturnType<typeof getCreateClassSchema>>;
 
 interface ClassFormProps {
   classToEdit?: Class;
   users: User[];
-  translations: any;
 }
 
-export function ClassForm({ classToEdit, users, translations }: ClassFormProps) {
+export function ClassForm({ classToEdit, users }: ClassFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEditMode = !!classToEdit;
+  const { t } = useLocale();
+
+  const translations = {
+    labels: {
+        name: t('classes.form.label.name'),
+        manager: t('classes.form.label.manager'),
+    },
+    placeholders: {
+        name: t('classes.form.placeholder.name'),
+        manager: t('classes.form.placeholder.manager'),
+    },
+    buttons: {
+        submit: isEditMode ? t('form.save') : t('form.submit'),
+        loading: t('form.loading'),
+    },
+    success: {
+        title: isEditMode ? t('classes.form.updateSuccess.title') : t('classes.form.createSuccess.title'),
+        description: isEditMode ? t('classes.form.updateSuccess.description') : t('classes.form.createSuccess.description'),
+    },
+  };
 
   const validationSchema = getCreateClassSchema();
 
