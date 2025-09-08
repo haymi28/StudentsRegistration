@@ -248,10 +248,19 @@ export async function createClass(data: ClassData) {
     if (!validatedData.success) {
         throw new Error('Invalid class data: ' + validatedData.error.message);
     }
-    
-    await prisma.class.create({ data: validatedData.data });
+
+    try {
+        await prisma.class.create({ data: validatedData.data });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+            throw new Error('This user is already managing another class. A user can only manage one class at a time.');
+        }
+        throw error;
+    }
+
     revalidatePath('/classes');
 }
+
 
 export async function updateClass(id: string, data: ClassData) {
     const validationSchema = getCreateClassSchema();

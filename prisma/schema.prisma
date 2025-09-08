@@ -1,5 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -10,14 +8,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Student {
-  id                    String    @id @default(cuid())
-  registrationNumber    String    @unique
+  id                    String   @id @default(cuid())
+  registrationNumber  String   @unique
   fullName              String
   gender                String
-  classId               String?
-  photo                 String?
   baptismalName         String?
   mothersName           String?
   dateOfBirth           String?
@@ -30,11 +25,14 @@ model Student {
   kebele                String?
   houseNumber           String?
   specificAddress       String?
+  photo                 String?
   dateOfJoining         String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  serviceDepartment     String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
   
-  class                 Class?    @relation(fields: [classId], references: [id], onDelete: SetNull)
+  classId               String?
+  class                 Class?   @relation(fields: [classId], references: [id])
 }
 
 model User {
@@ -42,33 +40,35 @@ model User {
   username      String    @unique
   password      String
   displayName   String
-  roleId        String
   isActive      Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-
+  
+  roleId        String
   role          Role      @relation(fields: [roleId], references: [id])
-  managedClass  Class?    @relation("ClassManager")
-}
-
-model Class {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  managerId String?   @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  students  Student[]
-  manager   User?     @relation("ClassManager", fields: [managerId], references: [id])
+  
+  managedClasses Class[]
 }
 
 model Role {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  description String?
-  permissions Json     @default("{}")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String    @id @default(cuid())
+  name          String    @unique
+  description   String?
+  permissions   Json      @default("{}")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  users         User[]
+}
 
-  users       User[]
+model Class {
+  id            String    @id @default(cuid())
+  name          String    @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  managerId     String?
+  manager       User?     @relation(fields: [managerId], references: [id], onDelete: SetNull)
+
+  students      Student[]
 }
