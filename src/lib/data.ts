@@ -7,7 +7,7 @@ import { getStudentRegistrationSchema, StudentValidationTranslations } from './v
 import { revalidatePath } from 'next/cache';
 import { Student, User, Class, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { getCreateUserSchema, getUpdateUserSchema } from './validations/user';
+import { getCreateUserSchema } from './validations/user';
 import { updateUserSchema } from './validations/user-server';
 import { getCreateClassSchema } from './validations/class';
 import { getRoleSchema } from './validations/role';
@@ -199,6 +199,18 @@ export async function updateUser(id: string, data: Partial<UserUpdateData>) {
     const { password, ...rest } = validatedData.data;
 
     const dataToUpdate: Prisma.UserUpdateInput = { ...rest };
+    
+    if (rest.username) {
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                username: rest.username,
+                id: { not: id }
+            }
+        });
+        if (existingUser) {
+            throw new Error("Username is already taken.");
+        }
+    }
 
     if (password) {
         dataToUpdate.password = await bcrypt.hash(password, 10);
@@ -414,4 +426,3 @@ export async function deleteRole(id: string) {
     await prisma.role.delete({ where: { id } });
     revalidatePath('/roles');
 }
-

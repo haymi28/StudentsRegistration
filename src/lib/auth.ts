@@ -23,7 +23,7 @@ type TokenPayload = {
 };
 
 // -------------------- SIGN IN --------------------
-export async function signIn(credentials: { username: string; password: string }) {
+export async function signIn(credentials: { username: string; password: string }, reauth = false) {
   try {
     const user = await prisma.user.findUnique({
       where: { username: credentials.username },
@@ -34,10 +34,13 @@ export async function signIn(credentials: { username: string; password: string }
       return { success: false, error: 'Invalid username or password' };
     }
 
-    const passwordsMatch = await bcrypt.compare(credentials.password, user.password);
-    if (!passwordsMatch) {
-      return { success: false, error: 'Invalid username or password' };
+    if (!reauth) {
+        const passwordsMatch = await bcrypt.compare(credentials.password, user.password);
+        if (!passwordsMatch) {
+            return { success: false, error: 'Invalid username or password' };
+        }
     }
+
 
     const { password, ...userWithoutPassword } = user;
 

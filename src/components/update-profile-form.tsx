@@ -14,6 +14,8 @@ import { useLocale } from '@/contexts/locale-provider';
 import { getUserByUsername, updateUser } from '@/lib/data';
 import { User } from '@prisma/client';
 import { getUpdateProfileSchema } from '@/lib/validations/user';
+import { signIn } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
 
 type ProfileFormValues = z.infer<ReturnType<typeof getUpdateProfileSchema>>;
 
@@ -22,12 +24,14 @@ export function UpdateProfileForm() {
   const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const router = useRouter();
 
   const formSchema = useMemo(() => getUpdateProfileSchema(t), [t]);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      username: '',
       displayName: '',
     },
   });
@@ -41,6 +45,7 @@ export function UpdateProfileForm() {
                 if (user) {
                     setCurrentUser(user);
                     form.reset({
+                        username: user.username,
                         displayName: user.displayName,
                     });
                 }
@@ -57,13 +62,33 @@ export function UpdateProfileForm() {
     setIsLoading(true);
     
     try {
-        await updateUser(currentUser.id, { displayName: values.displayName });
-        localStorage.setItem('displayName', values.displayName);
+        await updateUser(currentUser.id, { 
+            displayName: values.displayName,
+            username: values.username,
+        });
+
+        const usernameChanged = currentUser.username !== values.username;
+        
         toast({
           title: t('account.updateProfileSuccessTitle'),
           description: t('account.updateProfileSuccessDescription'),
         });
-        
+
+        if (usernameChanged) {
+            const result = await signIn({ username: values.username, password: '' }, true);
+            if (result.success && result.user) {
+                localStorage.setItem('userId', result.user.id);
+                localStorage.setItem('username', result.user.username);
+                localStorage.setItem('displayName', result.user.displayName);
+                localStorage.setItem('user_role', JSON.stringify(result.user.role));
+                router.refresh();
+            } else {
+                 toast({ variant: 'destructive', title: "Session Update Failed", description: "Please log out and log in again."});
+            }
+        } else {
+            localStorage.setItem('displayName', values.displayName);
+        }
+
     } catch (error) {
        toast({
         variant: 'destructive',
@@ -78,13 +103,19 @@ export function UpdateProfileForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-lg">
-        <FormItem>
+         <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
               <FormLabel>{t('login.username')}</FormLabel>
               <FormControl>
-                <Input readOnly disabled className="bg-muted" value={currentUser?.username || ''} />
+                <Input {...field} placeholder={t('login.usernamePlaceholder')} />
               </FormControl>
               <FormMessage />
-        </FormItem>
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="displayName"
