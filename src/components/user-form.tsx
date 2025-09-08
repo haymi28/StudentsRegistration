@@ -116,6 +116,8 @@ export function UserForm({ userToEdit }: UserFormProps) {
     }
   }
 
+  const isSuperAdminRole = userToEdit?.role.name === 'Super Admin';
+
   return (
     <Card className="w-full shadow-lg">
       <Form {...form}>
@@ -152,10 +154,10 @@ export function UserForm({ userToEdit }: UserFormProps) {
                 <FormField control={form.control} name="roleId" render={({ field }) => (
                     <FormItem>
                         <FormLabel>{translations.labels.role}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} disabled={userToEdit?.role.name === 'Super Admin'}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={isSuperAdminRole}>
                             <FormControl><SelectTrigger><SelectValue placeholder={translations.placeholders.selectRole} /></SelectTrigger></FormControl>
                             <SelectContent>
-                                {roles.map(role => <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>)}
+                                {roles.map(role => <SelectItem key={role.id} value={role.id} disabled={role.name === 'Super Admin'}>{role.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -174,7 +176,7 @@ export function UserForm({ userToEdit }: UserFormProps) {
                                 <Switch
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
-                                    disabled={userToEdit?.role.name === 'Super Admin'}
+                                    disabled={isSuperAdminRole}
                                 />
                             </FormControl>
                         </FormItem>

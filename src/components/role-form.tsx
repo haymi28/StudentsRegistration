@@ -128,7 +128,7 @@ export function RoleForm({ roleToEdit }: RoleFormProps) {
     }
   }
 
-  const isDefaultRole = ['Super Admin', 'Admin', 'Teacher'].includes(roleToEdit?.name || '');
+  const isSuperAdminRole = roleToEdit?.name === 'Super Admin';
 
   return (
     <Card className="w-full shadow-lg">
@@ -142,7 +142,7 @@ export function RoleForm({ roleToEdit }: RoleFormProps) {
                 <FormItem>
                   <FormLabel>{translations.labels.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder={translations.placeholders.name} {...field} readOnly={isDefaultRole} />
+                    <Input placeholder={translations.placeholders.name} {...field} readOnly={isSuperAdminRole} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -188,7 +188,7 @@ export function RoleForm({ roleToEdit }: RoleFormProps) {
                                             field.onChange(currentValue.filter(id => id !== permissionId));
                                         }
                                     }}
-                                    disabled={isDefaultRole}
+                                    disabled={isSuperAdminRole}
                                 />
                                 </FormControl>
                                 <div className="space-y-1 leading-none">
@@ -205,7 +205,7 @@ export function RoleForm({ roleToEdit }: RoleFormProps) {
             </FormItem>
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={isLoading || isDefaultRole}>
+            <Button type="submit" disabled={isLoading || isSuperAdminRole}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? translations.buttons.loading : translations.buttons.submit}
             </Button>

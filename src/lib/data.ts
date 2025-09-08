@@ -249,7 +249,7 @@ export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSc
         throw new Error('User with this username already exists.');
     }
 
-    const { password, confirmPassword, ...userData } = validatedData.data;
+    const { password, ...userData } = validatedData.data;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await prisma.user.create({
@@ -265,7 +265,7 @@ export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSc
 export async function deleteUser(id: string) {
     const user = await prisma.user.findUnique({ where: { id }, include: { role: true }});
     if (user?.role.name === 'Super Admin') {
-        throw new Error("Cannot delete the default super administrator.");
+        throw new Error("Cannot delete a super administrator.");
     }
     await prisma.user.delete({ where: { id }});
     revalidatePath('/users');
