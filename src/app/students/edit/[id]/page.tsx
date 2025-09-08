@@ -10,6 +10,7 @@ import { Student, Class } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
 export default function EditStudentPage({ params }: { params: { id: string }}) {
+  const { id } = params;
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [student, setStudent] = useState<Student | null>(null);
@@ -27,7 +28,7 @@ export default function EditStudentPage({ params }: { params: { id: string }}) {
       setSession(sessionData);
 
       const [studentData, classData] = await Promise.all([
-        getStudentById(params.id),
+        getStudentById(id),
         getClasses(),
       ]);
       setStudent(studentData);
@@ -35,7 +36,7 @@ export default function EditStudentPage({ params }: { params: { id: string }}) {
       setLoading(false);
     };
     checkAuthAndFetch();
-  }, [params.id]);
+  }, [id]);
 
   if (loading) {
     return <div>Loading...</div>; // Or a proper loading spinner
