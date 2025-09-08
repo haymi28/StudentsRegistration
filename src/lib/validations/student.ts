@@ -1,16 +1,10 @@
 
-'use client';
-
 import { z } from "zod";
 import { TFunction } from "@/contexts/locale-provider";
 
 const phoneRegex = new RegExp(
   /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
 );
-
-const getRequiredError = (t: TFunction, fieldKey: string) => ({
-    required_error: t ? t('validation.required', { field: t(fieldKey) }) : `${fieldKey} is required.`,
-});
 
 const getMinError = (t: TFunction, fieldKey: string, length: number) => ({
     message: t ? t('validation.min', { field: t(fieldKey), length }) : `${fieldKey} must be at least ${length} characters.`,
