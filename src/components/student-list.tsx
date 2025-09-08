@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,18 +39,8 @@ import { useLocale } from '@/contexts/locale-provider';
 type StudentWithClass = Student & { class: Class | null };
 
 interface StudentListProps {
-  students: StudentWithClass[];
+  initialStudents: StudentWithClass[];
   session: any;
-  translations: {
-    title: string;
-    descriptionSuperAdmin: string;
-    descriptionAdmin: string;
-    searchPlaceholder: string;
-    transferButton: string;
-    noStudents: string;
-    rowActions: RowActionsTranslations;
-    table: TableTranslations;
-  }
 }
 
 interface RowActionsTranslations {
@@ -77,12 +67,47 @@ interface TableTranslations {
 }
 
 
-export function StudentList({ students, session, translations }: StudentListProps) {
+export function StudentList({ initialStudents, session }: StudentListProps) {
+  const [students, setStudents] = useState(initialStudents);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const router = useRouter();
   const { t } = useLocale();
+
+  useEffect(() => {
+    setStudents(initialStudents);
+  }, [initialStudents]);
+
+  const translations = useMemo(() => ({
+      title: t('students.title'),
+      descriptionSuperAdmin: t('students.descriptionSuperAdmin'),
+      descriptionAdmin: t('students.descriptionAdmin'),
+      searchPlaceholder: t('students.searchPlaceholder'),
+      noStudents: t('students.noStudents'),
+      transferButton: t('students.transferButton'),
+      rowActions: {
+        actions: t('students.table.actions'),
+        view: t('students.actions.view'),
+        edit: t('students.actions.edit'),
+        delete: t('students.actions.delete'),
+        deleteSuccess: t('students.deleteSuccess'),
+        deleteSuccessDescription: t('students.deleteSuccessDescription'),
+        deleteDialog: {
+          title: t('students.deleteDialog.title'),
+          description: t('students.deleteDialog.description'),
+          cancel: t('students.deleteDialog.cancel'),
+          confirm: t('students.deleteDialog.confirm'),
+        }
+      },
+      table: {
+          photo: t('students.table.photo'),
+          regNumber: t('students.table.regNumber'),
+          fullName: t('students.table.fullName'),
+          department: t('students.table.department'),
+          phone: t('students.table.phone'),
+      }
+  }), [t]);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {

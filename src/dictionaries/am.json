@@ -98,7 +98,7 @@
         "updateSuccessDescription": "የ{name} መረጃ በተሳካ ሁኔታ ተስተካክሏል።"
     },
     "students": {
-        "title": "የተማሪዎች ዝርዝר",
+        "title": "የተማሪዎች ዝርዝር",
         "descriptionSuperAdmin": "ሁሉንም የተመዘገቡ ተማሪዎች ይመልከቱ እና ያስተዳድሩ።",
         "descriptionAdmin": "የተመደቡበትን ክፍል ተማሪዎች ይመልከቱ እና ያስተዳድሩ።",
         "searchPlaceholder": "በስም ወይም በምዝገባ ቁጥር ይፈልጉ...",
@@ -123,7 +123,7 @@
             "cancel": "ተመለስ",
             "confirm": "አዎ፣ ሰርዝ"
         },
-        "deleteSuccess": "ተማሪ ተሰרዟል!",
+        "deleteSuccess": "ተማሪ ተሰርዟል!",
         "deleteSuccessDescription": "{name} በተሳካ ሁኔታ ተሰርዟል።"
     },
     "studentDetails": {
