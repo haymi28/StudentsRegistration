@@ -23,16 +23,42 @@ type UserFormValues = z.infer<ReturnType<typeof getCreateUserSchema>>;
 
 interface UserFormProps {
   userToEdit?: User & { role: Role };
-  translations: any;
 }
 
-export function UserForm({ userToEdit, translations }: UserFormProps) {
+export function UserForm({ userToEdit }: UserFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
   const router = useRouter();
   const isEditMode = !!userToEdit;
   const { t } = useLocale();
+
+  const translations = useMemo(() => ({
+    title: isEditMode ? t('users.form.editTitle') : t('users.form.createTitle'),
+    description: isEditMode ? t('users.form.editDescription') : t('users.form.createDescription'),
+    labels: {
+        displayName: t('users.form.label.displayName'),
+        username: t('users.form.label.username'),
+        password: t('users.form.label.password'),
+        confirmPassword: t('users.form.label.confirmPassword'),
+        role: t('users.form.label.role'),
+        status: t('users.form.label.status'),
+        active: t('users.form.label.active'),
+        inactive: t('users.form.label.inactive'),
+    },
+    placeholders: {
+        selectRole: t('users.form.placeholder.selectRole'),
+        password: t('users.form.placeholder.passwordOptional')
+    },
+    buttons: {
+        submit: isEditMode ? t('form.save') : t('form.submit'),
+        loading: t('form.loading'),
+    },
+    success: {
+        title: isEditMode ? t('users.form.updateSuccess.title') : t('users.form.createSuccess.title'),
+        description: isEditMode ? t('users.form.updateSuccess.description') : t('users.form.createSuccess.description'),
+    }
+  }), [t, isEditMode]);
 
   useEffect(() => {
     getRoles().then(setRoles);
