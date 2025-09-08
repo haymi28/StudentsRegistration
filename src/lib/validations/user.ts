@@ -45,3 +45,4 @@ export const getChangePasswordSchema = (t: TFunction = () => '') => z.object({
   message: t('validation.passwordMismatch'),
   path: ['confirmPassword'],
 });
+

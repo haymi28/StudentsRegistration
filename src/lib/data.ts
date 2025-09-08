@@ -415,3 +415,4 @@ export async function deleteRole(id: string) {
     await prisma.role.delete({ where: { id } });
     revalidatePath('/roles');
 }
+
