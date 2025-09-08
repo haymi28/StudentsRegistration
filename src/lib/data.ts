@@ -8,6 +8,7 @@ import { revalidatePath } from 'next/cache';
 import { Student, User, Class, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { getCreateUserSchema, getUpdateUserSchema } from './validations/user';
+import { updateUserSchema } from './validations/user-server';
 import { getCreateClassSchema } from './validations/class';
 import { getRoleSchema } from './validations/role';
 import { Prisma } from '@prisma/client';
@@ -15,7 +16,7 @@ import { Prisma } from '@prisma/client';
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
 type RoleData = z.infer<ReturnType<typeof getRoleSchema>>;
-type UserUpdateData = z.infer<ReturnType<typeof getUpdateUserSchema>>;
+type UserUpdateData = z.infer<typeof updateUserSchema>;
 
 
 // Updated getStudents function
@@ -48,7 +49,6 @@ export async function getStudentById(id: string) {
 }
 
 export async function createStudent(data: StudentFormValues) {
-    // Since this is called from a client component, it will have translations
     const validatedData = getStudentRegistrationSchema({}).safeParse(data);
     if (!validatedData.success) {
         throw new Error('Invalid student data');
@@ -190,8 +190,7 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUser(id: string, data: Partial<UserUpdateData>) {
-    const validationSchema = getUpdateUserSchema().partial();
-    const validatedData = validationSchema.safeParse(data);
+    const validatedData = updateUserSchema.safeParse(data);
 
     if (!validatedData.success) {
         throw new Error('Invalid user data: ' + JSON.stringify(validatedData.error.issues, null, 2));

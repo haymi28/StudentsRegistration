@@ -1,4 +1,6 @@
 
+'use client';
+
 import { z } from 'zod';
 import type { TFunction } from '@/contexts/locale-provider';
 
