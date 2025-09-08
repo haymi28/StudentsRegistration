@@ -1,6 +1,8 @@
 
+'use client';
+
 import { UserForm } from "@/components/user-form";
-import { getTranslator } from "@/lib/i18n";
+import { useLocale } from "@/contexts/locale-provider";
 import { getServerSession } from "@/lib/auth";
 import { getUserById } from "@/lib/data";
 import { MainLayout } from "@/components/common/main-layout";
@@ -9,51 +11,49 @@ import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
-export default async function EditUserPage({ params }: { params: { id: string } }) {
+export default function EditUserPage({ params }: { params: { id: string } }) {
     const { id } = params;
-    const t = await getTranslator();
-    const session = await getServerSession();
+    const { t } = useLocale();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<(User & { role: Role }) | null>(null);
 
-    if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
-      redirect('/students');
-    }
-
-    const user = (await getUserById(id)) as User & { role: Role };
-
-    if (!user) {
-        redirect('/users');
-    }
-
-    const translations = {
-        title: t('users.form.editTitle'),
-        description: t('users.form.editDescription'),
-        labels: {
-            displayName: t('users.form.label.displayName'),
-            username: t('users.form.label.username'),
-            password: t('users.form.label.password'),
-            confirmPassword: t('users.form.label.confirmPassword'),
-            role: t('users.form.label.role'),
-            status: t('users.form.label.status'),
-            active: t('users.form.label.active'),
-            inactive: t('users.form.label.inactive'),
-        },
-        placeholders: {
-            selectRole: t('users.form.placeholder.selectRole'),
-            password: t('users.form.placeholder.passwordOptional')
-        },
-        buttons: {
-            submit: t('form.save'),
-            loading: t('form.loading'),
-        },
-        success: {
-            title: t('users.form.updateSuccess.title'),
-            description: t('users.form.updateSuccess.description'),
+    useEffect(() => {
+      const checkAuthAndFetchData = async () => {
+        const session = await getServerSession();
+        if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
+          redirect('/students');
+          return;
         }
-    };
+        setIsAuthenticated(true);
+        
+        const userData = (await getUserById(id)) as User & { role: Role };
+
+        if (!userData) {
+          redirect('/users');
+          return;
+        }
+
+        setUser(userData);
+        setLoading(false);
+      };
+      checkAuthAndFetchData();
+    }, [id]);
+
+    if (loading) {
+        return (
+            <MainLayout isAuthenticated={true}>
+                <div className="flex items-center justify-center h-screen">
+                    Loading...
+                </div>
+            </MainLayout>
+        );
+    }
 
     return (
-        <MainLayout>
+        <MainLayout isAuthenticated={isAuthenticated}>
             <div className="container py-8">
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-4">
@@ -65,10 +65,10 @@ export default async function EditUserPage({ params }: { params: { id: string } 
                       </Button>
                     </div>
                     <div className="mb-8 text-center">
-                        <h1 className="text-3xl font-bold font-headline">{translations.title}</h1>
-                        <p className="text-muted-foreground">{translations.description}</p>
+                        <h1 className="text-3xl font-bold font-headline">{t('users.form.editTitle')}</h1>
+                        <p className="text-muted-foreground">{t('users.form.editDescription')}</p>
                     </div>
-                    <UserForm userToEdit={user} translations={translations} />
+                    {user && <UserForm userToEdit={user} />}
                 </div>
             </div>
         </MainLayout>
