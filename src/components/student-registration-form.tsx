@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getStudentRegistrationSchema } from '@/lib/validations/student';
+import { getStudentRegistrationSchema, StudentValidationTranslations } from '@/lib/validations/student';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Separator } from '@/components/ui/separator';
 import { ImageUpload } from './image-upload';
@@ -48,7 +48,13 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
   const [birthMonth, setBirthMonth] = useState('');
   const [birthYear, setBirthYear] = useState('');
 
-  const studentRegistrationSchema = useMemo(() => getStudentRegistrationSchema(t), [t]);
+  const validationTranslations: StudentValidationTranslations = useMemo(() => ({
+    required: (field: string) => t('validation.required', { field }),
+    min: (field: string, length: number) => t('validation.min', { field, length }),
+    invalidNumber: t('validation.invalidNumber'),
+  }), [t]);
+
+  const studentRegistrationSchema = useMemo(() => getStudentRegistrationSchema(validationTranslations), [validationTranslations]);
   
   const genders = useMemo(() => [
     { value: 'Male', label: t('form.gender.male') },

@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/locale-provider';
 import { Student, Class } from '@prisma/client';
 import { readExcelFile, downloadTemplate, studentHeaders } from '@/lib/excel-utils';
-import { getStudentRegistrationSchema } from '@/lib/validations/student';
+import { getStudentRegistrationSchema, StudentValidationTranslations } from '@/lib/validations/student';
 import { getStudents, importStudents, getClasses } from '@/lib/data';
 
 const formSchema = z.object({
@@ -34,7 +34,14 @@ export function BulkImportForm() {
   const [classes, setClasses] = useState<Class[]>([]);
   const { t } = useLocale();
   const { toast } = useToast();
-  const studentValidationSchema = getStudentRegistrationSchema(t);
+  
+  const validationTranslations: StudentValidationTranslations = {
+    required: (field: string) => t('validation.required', { field }),
+    min: (field: string, length: number) => t('validation.min', { field, length }),
+    invalidNumber: t('validation.invalidNumber'),
+  };
+
+  const studentValidationSchema = getStudentRegistrationSchema(validationTranslations);
 
   useEffect(() => {
     getClasses().then(setClasses);

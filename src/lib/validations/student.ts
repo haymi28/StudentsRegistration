@@ -1,34 +1,46 @@
-
 import { z } from "zod";
-import { TFunction } from "@/contexts/locale-provider";
 
 const phoneRegex = new RegExp(
   /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
 );
 
-const getMinError = (t: TFunction, fieldKey: string, length: number) => ({
-    message: t ? t('validation.min', { field: t(fieldKey), length }) : `${fieldKey} must be at least ${length} characters.`,
-});
+export interface StudentValidationTranslations {
+  required: (field: string) => string;
+  min: (field: string, length: number) => string;
+  invalidNumber: string;
+}
 
-export const getStudentRegistrationSchema = (t?: TFunction) => {
-    const required = (fieldKey: string) => t ? t('validation.required', { field: t(fieldKey) }) : 'This field is required';
-    const invalidNumber = t ? t('validation.invalidNumber') : 'Invalid number';
-    const minMessage = (fieldKey: string, length: number) => t ? t('validation.min', { field: t(fieldKey), length }) : `Must be at least ${length} characters`;
+const defaultTranslations: StudentValidationTranslations = {
+  required: (field: string) => `${field} is required.`,
+  min: (field: string, length: number) => `${field} must be at least ${length} characters.`,
+  invalidNumber: 'Invalid number.',
+};
+
+export const getStudentRegistrationSchema = (translations: Partial<StudentValidationTranslations> = {}) => {
+    const t = { ...defaultTranslations, ...translations };
+    
+    const fields = {
+        regNumber: 'Registration Number',
+        fullName: 'Full Name',
+        gender: 'Gender',
+        department: 'Department',
+        phone: 'Phone Number'
+    };
 
     return z.object({
         photo: z.string().optional(),
-        registrationNumber: z.string({ required_error: required('form.label.regNumber') }).min(1, { message: required('form.label.regNumber') }),
-        fullName: z.string({ required_error: required('form.label.fullName') }).min(2, { message: minMessage('form.label.fullName', 2) }),
-        gender: z.string({ required_error: required('form.label.gender') }).min(1, { message: required('form.label.gender') }),
-        classId: z.string({ required_error: required('form.label.department') }).min(1, { message: required('form.label.department') }),
+        registrationNumber: z.string({ required_error: t.required(fields.regNumber) }).min(1, { message: t.required(fields.regNumber) }),
+        fullName: z.string({ required_error: t.required(fields.fullName) }).min(2, { message: t.min(fields.fullName, 2) }),
+        gender: z.string({ required_error: t.required(fields.gender) }).min(1, { message: t.required(fields.gender) }),
+        classId: z.string({ required_error: t.required(fields.department) }).min(1, { message: t.required(fields.department) }),
         baptismalName: z.string().optional(),
         mothersName: z.string().optional(),
         dateOfBirth: z.string().optional(),
         educationLevel: z.string().optional(),
-        fathersPhoneNumber: z.string().regex(phoneRegex, invalidNumber).optional().or(z.literal('')),
-        mothersPhoneNumber: z.string().regex(phoneRegex, invalidNumber).optional().or(z.literal('')),
-        additionalPhoneNumber: z.string().regex(phoneRegex, invalidNumber).optional().or(z.literal('')),
-        phoneNumber: z.string({ required_error: required('form.label.phone') }).regex(phoneRegex, invalidNumber).min(9, { message: required('form.label.phone') }),
+        fathersPhoneNumber: z.string().regex(phoneRegex, t.invalidNumber).optional().or(z.literal('')),
+        mothersPhoneNumber: z.string().regex(phoneRegex, t.invalidNumber).optional().or(z.literal('')),
+        additionalPhoneNumber: z.string().regex(phoneRegex, t.invalidNumber).optional().or(z.literal('')),
+        phoneNumber: z.string({ required_error: t.required(fields.phone) }).regex(phoneRegex, t.invalidNumber).min(9, { message: t.required(fields.phone) }),
         subcity: z.string().optional(),
         kebele: z.string().optional(),
         houseNumber: z.string().optional(),
