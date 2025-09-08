@@ -51,7 +51,7 @@ export function ClassForm({ classToEdit, users }: ClassFormProps) {
     },
   };
 
-  const validationSchema = getCreateClassSchema();
+  const validationSchema = getCreateClassSchema(t);
 
   const form = useForm<ClassFormValues>({
     resolver: zodResolver(validationSchema),
