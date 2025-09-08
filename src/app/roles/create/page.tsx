@@ -1,45 +1,47 @@
 
+'use client';
+
 import { getServerSession } from '@/lib/auth';
-import { getTranslator } from '@/lib/i18n';
+import { useLocale } from '@/contexts/locale-provider';
 import { RoleForm } from '@/components/role-form';
 import { MainLayout } from '@/components/common/main-layout';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
-export default async function CreateRolePage() {
-  const t = await getTranslator();
-  const session = await getServerSession();
+export default function CreateRolePage() {
+  const { t } = useLocale();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_roles !== true) {
-    redirect('/students');
+  useEffect(() => {
+    const checkAuth = async () => {
+        const sessionData = await getServerSession();
+        if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_roles !== true) {
+            redirect('/students');
+        } else {
+            setIsAuthenticated(true);
+        }
+        setLoading(false);
+    };
+    checkAuth();
+  }, []);
+
+
+  if (loading) {
+    return (
+        <MainLayout isAuthenticated={true}>
+            <div className="flex items-center justify-center h-screen">
+                Loading...
+            </div>
+        </MainLayout>
+    )
   }
 
-  const translations = {
-    createTitle: t('roles.form.createTitle'),
-    createDescription: t('roles.form.createDescription'),
-    labels: {
-        name: t('roles.form.label.name'),
-        description: t('roles.form.label.description'),
-        permissions: t('roles.form.label.permissions'),
-    },
-    placeholders: {
-        name: t('roles.form.placeholder.name'),
-        description: t('roles.form.placeholder.description'),
-    },
-    buttons: {
-        submit: t('roles.form.createButton'),
-        loading: t('form.loading'),
-    },
-    success: {
-        title: t('roles.form.createSuccess.title'),
-        description: t('roles.form.createSuccess.description'),
-    },
-  };
-
   return (
-    <MainLayout isAuthenticated={!!session}>
+    <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8">
         <div className="max-w-4xl mx-auto">
             <div className="mb-4">
@@ -51,10 +53,10 @@ export default async function CreateRolePage() {
               </Button>
             </div>
             <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold font-headline">{translations.createTitle}</h1>
-            <p className="text-muted-foreground">{translations.createDescription}</p>
+            <h1 className="text-3xl font-bold font-headline">{t('roles.form.createTitle')}</h1>
+            <p className="text-muted-foreground">{t('roles.form.createDescription')}</p>
             </div>
-            <RoleForm translations={translations} />
+            <RoleForm />
         </div>
         </div>
     </MainLayout>

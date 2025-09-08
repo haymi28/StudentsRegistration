@@ -34,15 +34,38 @@ const allPermissionsList = [
 
 interface RoleFormProps {
   roleToEdit?: Role;
-  translations: any;
 }
 
-export function RoleForm({ roleToEdit, translations }: RoleFormProps) {
+export function RoleForm({ roleToEdit }: RoleFormProps) {
   const { t } = useLocale();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEditMode = !!roleToEdit;
+
+  const translations = useMemo(() => ({
+    createTitle: t('roles.form.createTitle'),
+    createDescription: t('roles.form.createDescription'),
+    editTitle: t('roles.form.editTitle'),
+    editDescription: t('roles.form.editDescription'),
+    labels: {
+        name: t('roles.form.label.name'),
+        description: t('roles.form.label.description'),
+        permissions: t('roles.form.label.permissions'),
+    },
+    placeholders: {
+        name: t('roles.form.placeholder.name'),
+        description: t('roles.form.placeholder.description'),
+    },
+    buttons: {
+        submit: isEditMode ? t('form.save') : t('roles.form.createButton'),
+        loading: t('form.loading'),
+    },
+    success: {
+        title: isEditMode ? t('roles.form.updateSuccess.title') : t('roles.form.createSuccess.title'),
+        description: isEditMode ? t('roles.form.updateSuccess.description') : t('roles.form.createSuccess.description'),
+    },
+  }), [t, isEditMode]);
 
   const validationSchema = getRoleSchema();
 
