@@ -51,7 +51,7 @@ export function LoginForm() {
         title: t('login.success'),
         description: t('login.successDescription').replace('{username}', result.user.displayName || ''),
       });
-      router.push('/students');
+      router.push('/dashboard');
       router.refresh();
     } else {
       toast({
