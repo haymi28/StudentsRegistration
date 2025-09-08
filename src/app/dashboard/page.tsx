@@ -58,12 +58,24 @@ export default function DashboardPage() {
     <MainLayout isAuthenticated={isAuthenticated}>
       <div className="container py-8">
         <div className="space-y-8">
-          <div className="text-center md:text-left">
-            <h1 className="text-3xl font-bold font-headline">{t('dashboard.title')}</h1>
-            <p className="text-muted-foreground">{t('dashboard.description')}</p>
-          </div>
-          
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardContent className="flex flex-col md:flex-row items-center gap-6 pt-6">
+                <Image 
+                src="https://debregelila.org/wp-content/uploads/2024/10/cropped-IMG_20240909_155141_966-scaled-1.jpg" 
+                alt="Debre Gelila St. Amanuel Cathedral Logo" 
+                width={120} 
+                height={120}
+                className="shadow-lg rounded-full"
+                />
+                <div className="text-center md:text-left">
+                <h1 className="text-2xl font-bold font-headline">{t('dashboard.welcome.title')}</h1>
+                <p className="text-muted-foreground mt-1">{t('dashboard.welcome.churchName')}</p>
+                <p className="text-sm text-muted-foreground">{t('dashboard.welcome.systemName')}</p>
+                </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{t('dashboard.totalStudents')}</CardTitle>
@@ -84,57 +96,40 @@ export default function DashboardPage() {
             </Card>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-5">
-            <Card className="lg:col-span-3">
-              <CardHeader>
-                <CardTitle>{t('dashboard.chartTitle')}</CardTitle>
-                <CardDescription>{t('dashboard.chartDescription')}</CardDescription>
-              </CardHeader>
-              <CardContent className="pl-2">
-                <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={chartData}>
-                    <XAxis
-                      dataKey="name"
-                      stroke="#888888"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                    />
-                    <YAxis
-                      stroke="#888888"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(value) => `${value}`}
-                    />
-                    <Tooltip
-                        cursor={{fill: 'hsl(var(--muted))'}}
-                        contentStyle={{
-                            backgroundColor: 'hsl(var(--background))',
-                            borderColor: 'hsl(var(--border))',
-                        }}
-                    />
-                    <Bar dataKey="students" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card className="lg:col-span-2">
-              <CardContent className="flex flex-col items-center justify-center pt-6">
-                 <CardTitle className="text-center mb-4">{t('dashboard.welcome.title')}</CardTitle>
-                 <Image 
-                    src="https://debregelila.org/wp-content/uploads/2024/10/cropped-IMG_20240909_155141_966-scaled-1.jpg" 
-                    alt="Debre Gelila St. Amanuel Cathedral Logo" 
-                    width={150} 
-                    height={150}
-                    className="shadow-lg mx-auto"
-                />
-                <h3 className="text-lg font-semibold mt-4 text-center">{t('dashboard.welcome.churchName')}</h3>
-                <p className="text-sm text-muted-foreground mt-2 text-center">{t('dashboard.welcome.systemName')}</p>
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('dashboard.chartTitle')}</CardTitle>
+              <CardDescription>{t('dashboard.chartDescription')}</CardDescription>
+            </CardHeader>
+            <CardContent className="pl-2">
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={chartData}>
+                  <XAxis
+                    dataKey="name"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value}`}
+                  />
+                  <Tooltip
+                      cursor={{fill: 'hsl(var(--muted))'}}
+                      contentStyle={{
+                          backgroundColor: 'hsl(var(--background))',
+                          borderColor: 'hsl(var(--border))',
+                      }}
+                  />
+                  <Bar dataKey="students" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
         </div>
       </div>
