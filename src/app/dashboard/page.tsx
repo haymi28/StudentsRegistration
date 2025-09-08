@@ -1,7 +1,9 @@
 
+'use client';
+
 import { getServerSession } from '@/lib/auth';
 import { getClasses } from '@/lib/data';
-import { getTranslator } from '@/lib/i18n';
+import { useLocale } from '@/contexts/locale-provider';
 import { MainLayout } from '@/components/common/main-layout';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Class, User } from '@prisma/client';
@@ -9,18 +11,41 @@ import { redirect } from 'next/navigation';
 import { Users, School, BarChart3 } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 type ClassWithDetails = Class & { manager: User | null; _count: { students: number } };
 
-export default async function DashboardPage() {
-  const t = await getTranslator();
-  const session = await getServerSession();
+export default function DashboardPage() {
+  const { t } = useLocale();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [classes, setClasses] = useState<ClassWithDetails[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!session) {
-    redirect('/');
+  useEffect(() => {
+    const fetchData = async () => {
+      const session = await getServerSession();
+      if (!session) {
+        redirect('/');
+      } else {
+        setIsAuthenticated(true);
+        const fetchedClasses = await getClasses() as ClassWithDetails[];
+        setClasses(fetchedClasses);
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+        <MainLayout isAuthenticated={true}>
+            <div className="flex items-center justify-center h-screen">
+                Loading...
+            </div>
+        </MainLayout>
+    )
   }
 
-  const classes = (await getClasses()) as ClassWithDetails[];
   const totalStudents = classes.reduce((acc, curr) => acc + curr._count.students, 0);
   const totalClasses = classes.length;
 
@@ -30,7 +55,7 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <MainLayout isAuthenticated={true}>
+    <MainLayout isAuthenticated={isAuthenticated}>
       <div className="container py-8">
         <div className="space-y-8">
           <div className="text-center md:text-left">
