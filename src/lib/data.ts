@@ -50,7 +50,7 @@ export async function getStudentById(id: string) {
 }
 
 export async function createStudent(data: StudentData) {
-    const validatedData = getStudentRegistrationSchema(() => '').safeParse(data);
+    const validatedData = getStudentRegistrationSchema().safeParse(data);
     if (!validatedData.success) {
         throw new Error('Invalid student data');
     }
@@ -67,8 +67,8 @@ export async function createStudent(data: StudentData) {
     revalidatePath('/students');
 }
 
-export async function importStudents(students: Partial<Student & { className: string }>[], t: TFunction) {
-    const validationSchema = getStudentRegistrationSchema(t);
+export async function importStudents(students: Partial<Student & { className: string }>[]) {
+    const validationSchema = getStudentRegistrationSchema();
     const classes = await getClasses();
     const classMap = new Map(classes.map(c => [c.name.toLowerCase(), c.id]));
     
@@ -105,7 +105,7 @@ export async function importStudents(students: Partial<Student & { className: st
 
 
 export async function updateStudent(id: string, data: Partial<StudentData>) {
-    const validatedData = getStudentRegistrationSchema(() => '').partial().safeParse(data);
+    const validatedData = getStudentRegistrationSchema().partial().safeParse(data);
     if (!validatedData.success) {
         throw new Error('Invalid student data');
     }

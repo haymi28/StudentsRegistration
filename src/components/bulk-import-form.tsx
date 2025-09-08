@@ -104,7 +104,7 @@ export function BulkImportForm() {
 
     setIsLoading(true);
     try {
-        await importStudents(validationResult.validStudents, t);
+        await importStudents(validationResult.validStudents);
         toast({
             title: t('import.successTitle'),
             description: t('import.successDescription').replace('{count}', String(validationResult.validStudents.length)),
