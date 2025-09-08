@@ -14,7 +14,7 @@ import { useState, useEffect } from 'react';
 import { Role } from '@prisma/client';
 
 export default function EditRolePage({ params }: { params: { id: string } }) {
-  const { id } = params;
+  const id = params.id;
   const { t } = useLocale();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
