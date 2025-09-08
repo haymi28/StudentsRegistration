@@ -126,7 +126,7 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center">
                  <Image 
-                    src="https://debregelila.org/wp-content/uploads/2024/10/cropped-IMG_20240909_155141_966-scaled-1.jpg" 
+                    src="https://debregelila.org/wp-content/uploads/2024/09/Sunday-School-Final-Logo-2.png" 
                     alt="Debre Gelila St. Amanuel Cathedral Logo" 
                     width={150} 
                     height={150}
