@@ -121,10 +121,8 @@ export default function DashboardPage() {
             </Card>
 
             <Card className="lg:col-span-2">
-              <CardHeader>
-                 <CardTitle className="text-center">{t('dashboard.welcome.title')}</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center justify-center">
+              <CardContent className="flex flex-col items-center justify-center pt-6">
+                 <CardTitle className="text-center mb-4">{t('dashboard.welcome.title')}</CardTitle>
                  <Image 
                     src="https://debregelila.org/wp-content/uploads/2024/09/Sunday-School-Final-Logo-2.png" 
                     alt="Debre Gelila St. Amanuel Cathedral Logo" 
