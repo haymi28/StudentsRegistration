@@ -13,7 +13,7 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
-export default function EditClassPage({ params }: { params: { id: string } }) {
+export default function EditClassPage({ params: { id } }: { params: { id: string } }) {
   const { t } = useLocale();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ export default function EditClassPage({ params }: { params: { id: string } }) {
       setIsAuthenticated(true);
 
       const [classData, userData] = await Promise.all([
-        getClassById(params.id),
+        getClassById(id),
         getUsers(true)
       ]);
 
@@ -44,7 +44,7 @@ export default function EditClassPage({ params }: { params: { id: string } }) {
       setLoading(false);
     };
     checkAuthAndFetchData();
-  }, [params.id]);
+  }, [id]);
 
 
   if (loading) {
