@@ -7,8 +7,8 @@ import { getStudentRegistrationSchema, StudentValidationTranslations } from './v
 import { revalidatePath } from 'next/cache';
 import { Student, User, Class, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { getCreateUserSchema } from './validations/user';
-import { updateUserSchema } from './validations/user-server';
+import { getCreateUserSchema, getUpdateUserSchema, getUpdateProfileSchema } from './validations/user';
+import { updateUserSchema as serverUpdateUserSchema } from './validations/user-server';
 import { getCreateClassSchema } from './validations/class';
 import { getRoleSchema } from './validations/role';
 import { Prisma } from '@prisma/client';
@@ -16,7 +16,7 @@ import { Prisma } from '@prisma/client';
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
 type RoleData = z.infer<ReturnType<typeof getRoleSchema>>;
-type UserUpdateData = z.infer<typeof updateUserSchema>;
+type UserUpdateData = z.infer<typeof serverUpdateUserSchema>;
 
 
 // Updated getStudents function
@@ -190,7 +190,7 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUser(id: string, data: Partial<UserUpdateData>) {
-    const validatedData = updateUserSchema.safeParse(data);
+    const validatedData = serverUpdateUserSchema.safeParse(data);
 
     if (!validatedData.success) {
         throw new Error('Invalid user data: ' + JSON.stringify(validatedData.error.issues, null, 2));
@@ -263,9 +263,9 @@ export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSc
 }
 
 export async function deleteUser(id: string) {
-    const user = await prisma.user.findUnique({ where: { id }, include: { role: true }});
-    if (user?.role.name === 'Super Admin') {
-        throw new Error("Cannot delete a super administrator.");
+    const user = await prisma.user.findUnique({ where: { id }});
+    if (user?.username === 'superadmin') {
+        throw new Error("Cannot delete the initial super administrator.");
     }
     await prisma.user.delete({ where: { id }});
     revalidatePath('/users');
@@ -415,8 +415,8 @@ export async function updateRole(id: string, data: RoleData) {
 
 export async function deleteRole(id: string) {
     const role = await prisma.role.findUnique({ where: { id } });
-    if (['Super Admin', 'Admin', 'Teacher'].includes(role?.name || '')) {
-        throw new Error("Cannot delete default system roles.");
+    if (['Super Admin'].includes(role?.name || '')) {
+        throw new Error("Cannot delete the default Super Admin role.");
     }
     const userCount = await prisma.user.count({ where: { roleId: id } });
     if (userCount > 0) {
