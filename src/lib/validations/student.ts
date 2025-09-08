@@ -23,7 +23,7 @@ export const getStudentRegistrationSchema = (translations: Partial<StudentValida
         regNumber: 'Registration Number',
         fullName: 'Full Name',
         gender: 'Gender',
-        department: 'Department',
+        class: 'Class',
         phone: 'Phone Number'
     };
 
@@ -32,7 +32,7 @@ export const getStudentRegistrationSchema = (translations: Partial<StudentValida
         registrationNumber: z.string({ required_error: t.required(fields.regNumber) }).min(1, { message: t.required(fields.regNumber) }),
         fullName: z.string({ required_error: t.required(fields.fullName) }).min(2, { message: t.min(fields.fullName, 2) }),
         gender: z.string({ required_error: t.required(fields.gender) }).min(1, { message: t.required(fields.gender) }),
-        classId: z.string({ required_error: t.required(fields.department) }).min(1, { message: t.required(fields.department) }),
+        classId: z.string({ required_error: t.required(fields.class) }).min(1, { message: t.required(fields.class) }),
         baptismalName: z.string().optional(),
         mothersName: z.string().optional(),
         dateOfBirth: z.string().optional(),

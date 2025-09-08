@@ -143,7 +143,7 @@ export function ExportStudentClient({ students: initialStudents }: ExportStudent
                 <TableHead className="w-[80px]">{t('students.table.photo')}</TableHead>
                 <TableHead>{t('students.table.regNumber')}</TableHead>
                 <TableHead>{t('students.table.fullName')}</TableHead>
-                <TableHead>{t('students.table.department')}</TableHead>
+                <TableHead>{t('students.table.class')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

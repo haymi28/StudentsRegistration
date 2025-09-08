@@ -61,7 +61,7 @@
             "regNumber": "የምዝገባ ቁጥር",
             "fullName": "ሙሉ ስም",
             "gender": "ጾታ",
-            "department": "ክፍል",
+            "class": "ክፍል",
             "baptismalName": "የክርስትና ስም",
             "mothersName": "የእናት ስም",
             "dob": "የትውልድ ዘመን (በኢትዮጵያ አቆጣጠር)",
@@ -79,7 +79,7 @@
         "placeholder": {
             "regNumber": "ለምሳሌ፦ 001/17",
             "selectGender": "ጾታ ይምረጡ",
-            "selectDepartment": "ክፍል ይምረጡ",
+            "selectClass": "ክፍል ይምረጡ",
             "address": "የአካባቢውን ዝርዝር መረጃ ያስገቡ",
             "day": "ቀን",
             "month": "ወር",
@@ -108,7 +108,7 @@
             "photo": "ፎቶ",
             "regNumber": "የምዝገባ ቁ.",
             "fullName": "ሙሉ ስም",
-            "department": "ክፍል",
+            "class": "ክፍል",
             "phone": "ስልክ ቁጥር",
             "actions": "ድርጊቶች"
         },
@@ -147,7 +147,8 @@
             "subcity": "ክፍለ ከተማ",
             "kebele": "ቀበሌ",
             "houseNumber": "የቤት ቁጥር",
-            "specificAddress": "የአካባቢው መጠሪያ"
+            "specificAddress": "የአካባቢው መጠሪያ",
+            "class": "ክፍል"
         }
     },
     "import": {

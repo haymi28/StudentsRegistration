@@ -62,7 +62,7 @@ interface TableTranslations {
     photo: string;
     regNumber: string;
     fullName: string;
-    department: string;
+    class: string;
     phone: string;
 }
 
@@ -104,7 +104,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
           photo: t('students.table.photo'),
           regNumber: t('students.table.regNumber'),
           fullName: t('students.table.fullName'),
-          department: t('students.table.department'),
+          class: t('students.table.class'),
           phone: t('students.table.phone'),
       }
   }), [t]);
@@ -201,7 +201,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                     <TableHead className="w-[80px]">{translations.table.photo}</TableHead>
                     <TableHead>{translations.table.regNumber}</TableHead>
                     <TableHead>{translations.table.fullName}</TableHead>
-                    <TableHead>{translations.table.department}</TableHead>
+                    <TableHead>{translations.table.class}</TableHead>
                     <TableHead>{translations.table.phone}</TableHead>
                     <TableHead className="text-right">{translations.rowActions.actions}</TableHead>
                   </TableRow>

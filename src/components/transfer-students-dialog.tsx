@@ -124,17 +124,17 @@ export function TransferStudentsDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('transfer.title')}</DialogTitle>
-           <DialogDescription dangerouslySetInnerHTML={{ __html: t('transfer.description').replace('{count}', String(selectedStudentIds.length)).replace('{from}', `<strong>${fromClass?.name || t('transfer.multipleDepartments')}</strong>`) }} />
+           <DialogDescription dangerouslySetInnerHTML={{ __html: t('transfer.description').replace('{count}', String(selectedStudentIds.length)).replace('{from}', `<strong>${fromClass?.name || t('transfer.multipleClasses')}</strong>`) }} />
         </DialogHeader>
         <div className="py-4 space-y-4">
             {canTransfer ? (
                 <div>
-                    <Label htmlFor="target-department">{t('transfer.toLabel')}</Label>
+                    <Label htmlFor="target-class">{t('transfer.toLabel')}</Label>
                     <Select
                         value={targetClassId}
                         onValueChange={setTargetClassId}
                     >
-                        <SelectTrigger id="target-department">
+                        <SelectTrigger id="target-class">
                         <SelectValue placeholder={t('transfer.toPlaceholder')} />
                         </SelectTrigger>
                         <SelectContent>

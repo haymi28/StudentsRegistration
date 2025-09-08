@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Student, ServiceDepartment } from '@prisma/client';
+import type { Student, Class } from '@prisma/client';
 import type { TFunction } from '@/contexts/locale-provider';
 
 export interface ReportTranslations {
@@ -65,8 +65,8 @@ const getEthiopianDate = (): string => {
 
 export async function generateTransferReport(
   students: Student[],
-  fromDepartment: string,
-  toDepartment: ServiceDepartment,
+  fromClass: string,
+  toClass: string,
   translations: ReportTranslations,
   generatedByDisplayName: string
 ) {
@@ -105,8 +105,8 @@ export async function generateTransferReport(
       th { background-color: #f2f2f2; font-weight: bold;}
     </style>
     <h1>${translations.title}</h1>
-    <p><strong>${translations.from}</strong> ${fromDepartment}</p>
-    <p><strong>${translations.to}</strong> ${toDepartment}</p>
+    <p><strong>${translations.from}</strong> ${fromClass}</p>
+    <p><strong>${translations.to}</strong> ${toClass}</p>
     <p><strong>${translations.date}</strong> ${dateToday}</p>
     <p><strong>${translations.generatedBy}</strong> ${generatedByDisplayName}</p>
     <table>

@@ -61,7 +61,7 @@
             "regNumber": "Registration Number",
             "fullName": "Full Name",
             "gender": "Gender",
-            "department": "Class",
+            "class": "Class",
             "baptismalName": "Baptismal Name",
             "mothersName": "Mother's Name",
             "dob": "Date of Birth (E.C.)",
@@ -79,7 +79,7 @@
         "placeholder": {
             "regNumber": "e.g., 001/17",
             "selectGender": "Select gender",
-            "selectDepartment": "Select class",
+            "selectClass": "Select class",
             "address": "Enter detailed address information",
             "day": "Day",
             "month": "Month",
@@ -108,7 +108,7 @@
             "photo": "Photo",
             "regNumber": "Reg. No.",
             "fullName": "Full Name",
-            "department": "Class",
+            "class": "Class",
             "phone": "Phone Number",
             "actions": "Actions"
         },
@@ -147,7 +147,8 @@
             "subcity": "Subcity",
             "kebele": "Kebele",
             "houseNumber": "House Number",
-            "specificAddress": "Specific Address"
+            "specificAddress": "Specific Address",
+            "class": "Class"
         }
     },
     "import": {

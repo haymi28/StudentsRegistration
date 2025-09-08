@@ -81,6 +81,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
             <DetailItem label={t('studentDetails.label.dob')} value={student.dateOfBirth} />
             <DetailItem label={t('studentDetails.label.education')} value={student.educationLevel} />
             <DetailItem label={t('studentDetails.label.joinDate')} value={student.dateOfJoining} />
+            <DetailItem label={t('studentDetails.label.class')} value={student.class?.name} />
           </div>
 
           <Separator />
