@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   title: "የደብረ ገሊላ ቅዱስ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት የተማሪዎች መመዝገቢያ ቅጽ",
   description: "A student registration and attendance management system.",
   icons: {
-    icon: "https://debregelila.org/wp-content/uploads/2024/09/Sunday-School-Final-Logo-2.png",
+    icon: "https://debregelila.org/wp-content/uploads/2024/10/cropped-IMG_20240909_155141_966-scaled-1.jpg",
   },
 };
 
