@@ -18,7 +18,7 @@ export default async function UsersPage() {
   const users = (await getUsers()) as UserWithRole[];
 
   return (
-    <MainLayout>
+    <MainLayout isAuthenticated={!!session}>
         <div className="container py-8 flex flex-col items-center">
             <UserList users={users} />
         </div>
