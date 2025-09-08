@@ -20,8 +20,6 @@
         "description": "የስርዓቱ ስታቲስቲክስ አጠቃላይ እይታ።",
         "totalStudents": "ጠቅላላ ተማሪዎች",
         "totalClasses": "ጠቅላላ ክፍሎች",
-        "averageAttendance": "አማካይ ክትትል",
-        "comingSoon": "በቅርብ ቀን",
         "chartTitle": "የተማሪ ስርጭት በክፍል",
         "chartDescription": "በእያንዳንዱ ክፍል ውስጥ ምን ያህል ተማሪዎች እንዳሉ ይመልከቱ።",
         "welcome": {

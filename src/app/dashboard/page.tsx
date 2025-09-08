@@ -8,7 +8,7 @@ import { MainLayout } from '@/components/common/main-layout';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Class, User } from '@prisma/client';
 import { redirect } from 'next/navigation';
-import { Users, School, BarChart3 } from 'lucide-react';
+import { Users, School } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -80,16 +80,6 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalClasses}</div>
-              </CardContent>
-            </Card>
-             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t('dashboard.averageAttendance')}</CardTitle>
-                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">--%</div>
-                <p className="text-xs text-muted-foreground">{t('dashboard.comingSoon')}</p>
               </CardContent>
             </Card>
           </div>

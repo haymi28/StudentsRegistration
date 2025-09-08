@@ -20,8 +20,6 @@
         "description": "An overview of the system's statistics.",
         "totalStudents": "Total Students",
         "totalClasses": "Total Classes",
-        "averageAttendance": "Average Attendance",
-        "comingSoon": "Coming Soon",
         "chartTitle": "Student Distribution by Class",
         "chartDescription": "See how many students are in each class.",
         "welcome": {
