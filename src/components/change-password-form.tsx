@@ -52,7 +52,7 @@ export function ChangePasswordForm() {
   const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
 
-  const formSchema = getChangePasswordSchema();
+  const formSchema = getChangePasswordSchema(t);
 
   const form = useForm<PasswordFormValues>({
     resolver: zodResolver(formSchema),

@@ -23,7 +23,7 @@ export function UpdateProfileForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  const formSchema = useMemo(() => getUpdateProfileSchema(), []);
+  const formSchema = useMemo(() => getUpdateProfileSchema(t), [t]);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(formSchema),

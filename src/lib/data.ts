@@ -190,14 +190,14 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUser(id: string, data: Partial<UserUpdateData>) {
-    const validationSchema = getUpdateUserSchema();
+    const validationSchema = getUpdateUserSchema().partial();
     const validatedData = validationSchema.safeParse(data);
 
     if (!validatedData.success) {
         throw new Error('Invalid user data: ' + JSON.stringify(validatedData.error.issues, null, 2));
     }
     
-    const { password, confirmPassword, ...rest } = validatedData.data;
+    const { password, ...rest } = validatedData.data;
 
     const dataToUpdate: Prisma.UserUpdateInput = { ...rest };
 
