@@ -121,7 +121,7 @@ export function RoleList({ roles }: RoleListProps) {
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive focus:bg-destructive/10"
                             onClick={() => setRoleToDelete(role)}
-                            disabled={isDeleting}
+                            disabled={isDeleting || ['Super Admin', 'Admin', 'Teacher'].includes(role.name)}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
                             <span>{t('students.actions.delete')}</span>

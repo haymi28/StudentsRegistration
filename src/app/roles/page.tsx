@@ -18,7 +18,7 @@ export default async function RolesPage() {
   const roles = (await getRoles()) as RoleWithDetails[];
 
   return (
-    <MainLayout>
+    <MainLayout isAuthenticated={!!session}>
         <div className="container py-8 flex flex-col items-center">
             <RoleList roles={roles} />
         </div>
