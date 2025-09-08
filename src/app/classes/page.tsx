@@ -18,7 +18,7 @@ export default async function ClassesPage() {
   const classes = (await getClasses()) as ClassWithDetails[];
 
   return (
-    <MainLayout>
+    <MainLayout isAuthenticated={!!session}>
         <div className="container py-8 flex flex-col items-center">
             <ClassList classes={classes} />
         </div>
