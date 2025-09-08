@@ -6,6 +6,10 @@
         "newStudent": "አዲስ ተማሪ",
         "import": "አስመጣ",
         "export": "ላክ",
+        "importText": "የጽሑፍ መረጃ አስመጣ",
+        "exportText": "የጽሑፍ መረጃ ላክ",
+        "importPhotos": "ፎቶዎችን አስመጣ",
+        "exportPhotos": "ፎቶዎችን ላክ",
         "attendance": "የተማሪዎች ክትትል",
         "settings": "ቅንብሮች",
         "userManagement": "የተጠቃሚ አስተዳደር",
@@ -194,6 +198,46 @@
         "successTitle": "መላክ ተሳክቷል!",
         "successDescription": "{count} የተማሪዎች መረጃ በተሳካ ሁኔታ ተልኳል።"
     },
+    "importPhotos": {
+        "pageTitle": "ፎቶዎችን በብዛት አስመጣ",
+        "pageDescription": "ብዙ የተማሪ ፎቶዎችን በአንድ ጊዜ ይስቀሉ። የፋይል ስሞች ከተማሪ ምዝገባ ቁጥሮች ጋር መመሳሰላቸውን ያረጋግጡ (ለምሳሌ፦ '001-17.jpg')።",
+        "uploadCard": {
+            "title": "የምስል ፋይሎችን ስቀል",
+            "description": "አንድ ወይም ከዚያ በላይ የምስል ፋይሎችን ለመስቀል ይምረጡ።"
+        },
+        "selectFiles": "ፋይሎችን ይምረጡ",
+        "fileDrop": {
+            "fileTypes": "PNG, JPG, JPEG"
+        },
+        "filesSelected": "{count} ፋይሎች ተመርጠዋል",
+        "preview": {
+            "title": "የማስመጣት ቅድመ እይታ",
+            "description": "{count} ፎቶዎች ለማስመጣት እና ለመመደብ ዝግጁ ናቸው።"
+        },
+        "table": {
+            "photo": "ፎቶ",
+            "fileName": "የፋይል ስም"
+        },
+        "confirmButton": "{count} ፎቶዎችን አስመጣ",
+        "successTitle": "ማስመጣት ተሳክቷል!",
+        "successDescription": "{count} ፎቶዎች በተሳካ ሁኔታ ገብተው ተመድበዋል።",
+        "errors": {
+            "invalidFileName": "የፋይል ስም የምዝገባ ቁጥር መሆን አለበት።",
+            "notFoundTitle": "አንዳንድ ተማሪዎች አልተገኙም",
+            "notFoundDescription": "ከእነዚህ የምዝገባ ቁጥሮች ጋር ተማሪዎችን ማግኘት አልተቻለም፦ {numbers}"
+        }
+    },
+    "exportPhotos": {
+        "pageTitle": "የተማሪ ፎቶዎችን ላክ",
+        "pageDescription": "የተማሪ ፎቶዎችን እንደ ZIP መዝገብ ይምረጡ እና ያውርዱ።",
+        "button": "{count} ፎቶዎችን ላክ",
+        "noSelectionDescription": "እባክዎ ለመላክ ቢያንስ አንድ ፎቶ ይምረጡ።",
+        "successTitle": "መላክ ተሳክቷል!",
+        "successDescription": "{count} ፎቶዎች ለማውረድ ወደ zip ፋይል ታክለዋል።",
+        "selectAll": "ሁሉንም ምረጥ ({count})",
+        "noPhotosTitle": "ምንም ፎቶዎች አልተገኙም",
+        "noPhotosDescription": "ለመላክ ምንም የተማሪ ፎቶዎች የሉም።"
+    },
     "transfer": {
         "title": "ተማሪዎችን አስተላልፍ",
         "description": "{count} ተማሪዎችን ከ <strong>{from}</strong> ክፍል ለማስተላለፍ ተመርጠዋል።",
@@ -271,7 +315,7 @@
         },
         "deleteSuccess": {
             "title": "ተጠቃሚ ተሰרዟል!",
-            "description": "ተጠቃሚ {name} በተሳካ ሁኔታ ተሰርዟል።"
+            "description": "ተጠቃሚ {name} በተሳካ ሁኔታ ተሰרዟል።"
         }
     },
     "classes": {

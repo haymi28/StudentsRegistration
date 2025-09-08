@@ -3,7 +3,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, User, UserPlus, Users, Upload, Download, Settings, LayoutGrid } from 'lucide-react';
+import { LogOut, User, UserPlus, Users, Upload, Download, Settings, LayoutGrid, FileText, Image as ImageIcon } from 'lucide-react';
 import { Logo } from './logo';
 import {
   Sidebar,
@@ -57,8 +57,10 @@ export function AppSidebar() {
   ];
 
   const adminLinks = [
-    { href: '/students/import', label: t('nav.import'), icon: Upload, permission: 'import_students' },
-    { href: '/students/export', label: t('nav.export'), icon: Download, permission: 'export_students' },
+    { href: '/students/import', label: t('nav.importText'), icon: FileText, permission: 'import_students' },
+    { href: '/students/export', label: t('nav.exportText'), icon: FileText, permission: 'export_students' },
+    { href: '/students/import-photos', label: t('nav.importPhotos'), icon: ImageIcon, permission: 'import_students' },
+    { href: '/students/export-photos', label: t('nav.exportPhotos'), icon: ImageIcon, permission: 'export_students' },
   ];
   
   const visibleMainLinks = mainLinks.filter(link => permissions[link.permission]);

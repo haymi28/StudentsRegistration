@@ -6,6 +6,10 @@
         "newStudent": "New Student",
         "import": "Import",
         "export": "Export",
+        "importText": "Import Text Data",
+        "exportText": "Export Text Data",
+        "importPhotos": "Import Photos",
+        "exportPhotos": "Export Photos",
         "attendance": "Attendance",
         "settings": "Settings",
         "userManagement": "User Management",
@@ -193,6 +197,46 @@
         "noSelectionDescription": "Please select at least one student to export.",
         "successTitle": "Export Successful!",
         "successDescription": "{count} students have been successfully exported."
+    },
+    "importPhotos": {
+        "pageTitle": "Bulk Import Photos",
+        "pageDescription": "Upload multiple student photos at once. Ensure filenames match student registration numbers (e.g., '001-17.jpg').",
+        "uploadCard": {
+            "title": "Upload Image Files",
+            "description": "Choose one or more image files to upload."
+        },
+        "selectFiles": "Select files",
+        "fileDrop": {
+            "fileTypes": "PNG, JPG, JPEG"
+        },
+        "filesSelected": "{count} files selected",
+        "preview": {
+            "title": "Import Preview",
+            "description": "{count} photos are ready to be imported and assigned."
+        },
+        "table": {
+            "photo": "Photo",
+            "fileName": "Filename"
+        },
+        "confirmButton": "Import {count} Photos",
+        "successTitle": "Import Successful!",
+        "successDescription": "{count} photos have been successfully imported and assigned.",
+        "errors": {
+            "invalidFileName": "Filename must be a registration number.",
+            "notFoundTitle": "Some Students Not Found",
+            "notFoundDescription": "Could not find students with registration numbers: {numbers}"
+        }
+    },
+    "exportPhotos": {
+        "pageTitle": "Export Student Photos",
+        "pageDescription": "Select and download student photos as a ZIP archive.",
+        "button": "Export {count} Photos",
+        "noSelectionDescription": "Please select at least one photo to export.",
+        "successTitle": "Export Successful!",
+        "successDescription": "{count} photos have been added to the zip file for download.",
+        "selectAll": "Select All ({count})",
+        "noPhotosTitle": "No Photos Found",
+        "noPhotosDescription": "There are no student photos available to export."
     },
     "transfer": {
         "title": "Transfer Students",

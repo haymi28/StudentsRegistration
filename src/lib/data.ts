@@ -3,7 +3,7 @@
 
 import prisma from './prisma';
 import { z } from 'zod';
-import { getStudentRegistrationSchema } from './validations/student';
+import { getStudentRegistrationSchema, StudentValidationTranslations } from './validations/student';
 import { revalidatePath } from 'next/cache';
 import { Student, User, Class, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
@@ -11,10 +11,8 @@ import { getCreateUserSchema, getUpdateUserSchema } from './validations/user';
 import { getCreateClassSchema } from './validations/class';
 import { getRoleSchema } from './validations/role';
 import { Prisma } from '@prisma/client';
-import { TFunction } from '@/contexts/locale-provider';
 
-
-type StudentData = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
+type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
 type RoleData = z.infer<ReturnType<typeof getRoleSchema>>;
 type UserUpdateData = z.infer<ReturnType<typeof getUpdateUserSchema>>;
@@ -49,8 +47,9 @@ export async function getStudentById(id: string) {
   });
 }
 
-export async function createStudent(data: StudentData) {
-    const validatedData = getStudentRegistrationSchema().safeParse(data);
+export async function createStudent(data: StudentFormValues) {
+    // Since this is called from a client component, it will have translations
+    const validatedData = getStudentRegistrationSchema({}).safeParse(data);
     if (!validatedData.success) {
         throw new Error('Invalid student data');
     }
@@ -68,11 +67,12 @@ export async function createStudent(data: StudentData) {
 }
 
 export async function importStudents(students: Partial<Student & { className: string }>[]) {
+    // Server-side validation, no translations
     const validationSchema = getStudentRegistrationSchema();
     const classes = await getClasses();
     const classMap = new Map(classes.map(c => [c.name.toLowerCase(), c.id]));
     
-    const validatedStudents: StudentData[] = [];
+    const validatedStudents: StudentFormValues[] = [];
 
     for (const student of students) {
         const studentWithClassId = { ...student };
@@ -84,7 +84,7 @@ export async function importStudents(students: Partial<Student & { className: st
 
         const result = validationSchema.safeParse(studentWithClassId);
         if (result.success) {
-            validatedStudents.push(result.data);
+            validatedStudents.push(result.data as StudentFormValues);
         } else {
              console.error("Invalid student data during import:", result.error.flatten().fieldErrors);
              throw new Error("Validation failed for some students.");
@@ -104,7 +104,7 @@ export async function importStudents(students: Partial<Student & { className: st
 }
 
 
-export async function updateStudent(id: string, data: Partial<StudentData>) {
+export async function updateStudent(id: string, data: Partial<StudentFormValues>) {
     const validatedData = getStudentRegistrationSchema().partial().safeParse(data);
     if (!validatedData.success) {
         throw new Error('Invalid student data');
@@ -117,6 +117,47 @@ export async function updateStudent(id: string, data: Partial<StudentData>) {
 export async function deleteStudent(id: string) {
     await prisma.student.delete({ where: { id }});
     revalidatePath('/students');
+}
+
+export async function updateStudentPhotos(photoData: { registrationNumber: string; photo: string }[]) {
+  const registrationNumbers = photoData.map(p => p.registrationNumber);
+  
+  const existingStudents = await prisma.student.findMany({
+    where: {
+      registrationNumber: {
+        in: registrationNumbers,
+      },
+    },
+    select: {
+      id: true,
+      registrationNumber: true,
+    },
+  });
+
+  const studentMap = new Map(existingStudents.map(s => [s.registrationNumber, s.id]));
+  const foundNumbers = new Set(existingStudents.map(s => s.registrationNumber));
+  const notFound = registrationNumbers.filter(rn => !foundNumbers.has(rn));
+
+  const updates = photoData
+    .filter(p => studentMap.has(p.registrationNumber))
+    .map(p => 
+      prisma.student.update({
+        where: { id: studentMap.get(p.registrationNumber) },
+        data: { photo: p.photo },
+      })
+    );
+
+  if (updates.length > 0) {
+    await prisma.$transaction(updates);
+  }
+  
+  revalidatePath('/students');
+  revalidatePath('/students/export-photos');
+  
+  return {
+    count: updates.length,
+    notFound,
+  };
 }
 
 
