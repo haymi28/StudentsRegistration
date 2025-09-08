@@ -1,6 +1,7 @@
 
 {
     "nav": {
+        "dashboard": "ዳሽቦርድ",
         "students": "ተማሪዎች",
         "newStudent": "አዲስ ተማሪ",
         "import": "አስመጣ",
@@ -13,6 +14,21 @@
         "account": "የኔ መለያ",
         "logout": "ውጣ",
         "language": "ቋንቋ"
+    },
+    "dashboard": {
+        "title": "ዳሽቦርድ",
+        "description": "የስርዓቱ ስታቲስቲክስ አጠቃላይ እይታ።",
+        "totalStudents": "ጠቅላላ ተማሪዎች",
+        "totalClasses": "ጠቅላላ ክፍሎች",
+        "averageAttendance": "አማካይ ክትትል",
+        "comingSoon": "በቅርብ ቀን",
+        "chartTitle": "የተማሪ ስርጭት በክፍል",
+        "chartDescription": "በእያንዳንዱ ክፍል ውስጥ ምን ያህል ተማሪዎች እንዳሉ ይመልከቱ።",
+        "welcome": {
+            "title": "እንኳን ወደ የተማሪ አስተዳደር ስርዓት በደህና መጡ",
+            "churchName": "የደብረ ገሊላ ዐማኑኤል ካቴድራል ሰ/ት/ቤት",
+            "systemName": "የተማሪዎች መመዝገቢያና መቆጣጠሪያ ዘዴ"
+        }
     },
     "login": {
         "title": "ግባ",

@@ -22,16 +22,7 @@ type UserUpdateData = z.infer<ReturnType<typeof getUpdateUserSchema>>;
 
 // Updated getStudents function
 export async function getStudents(userId?: string, role?: Role) {
-  if (!role || role.name === 'Super Admin') {
-    return await prisma.student.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: { class: true },
-    });
-  }
-
-  const userPermissions = role.permissions as Record<string, boolean> || {};
-
-  if (userPermissions.manage_all_students) {
+  if (!role || (role.permissions as Record<string, boolean>)?.manage_all_students) {
     return await prisma.student.findMany({
       orderBy: { createdAt: 'desc' },
       include: { class: true },
@@ -76,16 +67,27 @@ export async function createStudent(data: StudentData) {
     revalidatePath('/students');
 }
 
-export async function importStudents(students: Partial<Student & { className: string }>[]) {
-    const validationSchema = getStudentRegistrationSchema(() => '');
+export async function importStudents(students: Partial<Student & { className: string }>[], t: TFunction) {
+    const validationSchema = getStudentRegistrationSchema(t);
+    const classes = await getClasses();
+    const classMap = new Map(classes.map(c => [c.name.toLowerCase(), c.id]));
+    
     const validatedStudents: StudentData[] = [];
 
     for (const student of students) {
-        const result = validationSchema.safeParse(student);
+        const studentWithClassId = { ...student };
+        const className = student.className?.toLowerCase();
+        
+        if (className && classMap.has(className)) {
+          studentWithClassId.classId = classMap.get(className);
+        }
+
+        const result = validationSchema.safeParse(studentWithClassId);
         if (result.success) {
             validatedStudents.push(result.data);
         } else {
              console.error("Invalid student data during import:", result.error.flatten().fieldErrors);
+             throw new Error("Validation failed for some students.");
         }
     }
 

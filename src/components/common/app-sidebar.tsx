@@ -3,7 +3,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, User, UserPlus, Users, Upload, Download, Settings } from 'lucide-react';
+import { LogOut, User, UserPlus, Users, Upload, Download, Settings, LayoutGrid } from 'lucide-react';
 import { Logo } from './logo';
 import {
   Sidebar,
@@ -51,6 +51,7 @@ export function AppSidebar() {
   const permissions = userSession?.role?.permissions as Record<string, boolean> || {};
 
   const mainLinks = [
+    { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutGrid, permission: 'view_students' },
     { href: '/students', label: t('nav.students'), icon: Users, permission: 'view_students' },
     { href: '/register', label: t('nav.newStudent'), icon: UserPlus, permission: 'manage_class_students' },
   ];

@@ -12,7 +12,7 @@ export default async function HomePage() {
   const session = await getServerSession();
 
   if (session) {
-    redirect('/students');
+    redirect('/dashboard');
   }
 
   return (

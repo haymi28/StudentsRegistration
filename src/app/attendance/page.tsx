@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 export default function AttendancePage() {
   const router = useRouter();
   useEffect(() => {
-    router.replace('/students');
+    router.replace('/dashboard');
   }, [router]);
 
   return null;

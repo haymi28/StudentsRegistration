@@ -1,6 +1,7 @@
 
 {
     "nav": {
+        "dashboard": "Dashboard",
         "students": "Students",
         "newStudent": "New Student",
         "import": "Import",
@@ -13,6 +14,21 @@
         "account": "My Account",
         "logout": "Logout",
         "language": "Language"
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "description": "An overview of the system's statistics.",
+        "totalStudents": "Total Students",
+        "totalClasses": "Total Classes",
+        "averageAttendance": "Average Attendance",
+        "comingSoon": "Coming Soon",
+        "chartTitle": "Student Distribution by Class",
+        "chartDescription": "See how many students are in each class.",
+        "welcome": {
+            "title": "Welcome to the Student Management System",
+            "churchName": "Debre Gelila St. Amanuel Cathedral Sunday School",
+            "systemName": "Student Registration & Management System"
+        }
     },
     "login": {
         "title": "Login",
