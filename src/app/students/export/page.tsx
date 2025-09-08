@@ -1,49 +1,30 @@
 
-'use client';
-
-import { getStudents } from '@/lib/data';
 import { getServerSession } from '@/lib/auth';
+import { getStudents } from '@/lib/data';
 import { redirect } from 'next/navigation';
 import { ExportStudentClient } from '@/components/export-student-client';
-import { useEffect, useState } from 'react';
 import { Student, Role } from '@prisma/client';
 import { MainLayout } from '@/components/common/main-layout';
 
 
-export default function ExportStudentsPage() {
-  const [students, setStudents] = useState<Student[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const checkAuthAndFetch = async () => {
-        const session = await getServerSession();
-        if (!session) {
-            redirect('/');
-            return;
-        }
-
-        const permissions = session.user.role.permissions as Record<string, boolean>;
-        if (!permissions.export_students) {
-             redirect('/students');
-             return;
-        }
-
-        const studentData = await getStudents(session.user.id, session.user.role as Role);
-        setStudents(studentData);
-        setLoading(false);
+export default async function ExportStudentsPage() {
+    const session = await getServerSession();
+    if (!session) {
+        redirect('/');
     }
-    checkAuthAndFetch();
-  }, []);
-  
-  if (loading) {
-    return <div>Loading...</div>; // Or a proper loading spinner
-  }
 
-  return (
-    <MainLayout>
-        <div className="container py-8">
-        <ExportStudentClient students={students} />
-        </div>
-    </MainLayout>
-  );
+    const permissions = session.user.role.permissions as Record<string, boolean>;
+    if (!permissions.export_students) {
+            redirect('/students');
+    }
+
+    const students = await getStudents(session.user.id, session.user.role as Role);
+
+    return (
+        <MainLayout isAuthenticated={!!session}>
+            <div className="container py-8">
+            <ExportStudentClient students={students} />
+            </div>
+        </MainLayout>
+    );
 }

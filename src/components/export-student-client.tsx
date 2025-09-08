@@ -34,7 +34,7 @@ export function ExportStudentClient({ students: initialStudents }: ExportStudent
       const lowercasedQuery = searchQuery.toLowerCase();
       studentsToDisplay = studentsToDisplay.filter(student =>
         student.fullName.toLowerCase().includes(lowercasedQuery) ||
-        student.registrationNumber.toLowerCase().includes(lowercasedQuery)
+        (student.registrationNumber && student.registrationNumber.toLowerCase().includes(lowercasedQuery))
       );
     }
     return studentsToDisplay;
@@ -49,7 +49,7 @@ export function ExportStudentClient({ students: initialStudents }: ExportStudent
   
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedRowKeys(new Set(students.map(s => s.id)));
+      setSelectedRowKeys(new Set(filteredStudents.map(s => s.id)));
     } else {
       setSelectedRowKeys(new Set());
     }
@@ -134,9 +134,10 @@ export function ExportStudentClient({ students: initialStudents }: ExportStudent
               <TableRow>
                 <TableHead className="w-[50px]">
                   <Checkbox
-                    checked={selectedRowKeys.size > 0 && selectedRowKeys.size === students.length}
+                    checked={selectedRowKeys.size > 0 && selectedRowKeys.size === filteredStudents.length}
                     onCheckedChange={(checked) => handleSelectAll(!!checked)}
                     aria-label="Select all students"
+                    disabled={!filteredStudents.length}
                   />
                 </TableHead>
                 <TableHead className="w-[80px]">{t('students.table.photo')}</TableHead>

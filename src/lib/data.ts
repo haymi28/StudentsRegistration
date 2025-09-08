@@ -149,7 +149,7 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUser(id: string, data: Partial<UserUpdateData>) {
-    const validationSchema = getUpdateUserSchema(() => '');
+    const validationSchema = getUpdateUserSchema();
     const validatedData = validationSchema.safeParse(data);
 
     if (!validatedData.success) {
@@ -182,7 +182,7 @@ export async function updateUser(id: string, data: Partial<UserUpdateData>) {
 }
 
 export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSchema>>) {
-    const validationSchema = getCreateUserSchema(() => '');
+    const validationSchema = getCreateUserSchema();
     const validatedData = validationSchema.safeParse(data);
 
     if (!validatedData.success) {
