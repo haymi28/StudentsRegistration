@@ -2,15 +2,17 @@
 'use client';
 
 import * as XLSX from 'xlsx';
-import type { Student } from '@prisma/client';
+import type { Student, Class } from '@prisma/client';
 import type { TFunction } from '@/contexts/locale-provider';
+
+type StudentWithClass = Student & { class: Class | null };
 
 // Note: The order of headers here is important and must match the template.
 export const studentHeaders = (t: TFunction) => [
   { key: 'registrationNumber', label: t('form.label.regNumber') },
   { key: 'fullName', label: t('form.label.fullName') },
   { key: 'gender', label: t('form.label.gender') },
-  { key: 'className', label: t('classes.form.label.name') },
+  { key: 'className', label: t('form.label.class') },
   { key: 'baptismalName', label: t('form.label.baptismalName') },
   { key: 'mothersName', label: t('form.label.mothersName') },
   { key: 'dateOfBirth', label: t('form.label.dob') },
@@ -27,12 +29,16 @@ export const studentHeaders = (t: TFunction) => [
   { key: 'photo', label: t('form.photoLabel') },
 ];
 
-export const exportToExcel = (students: Student[], fileName: string, t: TFunction) => {
+export const exportToExcel = (students: StudentWithClass[], fileName: string, t: TFunction) => {
   const headers = studentHeaders(t);
   const worksheetData = students.map(student => {
     const row: Record<string, any> = {};
     headers.forEach(header => {
-      row[header.label] = (student as any)[header.key] || '';
+      if (header.key === 'className') {
+        row[header.label] = student.class?.name || 'N/A';
+      } else {
+        row[header.label] = (student as any)[header.key] || '';
+      }
     });
     return row;
   });
@@ -61,14 +67,18 @@ export const readExcelFile = (file: File, t: TFunction): Promise<Partial<Student
         const jsonData = XLSX.utils.sheet_to_json(worksheet) as any[];
 
         const headers = studentHeaders(t);
-        const headerKeyMap = new Map(headers.map(h => [h.label, h.key]));
+        const headerLabelToKey = new Map(headers.map(h => [h.label, h.key]));
 
-        const students: Partial<Student>[] = jsonData.map(row => {
-          const student: Partial<Student> = {};
-          for (const key in row) {
-            if (headerKeyMap.has(key)) {
-              const studentKey = headerKeyMap.get(key) as keyof Student;
-              student[studentKey] = row[key] !== null && row[key] !== undefined ? String(row[key]) : '';
+        const students: Partial<Student & { className: string }>[] = jsonData.map(row => {
+          const student: Partial<Student & { className: string }> = {};
+          for (const label in row) {
+            if (headerLabelToKey.has(label)) {
+              const studentKey = headerLabelToKey.get(label) as keyof Student;
+              if (studentKey === 'className' as any) {
+                 student['className'] = row[label] !== null && row[label] !== undefined ? String(row[label]) : '';
+              } else {
+                (student as any)[studentKey] = row[label] !== null && row[label] !== undefined ? String(row[label]) : '';
+              }
             }
           }
           return student;

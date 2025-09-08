@@ -1,8 +1,9 @@
+
 'use client';
 
 import { Card, CardDescription, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { useLocale } from '@/contexts/locale-provider';
-import { Student } from '@prisma/client';
+import { Student, Class } from '@prisma/client';
 import { useState, useMemo } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -14,15 +15,17 @@ import { Badge } from './ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { exportToExcel } from '@/lib/excel-utils';
 
+type StudentWithClass = Student & { class: Class | null };
+
 interface ExportStudentClientProps {
-  students: Student[];
+  students: StudentWithClass[];
 }
 
 const STUDENTS_PER_PAGE = 10;
 
 export function ExportStudentClient({ students: initialStudents }: ExportStudentClientProps) {
   const { t } = useLocale();
-  const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [students, setStudents] = useState<StudentWithClass[]>(initialStudents);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -166,7 +169,7 @@ export function ExportStudentClient({ students: initialStudents }: ExportStudent
                     <TableCell className="font-medium whitespace-nowrap">{student.registrationNumber}</TableCell>
                     <TableCell className="whitespace-nowrap">{student.fullName}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="whitespace-nowrap">{student.serviceDepartment}</Badge>
+                      <Badge variant="secondary" className="whitespace-nowrap">{student.class?.name || 'N/A'}</Badge>
                     </TableCell>
                   </TableRow>
                 ))
