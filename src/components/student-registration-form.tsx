@@ -61,8 +61,8 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
     { value: 'Female', label: t('form.gender.female') },
   ], [t]);
 
-  const userRole = session.user.role.name;
-  const canChangeClass = userRole === 'Super Admin';
+  const permissions = session.user.role.permissions || {};
+  const canChangeClass = permissions.manage_all_students;
   const assignedClass = canChangeClass ? null : classes.find(c => c.managerId === session.user.id);
   
   const defaultClassId = isEditMode 
@@ -277,12 +277,12 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
                     name="classId"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>{t('form.label.department')}</FormLabel>
+                        <FormLabel>{t('form.label.class')}</FormLabel>
                         {canChangeClass ? (
                             <Select onValueChange={field.onChange} value={field.value} disabled={isLoading}>
                                 <FormControl>
                                 <SelectTrigger>
-                                    <SelectValue placeholder={t('form.placeholder.selectDepartment')} />
+                                    <SelectValue placeholder={t('form.placeholder.selectClass')} />
                                 </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>

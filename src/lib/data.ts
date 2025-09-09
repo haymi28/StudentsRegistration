@@ -16,7 +16,7 @@ import { Prisma } from '@prisma/client';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
-type RoleData = { name: string; description?: string | null; permissions: Prisma.JsonObject | string[] };
+type RoleData = { name: string; description?: string | null; permissions: Prisma.JsonObject };
 type UserUpdateData = z.infer<typeof serverUpdateUserSchema>;
 
 
@@ -263,7 +263,7 @@ export async function createUser(data: z.infer<typeof serverCreateUserSchema>) {
 }
 
 export async function deleteUser(id: string) {
-    const user = await prisma.user.findUnique({ where: { id }});
+    const user = await prisma.user.findUnique({ where: { id }, include: { role: true }});
     if (user?.username === 'superadmin') {
         throw new Error("Cannot delete the initial super administrator.");
     }
@@ -377,7 +377,7 @@ export async function createRole(data: RoleData) {
         data: {
             name,
             description: description ?? '',
-            permissions: permissions as Prisma.JsonObject,
+            permissions: permissions,
         }
     });
 
@@ -392,7 +392,7 @@ export async function updateRole(id: string, data: RoleData) {
         data: { 
             name, 
             description: description ?? '', 
-            permissions: permissions as Prisma.JsonObject,
+            permissions: permissions,
         }
     });
 
