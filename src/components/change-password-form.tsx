@@ -6,46 +6,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Eye, EyeOff, Lock } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useLocale } from '@/contexts/locale-provider';
 import { getChangePasswordSchema } from '@/lib/validations/user';
 import { getUserByUsername, updateUser } from '@/lib/data';
 import bcrypt from 'bcryptjs';
+import { PasswordInput } from './password-input';
 
 type PasswordFormValues = z.infer<ReturnType<typeof getChangePasswordSchema>>;
-
-const PasswordInput = ({ field, placeholder, t }: { field: any, placeholder: string, t: (key: string) => string }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  return (
-    <div className="relative">
-      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-      <FormControl>
-        <Input 
-          type={showPassword ? "text" : "password"} 
-          placeholder={placeholder} 
-          {...field} 
-          className="pl-10 pr-10" 
-        />
-      </FormControl>
-      <button
-        type="button"
-        onClick={() => setShowPassword((prev) => !prev)}
-        className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
-        aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
-      >
-        {showPassword ? (
-          <EyeOff className="h-5 w-5" />
-        ) : (
-          <Eye className="h-5 w-5" />
-        )}
-      </button>
-    </div>
-  )
-}
-
 
 export function ChangePasswordForm() {
   const { toast } = useToast();
@@ -116,7 +86,7 @@ export function ChangePasswordForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('account.currentPassword')}</FormLabel>
-              <PasswordInput field={field} placeholder="••••••••" t={t} />
+              <PasswordInput field={field} />
               <FormMessage />
             </FormItem>
           )}
@@ -127,7 +97,7 @@ export function ChangePasswordForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('account.newPassword')}</FormLabel>
-              <PasswordInput field={field} placeholder="••••••••" t={t} />
+              <PasswordInput field={field} />
               <FormMessage />
             </FormItem>
           )}
@@ -138,7 +108,7 @@ export function ChangePasswordForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('account.confirmPassword')}</FormLabel>
-               <PasswordInput field={field} placeholder="••••••••" t={t} />
+              <PasswordInput field={field} />
               <FormMessage />
             </FormItem>
           )}

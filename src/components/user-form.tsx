@@ -18,6 +18,7 @@ import { User, Role } from '@prisma/client';
 import { getCreateUserSchema, getUpdateUserSchema } from '@/lib/validations/user';
 import { createUser, updateUser, getRoles } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
+import { PasswordInput } from './password-input';
 
 type UserFormValues = z.infer<ReturnType<typeof getCreateUserSchema>>;
 
@@ -136,7 +137,7 @@ export function UserForm({ userToEdit }: UserFormProps) {
                 <FormField control={form.control} name="password" render={({ field }) => (
                     <FormItem>
                         <FormLabel>{translations.labels.password}</FormLabel>
-                        <FormControl><Input type="password" {...field} placeholder={isEditMode ? translations.placeholders.password : ''} /></FormControl>
+                        <PasswordInput field={field} placeholder={isEditMode ? translations.placeholders.password : '••••••••'} />
                         {isEditMode && <FormDescription>{translations.placeholders.password}</FormDescription>}
                         <FormMessage />
                     </FormItem>
@@ -144,7 +145,7 @@ export function UserForm({ userToEdit }: UserFormProps) {
                 <FormField control={form.control} name="confirmPassword" render={({ field }) => (
                     <FormItem>
                         <FormLabel>{translations.labels.confirmPassword}</FormLabel>
-                        <FormControl><Input type="password" {...field} /></FormControl>
+                        <PasswordInput field={field} />
                         <FormMessage />
                     </FormItem>
                 )} />
