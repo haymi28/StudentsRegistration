@@ -22,8 +22,15 @@ type TokenPayload = {
   };
 };
 
+interface SignInResult {
+    success: boolean;
+    user?: UserWithRole;
+    error?: string;
+    errorType?: 'inactive' | 'credentials';
+}
+
 // -------------------- SIGN IN --------------------
-export async function signIn(credentials: { username: string; password: string }, reauth = false) {
+export async function signIn(credentials: { username: string; password: string }, reauth = false): Promise<SignInResult> {
   try {
     const user = await prisma.user.findUnique({
       where: { username: credentials.username },
@@ -31,17 +38,17 @@ export async function signIn(credentials: { username: string; password: string }
     });
 
     if (!user) {
-      return { success: false, error: 'login.failDescription' };
+      return { success: false, error: 'login.failDescription', errorType: 'credentials' };
     }
     
     if (!user.isActive) {
-        return { success: false, error: 'login.inactiveAccount' };
+        return { success: false, errorType: 'inactive' };
     }
 
     if (!reauth) {
         const passwordsMatch = await bcrypt.compare(credentials.password, user.password);
         if (!passwordsMatch) {
-            return { success: false, error: 'login.failDescription' };
+            return { success: false, error: 'login.failDescription', errorType: 'credentials' };
         }
     }
 
@@ -69,7 +76,7 @@ export async function signIn(credentials: { username: string; password: string }
     return { success: true, user: userWithoutPassword };
   } catch (error) {
     console.error('Sign in error:', error);
-    return { success: false, error: 'common.errorDescription' };
+    return { success: false, error: 'common.errorDescription', errorType: 'credentials' };
   }
 }
 

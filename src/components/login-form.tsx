@@ -54,11 +54,18 @@ export function LoginForm() {
       router.push('/dashboard');
       router.refresh();
     } else {
-      toast({
-          variant: "destructive",
-          title: t('login.fail'),
-          description: result.error || t('login.failDescription'),
-      });
+        let description = t('login.failDescription');
+        if (result.errorType === 'inactive') {
+            description = 'Your account is inactive';
+        } else if (result.error) {
+            description = t(result.error);
+        }
+
+        toast({
+            variant: "destructive",
+            title: t('login.fail'),
+            description: description,
+        });
     }
     
     setIsLoading(false);
