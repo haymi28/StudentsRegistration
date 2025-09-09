@@ -32,7 +32,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { StudentDetailsDialog } from './student-details-dialog';
 import { TransferStudentsDialog } from './transfer-students-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { deleteStudent, getClasses } from '@/lib/data';
+import { deleteStudent, getClasses, deleteStudents } from '@/lib/data';
 import { Student, Class } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -73,13 +73,17 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [allClasses, setAllClasses] = useState<Class[]>([]);
   const [selectedClass, setSelectedClass] = useState('all');
   const router = useRouter();
   const { t } = useLocale();
+  const { toast } = useToast();
 
   useEffect(() => {
     setStudents(initialStudents);
+    setSelectedRowKeys(new Set());
   }, [initialStudents]);
 
   useEffect(() => {
@@ -95,6 +99,13 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
       searchPlaceholder: t('students.searchPlaceholder'),
       noStudents: t('students.noStudents'),
       transferButton: t('students.transferButton'),
+      deleteSelectedButton: t('students.deleteSelectedButton'),
+      bulkDeleteDialog: {
+        title: t('students.bulkDeleteDialog.title'),
+        description: t('students.bulkDeleteDialog.description'),
+        cancel: t('students.deleteDialog.cancel'),
+        confirm: t('students.deleteDialog.confirm'),
+      },
       rowActions: {
         actions: t('students.table.actions'),
         view: t('students.actions.view'),
@@ -135,6 +146,29 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
     }
     setSelectedRowKeys(newSelection);
   };
+
+   const handleDeleteSelected = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteStudents(Array.from(selectedRowKeys));
+      toast({
+        title: t('students.bulkDeleteSuccess.title'),
+        description: t('students.bulkDeleteSuccess.description', { count: selectedRowKeys.size }),
+        variant: 'destructive',
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedRowKeys(new Set());
+      router.refresh();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: t('common.error'),
+        description: error instanceof Error ? error.message : t('common.errorDescription'),
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   
   const filteredStudents = useMemo(() => {
     let studentsToDisplay = students;
@@ -156,6 +190,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   const permissions = session.user.role.permissions as Record<string, boolean> || {};
   const canManageAll = permissions?.manage_all_students;
   const canTransfer = permissions?.manage_all_students;
+  const canDelete = permissions?.manage_all_students;
 
 
   return (
@@ -198,11 +233,17 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                 </Select>
               </div>
             )}
-            <div className="flex items-center gap-2 self-start md:self-center">
+            <div className="flex items-center gap-2 self-start md:self-center ml-auto">
                 {selectedRowKeys.size > 0 && canTransfer && (
                   <Button onClick={() => setIsTransferDialogOpen(true)} className="shrink-0">
                     <ArrowRightLeft className="mr-2 h-4 w-4" />
                     {translations.transferButton.replace('{count}', String(selectedRowKeys.size))}
+                  </Button>
+                )}
+                 {selectedRowKeys.size > 0 && canDelete && (
+                  <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)} className="shrink-0">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {translations.deleteSelectedButton.replace('{count}', String(selectedRowKeys.size))}
                   </Button>
                 )}
             </div>
@@ -217,6 +258,23 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                 router.refresh();
             }}
           />
+           <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{translations.bulkDeleteDialog.title}</AlertDialogTitle>
+                <AlertDialogDescription>
+                    {translations.bulkDeleteDialog.description.replace('{count}', String(selectedRowKeys.size))}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{translations.bulkDeleteDialog.cancel}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteSelected} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                    {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {translations.bulkDeleteDialog.confirm}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           {/* Desktop Table View */}
           <div className="border rounded-lg overflow-x-auto hidden md:block w-full">
               <Table>
@@ -224,7 +282,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                   <TableRow>
                     <TableHead className="w-[50px]">
                         <Checkbox
-                            checked={selectedRowKeys.size > 0 && selectedRowKeys.size === filteredStudents.length}
+                            checked={selectedRowKeys.size > 0 && filteredStudents.length > 0 && selectedRowKeys.size === filteredStudents.length}
                             onCheckedChange={(checked) => handleSelectAll(!!checked)}
                             aria-label="Select all students"
                             disabled={filteredStudents.length === 0}

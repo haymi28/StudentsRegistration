@@ -119,6 +119,11 @@ export async function deleteStudent(id: string) {
     revalidatePath('/students');
 }
 
+export async function deleteStudents(ids: string[]) {
+    await prisma.student.deleteMany({ where: { id: { in: ids } } });
+    revalidatePath('/students');
+}
+
 export async function updateStudentPhotos(photoData: { registrationNumber: string; photo: string }[]) {
   const registrationNumbers = photoData.map(p => p.registrationNumber);
   

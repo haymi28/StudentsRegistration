@@ -109,6 +109,7 @@
         "searchPlaceholder": "በስም ወይም በምዝገባ ቁጥር ይፈልጉ...",
         "noStudents": "ምንም ተማሪዎች አልተገኙም።",
         "transferButton": "{count} ተማሪዎችን አስተላልፍ",
+        "deleteSelectedButton": "({count}) ሰርዝ",
         "allClasses": "ሁሉም ክፍሎች",
         "table": {
             "photo": "ፎቶ",
@@ -128,6 +129,16 @@
             "description": "ይህንን ድርጊት መቀልበስ አይችሉም። ይህ {name}ን በቋሚነት ይሰርዛል።",
             "cancel": "ተመለስ",
             "confirm": "አዎ፣ ሰርዝ"
+        },
+        "bulkDeleteDialog": {
+            "title": "የተመረጡትን ተማሪዎች ለመሰረז እርግጠኛ ነዎት?",
+            "description": "ይህ {count} ተማሪዎችን በቋሚነት ይሰרዛል። ይህ ድርጊት ሊቀለበስ አይችልም።",
+            "cancel": "ተመለስ",
+            "confirm": "አዎ፣ ሰርዝ"
+        },
+        "bulkDeleteSuccess": {
+            "title": "ተማሪዎች ተሰרዘዋል",
+            "description": "{count} ተማሪዎች በተሳካ ሁኔታ ተሰרዘዋል።"
         },
         "deleteSuccess": "ተማሪ ተሰርዟል!",
         "deleteSuccessDescription": "{name} በተሳካ ሁኔታ ተሰርዟል።"
@@ -485,5 +496,3 @@
         "back": "ተመለስ"
     }
 }
-
-    

@@ -109,6 +109,7 @@
         "searchPlaceholder": "Search by name or registration number...",
         "noStudents": "No students found.",
         "transferButton": "Transfer {count} Students",
+        "deleteSelectedButton": "Delete ({count})",
         "allClasses": "All Classes",
         "table": {
             "photo": "Photo",
@@ -128,6 +129,16 @@
             "description": "This action cannot be undone. This will permanently delete {name}.",
             "cancel": "Cancel",
             "confirm": "Yes, delete"
+        },
+        "bulkDeleteDialog": {
+            "title": "Are you sure you want to delete the selected students?",
+            "description": "This will permanently delete {count} students. This action cannot be undone.",
+            "cancel": "Cancel",
+            "confirm": "Yes, delete"
+        },
+        "bulkDeleteSuccess": {
+            "title": "Students Deleted",
+            "description": "{count} students have been successfully deleted."
         },
         "deleteSuccess": "Student Deleted!",
         "deleteSuccessDescription": "{name} has been successfully deleted."
@@ -485,5 +496,3 @@
         "back": "Back"
     }
 }
-
-    
