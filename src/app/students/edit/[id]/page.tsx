@@ -1,16 +1,14 @@
 
-'use client';
-
+import { use, useEffect, useState } from 'react';
 import { getStudentById, getClasses } from '@/lib/data';
-import { EditStudentClient } from '@/components/edit-student-client';
+import { EditStudentClient as EditStudentForm } from '@/components/edit-student-client';
 import { getServerSession } from '@/lib/auth';
 import { MainLayout } from '@/components/common/main-layout';
-import { useEffect, useState } from 'react';
 import { Student, Class } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
-export default function EditStudentPage({ params }: { params: { id: string }}) {
-  const { id } = params;
+function EditStudentPageClient({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
+  const { id } = use(paramsPromise);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [student, setStudent] = useState<Student | null>(null);
@@ -39,7 +37,13 @@ export default function EditStudentPage({ params }: { params: { id: string }}) {
   }, [id]);
 
   if (loading) {
-    return <div>Loading...</div>; // Or a proper loading spinner
+    return (
+        <MainLayout isAuthenticated={true}>
+            <div className="flex items-center justify-center h-screen">
+                Loading...
+            </div>
+        </MainLayout>
+    );
   }
   
   if (!student) {
@@ -55,7 +59,12 @@ export default function EditStudentPage({ params }: { params: { id: string }}) {
 
   return (
     <MainLayout isAuthenticated={isAuthenticated}>
-        {session && <EditStudentClient student={student} classes={classes} session={session} />}
+        {session && <EditStudentForm student={student} classes={classes} session={session} />}
     </MainLayout>
   );
+}
+
+
+export default function EditStudentPage({ params }: { params: Promise<{ id: string }> }) {
+    return <EditStudentPageClient params={params} />;
 }
