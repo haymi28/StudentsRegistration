@@ -15,7 +15,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: { [
     redirect('/');
   }
 
-  const classId = typeof searchParams.class === 'string' ? searchParams.class : undefined;
+  const classId = searchParams?.class && typeof searchParams.class === 'string' ? searchParams.class : undefined;
 
   const students = await getStudents(session.user.id, session.user.role as Role, classId);
 
