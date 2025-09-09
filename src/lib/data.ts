@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import prisma from './prisma';
@@ -7,8 +8,8 @@ import { getStudentRegistrationSchema, StudentValidationTranslations } from './v
 import { revalidatePath } from 'next/cache';
 import { Student, User, Class, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { getCreateUserSchema, getUpdateUserSchema, getUpdateProfileSchema } from './validations/user';
-import { updateUserSchema as serverUpdateUserSchema } from './validations/user-server';
+import { getUpdateProfileSchema } from './validations/user';
+import { updateUserSchema as serverUpdateUserSchema, createUserSchema as serverCreateUserSchema } from './validations/user-server';
 import { getCreateClassSchema } from './validations/class';
 import { getRoleSchema } from './validations/role';
 import { Prisma } from '@prisma/client';
@@ -233,9 +234,8 @@ export async function updateUser(id: string, data: Partial<UserUpdateData>) {
     revalidatePath(`/users/edit/${id}`);
 }
 
-export async function createUser(data: z.infer<ReturnType<typeof getCreateUserSchema>>) {
-    const validationSchema = getCreateUserSchema();
-    const validatedData = validationSchema.safeParse(data);
+export async function createUser(data: z.infer<typeof serverCreateUserSchema>) {
+    const validatedData = serverCreateUserSchema.safeParse(data);
 
     if (!validatedData.success) {
         throw new Error('Invalid user data: ' + validatedData.error.message);
