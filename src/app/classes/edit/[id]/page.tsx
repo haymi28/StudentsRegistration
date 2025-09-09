@@ -11,10 +11,10 @@ import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 
-export default function EditClassPage({ params }: { params: { id: string } }) {
-  const id = params.id;
+export default function EditClassPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { t } = useLocale();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
