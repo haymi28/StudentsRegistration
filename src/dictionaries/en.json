@@ -43,7 +43,8 @@
         "success": "Login Successful!",
         "successDescription": "Welcome back, {username}!",
         "fail": "Login Failed",
-        "failDescription": "Please check your credentials and try again.",
+        "failDescription": "Invalid username or password.",
+        "inactiveAccount": "Your account is inactive. Please contact an administrator.",
         "showPassword": "Show password",
         "hidePassword": "Hide password"
     },

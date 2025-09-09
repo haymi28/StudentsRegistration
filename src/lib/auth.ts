@@ -30,17 +30,20 @@ export async function signIn(credentials: { username: string; password: string }
       include: { role: true },
     });
 
-    if (!user || !user.isActive) {
-      return { success: false, error: 'Invalid username or password' };
+    if (!user) {
+      return { success: false, error: 'login.failDescription' };
+    }
+    
+    if (!user.isActive) {
+        return { success: false, error: 'login.inactiveAccount' };
     }
 
     if (!reauth) {
         const passwordsMatch = await bcrypt.compare(credentials.password, user.password);
         if (!passwordsMatch) {
-            return { success: false, error: 'Invalid username or password' };
+            return { success: false, error: 'login.failDescription' };
         }
     }
-
 
     const { password, ...userWithoutPassword } = user;
 
@@ -66,7 +69,7 @@ export async function signIn(credentials: { username: string; password: string }
     return { success: true, user: userWithoutPassword };
   } catch (error) {
     console.error('Sign in error:', error);
-    return { success: false, error: 'An unexpected error occurred.' };
+    return { success: false, error: 'common.errorDescription' };
   }
 }
 

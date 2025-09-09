@@ -43,7 +43,8 @@
         "success": "በተሳካ ሁኔታ ገብተዋል!",
         "successDescription": "እንኳን ደህና መጣህ {username}!",
         "fail": "መግባት አልተሳካም",
-        "failDescription": "እባክዎ መረጃዎን ያረጋግጡ እና እንደገና ይሞክሩ።",
+        "failDescription": "የተጠቃሚ ስም ወይም የይለፍ ቃል ልክ አይደለም።",
+        "inactiveAccount": "የእርስዎ መለያ የቦዘነ ነው። እባክዎ አስተዳዳሪን ያነጋግሩ።",
         "showPassword": "የይለፍ ቃል አሳይ",
         "hidePassword": "የይለፍ ቃል ደብቅ"
     },
@@ -122,7 +123,7 @@
             "delete": "ሰርዝ"
         },
         "deleteDialog": {
-            "title": "ተማሪውን ለመሰረዝ እርግጠኛ ነዎት?",
+            "title": "ተማሪውን ለመሰረז እርግጠኛ ነዎት?",
             "description": "ይህንን ድርጊት መቀልበስ አይችሉም። ይህ {name}ን በቋሚነት ይሰርዛል።",
             "cancel": "ተመለስ",
             "confirm": "አዎ፣ ሰርዝ"
@@ -160,7 +161,7 @@
         "pageDescription": "የተማሪዎችን መረጃ ከኤክሴል ፋይል ለማስመጣት ከታች ያለውን ቅጽ ይጠቀሙ።",
         "templateCard": {
             "title": "የኤክሴል ቅጽ አውርድ",
-            "description": "ለመጀመር ትክክለኛውን የዓምድ ቅርጸት ለማረጋገጥ የናሙና ቅጻችንን ያውርዱ።",
+            "description": "ለመጀመር ትክክለኛውን የዓምድ ቅርጸት ለማረጋገጥ የናሙና ቅጻችንን ያውרዱ።",
             "button": "ቅጽ አውርድ"
         },
         "uploadCard": {
@@ -229,9 +230,9 @@
     },
     "exportPhotos": {
         "pageTitle": "የተማሪ ፎቶዎችን ላክ",
-        "pageDescription": "የተማሪ ፎቶዎችን እንደ ZIP መዝገብ ይምረጡ እና ያውርዱ።",
-        "button": "{count} ፎቶዎችን ላክ",
-        "noSelectionDescription": "እባክዎ ለመላክ ቢያንስ አንድ ፎቶ ይምረጡ።",
+        "pageDescription": "የተማሪ ፎቶዎችን እንደ ZIP መዝገብ ይምረጡ እና ያውרዱ።",
+        "button": "{count} ፎቶዎችን ላк",
+        "noSelectionDescription": "እባክዎ ለመላк ቢያንስ አንድ ፎቶ ይምረጡ።",
         "successTitle": "መላክ ተሳክቷል!",
         "successDescription": "{count} ፎቶዎች ለማውረድ ወደ zip ፋይል ታክለዋል።",
         "selectAll": "ሁሉንም ምረጥ ({count})",
@@ -267,7 +268,7 @@
     },
      "users": {
         "title": "የተጠቃሚ አስተዳደር",
-        "description": "የسርዓት ተጠቃሚዎችን እና ሚናዎቻቸውን ይፍጠሩ، ይመልከቱ እና ያስተዳድሩ።",
+        "description": "የስርዓት ተጠቃሚዎችን እና ሚናዎቻቸውን ይፍጠሩ، ይመልከቱ እና ያስተዳድሩ።",
         "searchPlaceholder": "በስም ወይም በተጠቃሚ ስም ይፈልጉ...",
         "noUsers": "ምንም ተጠቃሚዎች አልተገኙም።",
         "createUserButton": "ተጠቃሚ ፍጠር",
