@@ -21,9 +21,9 @@ export default function CreateUserPage() {
             const session = await getServerSession();
             if (!session || (session.user.role.permissions as Record<string, boolean>)?.manage_users !== true) {
                 redirect('/students');
-            } else {
-                setIsAuthenticated(true);
+                return;
             }
+            setIsAuthenticated(true);
             setLoading(false);
         };
         checkAuth();

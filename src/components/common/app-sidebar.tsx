@@ -23,7 +23,10 @@ import { useLocale } from '@/contexts/locale-provider';
 
 interface UserSession {
     id: string;
-    role: Role;
+    role: {
+      name: string;
+      permissions: Record<string, boolean>
+    };
 }
 
 export function AppSidebar() {
@@ -48,7 +51,7 @@ export function AppSidebar() {
     router.refresh();
   };
 
-  const permissions = userSession?.role?.permissions as Record<string, boolean> || {};
+  const permissions = userSession?.role?.permissions || {};
 
   const mainLinks = [
     { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutGrid, permission: 'view_students' },

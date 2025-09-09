@@ -21,9 +21,9 @@ export default function CreateRolePage() {
         const sessionData = await getServerSession();
         if (!sessionData || (sessionData.user.role.permissions as Record<string, boolean>)?.manage_roles !== true) {
             redirect('/students');
-        } else {
-            setIsAuthenticated(true);
+            return;
         }
+        setIsAuthenticated(true);
         setLoading(false);
     };
     checkAuth();

@@ -16,7 +16,7 @@ import { Prisma } from '@prisma/client';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
-type RoleData = z.infer<ReturnType<typeof getRoleSchema>>;
+type RoleData = { name: string; description?: string | null; permissions: Prisma.JsonObject | string[] };
 type UserUpdateData = z.infer<typeof serverUpdateUserSchema>;
 
 
@@ -372,18 +372,12 @@ export async function getRoleById(id: string) {
 
 export async function createRole(data: RoleData) {
     const { name, description, permissions } = data;
-    
-    const safePermissions = Array.isArray(permissions) ? permissions : [];
-    const permissionsObject = safePermissions.reduce((acc, perm) => {
-        acc[perm] = true;
-        return acc;
-    }, {} as Record<string, boolean>);
 
     await prisma.role.create({
         data: {
             name,
-            description,
-            permissions: permissionsObject,
+            description: description ?? '',
+            permissions: permissions as Prisma.JsonObject,
         }
     });
 
@@ -393,18 +387,12 @@ export async function createRole(data: RoleData) {
 export async function updateRole(id: string, data: RoleData) {
     const { name, description, permissions } = data;
 
-    const safePermissions = Array.isArray(permissions) ? permissions : [];
-    const permissionsObject = safePermissions.reduce((acc, perm) => {
-        acc[perm] = true;
-        return acc;
-    }, {} as Record<string, boolean>);
-
     await prisma.role.update({
         where: { id },
         data: { 
             name, 
-            description, 
-            permissions: permissionsObject,
+            description: description ?? '', 
+            permissions: permissions as Prisma.JsonObject,
         }
     });
 

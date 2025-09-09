@@ -15,9 +15,8 @@ import { useState, useEffect } from 'react';
 
 export default function CreateClassPage() {
   const { t } = useLocale();
-  const [session, setSession] = useState<any>(null);
-  const [users, setUsers] = useState<User[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +26,7 @@ export default function CreateClassPage() {
         redirect('/students');
         return;
       }
-      setSession(sessionData);
+      
       setIsAuthenticated(true);
       
       const userData = await getUsers(true); // Exclude super_admin
