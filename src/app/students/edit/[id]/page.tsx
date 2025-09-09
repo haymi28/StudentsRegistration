@@ -1,4 +1,6 @@
 
+'use client';
+
 import { use, useEffect, useState } from 'react';
 import { getStudentById, getClasses } from '@/lib/data';
 import { EditStudentClient as EditStudentForm } from '@/components/edit-student-client';
