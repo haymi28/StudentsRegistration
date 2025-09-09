@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 export default function EditClassPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+  const id = params.id;
   const { t } = useLocale();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
