@@ -109,6 +109,7 @@
         "searchPlaceholder": "Search by name or registration number...",
         "noStudents": "No students found.",
         "transferButton": "Transfer {count} Students",
+        "allClasses": "All Classes",
         "table": {
             "photo": "Photo",
             "regNumber": "Reg. No.",
@@ -484,3 +485,5 @@
         "back": "Back"
     }
 }
+
+    

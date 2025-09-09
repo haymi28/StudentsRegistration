@@ -32,9 +32,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { StudentDetailsDialog } from './student-details-dialog';
 import { TransferStudentsDialog } from './transfer-students-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { deleteStudent } from '@/lib/data';
+import { deleteStudent, getClasses } from '@/lib/data';
 import { Student, Class } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type StudentWithClass = Student & { class: Class | null };
 
@@ -72,12 +73,20 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
+  const [allClasses, setAllClasses] = useState<Class[]>([]);
+  const [selectedClass, setSelectedClass] = useState('all');
   const router = useRouter();
   const { t } = useLocale();
 
   useEffect(() => {
     setStudents(initialStudents);
   }, [initialStudents]);
+
+  useEffect(() => {
+    if ((session.user.role.permissions as Record<string, boolean>)?.manage_all_students) {
+      getClasses().then(setAllClasses);
+    }
+  }, [session.user.role.permissions]);
 
   const translations = useMemo(() => ({
       title: t('students.title'),
@@ -129,6 +138,11 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   
   const filteredStudents = useMemo(() => {
     let studentsToDisplay = students;
+
+    if (selectedClass !== 'all') {
+      studentsToDisplay = studentsToDisplay.filter(student => student.classId === selectedClass);
+    }
+
     if (searchQuery) {
       const lowercasedQuery = searchQuery.toLowerCase();
       studentsToDisplay = studentsToDisplay.filter(student =>
@@ -137,9 +151,10 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
       );
     }
     return studentsToDisplay;
-  }, [students, searchQuery]);
+  }, [students, searchQuery, selectedClass]);
   
   const permissions = session.user.role.permissions as Record<string, boolean> || {};
+  const canManageAll = permissions?.manage_all_students;
   const canTransfer = permissions?.manage_all_students;
 
 
@@ -149,7 +164,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
         <div className="flex-grow">
           <CardTitle>{translations.title}</CardTitle>
           <CardDescription>
-            {permissions?.manage_all_students
+            {canManageAll
               ? translations.descriptionSuperAdmin
               : translations.descriptionAdmin}
           </CardDescription>
@@ -166,6 +181,23 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                 className="pl-10 w-full"
               />
             </div>
+             {canManageAll && (
+              <div className="w-full md:w-auto">
+                <Select value={selectedClass} onValueChange={setSelectedClass}>
+                  <SelectTrigger className="w-full md:w-[180px]">
+                    <SelectValue placeholder={t('form.label.class')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('students.allClasses')}</SelectItem>
+                    {allClasses.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="flex items-center gap-2 self-start md:self-center">
                 {selectedRowKeys.size > 0 && canTransfer && (
                   <Button onClick={() => setIsTransferDialogOpen(true)} className="shrink-0">
@@ -386,3 +418,5 @@ function RowActions({ student, session, translations, t }: { student: Student, s
         </>
     );
 }
+
+    

@@ -21,22 +21,21 @@ type UserUpdateData = z.infer<typeof serverUpdateUserSchema>;
 
 
 // Updated getStudents function
-export async function getStudents(userId?: string, role?: Role) {
-  if (!role || (role.permissions as Record<string, boolean>)?.manage_all_students) {
-    return await prisma.student.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: { class: true },
+export async function getStudents(userId?: string, role?: Role, classId?: string) {
+  let whereClause: Prisma.StudentWhereInput = {};
+
+  if (role && !(role.permissions as Record<string, boolean>)?.manage_all_students) {
+    const userClass = await prisma.class.findFirst({
+      where: { managerId: userId },
     });
+    if (!userClass) return [];
+    whereClause.classId = userClass.id;
+  } else if (classId && classId !== 'all') {
+    whereClause.classId = classId;
   }
-
-  const userClass = await prisma.class.findFirst({
-    where: { managerId: userId },
-  });
-
-  if (!userClass) return [];
-
+  
   return await prisma.student.findMany({
-    where: { classId: userClass.id },
+    where: whereClause,
     orderBy: { createdAt: 'desc' },
     include: { class: true },
   });
@@ -414,3 +413,5 @@ export async function deleteRole(id: string) {
     await prisma.role.delete({ where: { id } });
     revalidatePath('/roles');
 }
+
+    

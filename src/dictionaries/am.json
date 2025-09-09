@@ -109,6 +109,7 @@
         "searchPlaceholder": "በስም ወይም በምዝገባ ቁጥር ይፈልጉ...",
         "noStudents": "ምንም ተማሪዎች አልተገኙም።",
         "transferButton": "{count} ተማሪዎችን አስተላልፍ",
+        "allClasses": "ሁሉም ክፍሎች",
         "table": {
             "photo": "ፎቶ",
             "regNumber": "የምዝገባ ቁ.",
@@ -484,3 +485,5 @@
         "back": "ተመለስ"
     }
 }
+
+    

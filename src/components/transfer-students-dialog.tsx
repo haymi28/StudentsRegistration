@@ -57,7 +57,7 @@ export function TransferStudentsDialog({
   const fromClass = useMemo(() => {
     if (selectedStudents.length > 0) {
       const firstStudentClass = selectedStudents[0].class;
-      if (selectedStudents.every(s => s.classId === firstStudentClass?.id)) {
+      if (firstStudentClass && selectedStudents.every(s => s.classId === firstStudentClass?.id)) {
         return firstStudentClass;
       }
     }
@@ -65,8 +65,10 @@ export function TransferStudentsDialog({
   }, [selectedStudents]);
 
   const transferOptions = useMemo(() => {
-    return allClasses.filter(c => c.id !== fromClass?.id);
+    if (!fromClass) return [];
+    return allClasses.filter(c => c.id !== fromClass.id);
   }, [allClasses, fromClass]);
+
 
   const handleTransfer = async () => {
     if (!targetClassId || !fromClass) return;
@@ -165,3 +167,5 @@ export function TransferStudentsDialog({
     </Dialog>
   );
 }
+
+    

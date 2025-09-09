@@ -8,14 +8,16 @@ import { redirect } from 'next/navigation';
 
 type StudentWithClass = Student & { class: Class | null };
 
-export default async function StudentsPage() {
+export default async function StudentsPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   const session = await getServerSession();
 
   if (!session) {
     redirect('/');
   }
 
-  const students = await getStudents(session.user.id, session.user.role as Role);
+  const classId = typeof searchParams.class === 'string' ? searchParams.class : undefined;
+
+  const students = await getStudents(session.user.id, session.user.role as Role, classId);
 
   return (
     <MainLayout isAuthenticated={!!session}>
@@ -28,3 +30,5 @@ export default async function StudentsPage() {
     </MainLayout>
   );
 }
+
+    
