@@ -86,11 +86,14 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
     setSelectedRowKeys(new Set());
   }, [initialStudents]);
 
+  const permissions = session.user.role.permissions as Record<string, boolean> || {};
+  const canManageAll = permissions?.manage_all_students;
+
   useEffect(() => {
-    if ((session.user.role.permissions as Record<string, boolean>)?.manage_all_students) {
+    if (canManageAll) {
       getClasses().then(setAllClasses);
     }
-  }, [session.user.role.permissions]);
+  }, [canManageAll]);
 
   const translations = useMemo(() => ({
       title: t('students.title'),
@@ -173,7 +176,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   const filteredStudents = useMemo(() => {
     let studentsToDisplay = students;
 
-    if (selectedClass !== 'all') {
+    if (canManageAll && selectedClass !== 'all') {
       studentsToDisplay = studentsToDisplay.filter(student => student.classId === selectedClass);
     }
 
@@ -185,10 +188,8 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
       );
     }
     return studentsToDisplay;
-  }, [students, searchQuery, selectedClass]);
+  }, [students, searchQuery, selectedClass, canManageAll]);
   
-  const permissions = session.user.role.permissions as Record<string, boolean> || {};
-  const canManageAll = permissions?.manage_all_students;
   const canTransfer = permissions?.manage_all_students;
   const canDelete = permissions?.manage_all_students;
 
@@ -476,5 +477,7 @@ function RowActions({ student, session, translations, t }: { student: Student, s
         </>
     );
 }
+
+    
 
     
