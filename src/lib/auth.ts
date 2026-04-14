@@ -89,7 +89,8 @@ export async function signOut() {
 export async function getServerSession(): Promise<{ user: TokenPayload } | null> {
   const token = (await cookies()).get(COOKIE_NAME)?.value;
 
-  if (!token) {
+  // Validate token format before verifying
+  if (!token || typeof token !== 'string' || token.split('.').length !== 3) {
     return null;
   }
 
