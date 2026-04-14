@@ -28,7 +28,8 @@ export default function DashboardPage() {
         redirect('/');
       } else {
         setIsAuthenticated(true);
-        const fetchedClasses = await getClasses() as ClassWithDetails[];
+        // Pass user ID and role to getClasses to scope statistics based on permissions
+        const fetchedClasses = await getClasses(session.user.id, session.user.role) as ClassWithDetails[];
         setClasses(fetchedClasses);
         setLoading(false);
       }

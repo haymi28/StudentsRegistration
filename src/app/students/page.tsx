@@ -8,16 +8,18 @@ import { redirect } from 'next/navigation';
 
 type StudentWithClass = Student & { class: Class | null };
 
-export default async function StudentsPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+export default async function StudentsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const session = await getServerSession();
 
   if (!session) {
     redirect('/');
   }
 
-  const classId = searchParams?.class && typeof searchParams.class === 'string' ? searchParams.class : undefined;
+  const awaitedParams = await searchParams;
+  const classId = typeof awaitedParams.class === 'string' ? awaitedParams.class : undefined;
 
-  const students = await getStudents(session.user.id, session.user.role as Role, classId);
+  // Pass session user ID and role to getStudents to enforce access control
+  const students = await getStudents(session.user.id, session.user.role, classId);
 
   return (
     <MainLayout isAuthenticated={!!session}>
@@ -30,5 +32,3 @@ export default async function StudentsPage({ searchParams }: { searchParams: { [
     </MainLayout>
   );
 }
-
-    

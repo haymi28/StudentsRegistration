@@ -29,10 +29,18 @@ function EditStudentPageClient({ params: paramsPromise }: { params: Promise<{ id
       setIsAuthenticated(true);
       setSession(sessionData);
 
+      // Fetch student and classes with strict access control based on user session
       const [studentData, classData] = await Promise.all([
-        getStudentById(id),
-        getClasses(),
+        getStudentById(id, sessionData.user.id, sessionData.user.role),
+        getClasses(sessionData.user.id, sessionData.user.role),
       ]);
+
+      if (!studentData) {
+        // Redirect if student not found or access denied
+        redirect('/students');
+        return;
+      }
+
       setStudent(studentData);
       setClasses(classData);
       setLoading(false);
