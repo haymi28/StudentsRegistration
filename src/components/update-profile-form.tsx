@@ -83,7 +83,7 @@ export function UpdateProfileForm() {
                 localStorage.setItem('user_role', JSON.stringify(result.user.role));
                 router.refresh();
             } else {
-                 toast({ variant: 'destructive', title: "Session Update Failed", description: "Please log out and log in again."});
+                 toast({ variant: 'destructive', title: t('account.sessionUpdateFailed'), description: t('account.reloginDescription')});
             }
         } else {
             localStorage.setItem('displayName', values.displayName);

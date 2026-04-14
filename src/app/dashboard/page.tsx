@@ -40,7 +40,7 @@ export default function DashboardPage() {
     return (
         <MainLayout isAuthenticated={true}>
             <div className="flex items-center justify-center h-screen">
-                Loading...
+                {t('common.loading')}
             </div>
         </MainLayout>
     )
@@ -62,7 +62,7 @@ export default function DashboardPage() {
             <CardContent className="flex flex-col md:flex-row items-center gap-6 pt-6">
                 <Image 
                 src="/image/logo.jpg" 
-                alt="Debre Gelila St. Amanuel Cathedral Logo" 
+                alt={t('dashboard.welcome.churchName')} 
                 width={120} 
                 height={120}
                 className="shadow-lg rounded-full"

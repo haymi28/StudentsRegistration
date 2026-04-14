@@ -46,7 +46,7 @@ export function EditRoleClient({ params: paramsPromise }: { params: Promise<{ id
     return (
         <MainLayout isAuthenticated={true}>
             <div className="flex items-center justify-center h-screen">
-                Loading...
+                {t('common.loading')}
             </div>
         </MainLayout>
     )

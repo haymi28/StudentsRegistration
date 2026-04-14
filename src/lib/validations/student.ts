@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 const phoneRegex = new RegExp(
@@ -19,6 +20,7 @@ const defaultTranslations: StudentValidationTranslations = {
 export const getStudentRegistrationSchema = (translations: Partial<StudentValidationTranslations> = {}) => {
     const t = { ...defaultTranslations, ...translations };
     
+    // We assume field names are handled by the caller who passes the translated field name into the required/min functions.
     const fields = {
         regNumber: 'Registration Number',
         fullName: 'Full Name',
@@ -29,22 +31,22 @@ export const getStudentRegistrationSchema = (translations: Partial<StudentValida
 
     return z.object({
         photo: z.string().optional(),
-        registrationNumber: z.string({ required_error: t.required(fields.regNumber) }).min(1, { message: t.required(fields.regNumber) }),
-        fullName: z.string({ required_error: t.required(fields.fullName) }).min(2, { message: t.min(fields.fullName, 2) }),
-        gender: z.string({ required_error: t.required(fields.gender) }).min(1, { message: t.required(fields.gender) }),
-        classId: z.string({ required_error: t.required(fields.classId) }).min(1, { message: t.required(fields.classId) }),
-        baptismalName: z.string().optional(),
-        mothersName: z.string().optional(),
-        dateOfBirth: z.string().optional(),
-        educationLevel: z.string().optional(),
-        fathersPhoneNumber: z.string().regex(phoneRegex, t.invalidNumber).optional().or(z.literal('')),
-        mothersPhoneNumber: z.string().regex(phoneRegex, t.invalidNumber).optional().or(z.literal('')),
-        additionalPhoneNumber: z.string().regex(phoneRegex, t.invalidNumber).optional().or(z.literal('')),
-        phoneNumber: z.string({ required_error: t.required(fields.phone) }).regex(phoneRegex, t.invalidNumber).min(9, { message: t.required(fields.phone) }),
-        subcity: z.string().optional(),
-        kebele: z.string().optional(),
-        houseNumber: z.string().optional(),
-        specificAddress: z.string().optional(),
-        dateOfJoining: z.string().optional(),
+        registrationNumber: z.string().min(1, { message: t.required(fields.regNumber) }),
+        fullName: z.string().min(2, { message: t.min(fields.fullName, 2) }),
+        gender: z.string().min(1, { message: t.required(fields.gender) }),
+        classId: z.string().min(1, { message: t.required(fields.classId) }),
+        baptismalName: z.string().optional().or(z.literal('')),
+        mothersName: z.string().optional().or(z.literal('')),
+        dateOfBirth: z.string().optional().or(z.literal('')),
+        educationLevel: z.string().optional().or(z.literal('')),
+        fathersPhoneNumber: z.string().regex(phoneRegex, { message: t.invalidNumber }).optional().or(z.literal('')),
+        mothersPhoneNumber: z.string().regex(phoneRegex, { message: t.invalidNumber }).optional().or(z.literal('')),
+        additionalPhoneNumber: z.string().regex(phoneRegex, { message: t.invalidNumber }).optional().or(z.literal('')),
+        phoneNumber: z.string().regex(phoneRegex, { message: t.invalidNumber }).min(9, { message: t.min(fields.phone, 9) }),
+        subcity: z.string().optional().or(z.literal('')),
+        kebele: z.string().optional().or(z.literal('')),
+        houseNumber: z.string().optional().or(z.literal('')),
+        specificAddress: z.string().optional().or(z.literal('')),
+        dateOfJoining: z.string().optional().or(z.literal('')),
     });
 };
