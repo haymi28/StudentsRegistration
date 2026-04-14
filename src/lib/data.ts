@@ -1,18 +1,14 @@
 
-
 'use server';
 
 import prisma from './prisma';
 import { z } from 'zod';
-import { getStudentRegistrationSchema, StudentValidationTranslations } from './validations/student';
+import { getStudentRegistrationSchema } from './validations/student';
 import { revalidatePath } from 'next/cache';
-import { Student, User, Class, Role } from '@prisma/client';
+import { Student, User, Class, Role, Prisma } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { getUpdateProfileSchema } from './validations/user';
 import { updateUserSchema as serverUpdateUserSchema, createUserSchema as serverCreateUserSchema } from './validations/user-server';
 import { getCreateClassSchema } from './validations/class';
-import { getRoleSchema } from './validations/role';
-import { Prisma } from '@prisma/client';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
@@ -20,17 +16,21 @@ type RoleData = { name: string; description?: string | null; permissions: Prisma
 type UserUpdateData = z.infer<typeof serverUpdateUserSchema>;
 
 
-// Updated getStudents function
-export async function getStudents(userId?: string, role?: Role, classId?: string) {
+// Updated getStudents function with strict access control
+export async function getStudents(userId?: string, role?: any, classId?: string) {
   let whereClause: Prisma.StudentWhereInput = {};
 
-  if (role && !(role.permissions as Record<string, boolean>)?.manage_all_students) {
+  const permissions = role?.permissions as Record<string, boolean> || {};
+
+  if (!permissions.manage_all_students) {
+    // Non-super-admins can only see their managed class
     const userClass = await prisma.class.findFirst({
       where: { managerId: userId },
     });
     if (!userClass) return [];
     whereClause.classId = userClass.id;
   } else if (classId && classId !== 'all') {
+    // Super admins can filter by class
     whereClause.classId = classId;
   }
   
@@ -41,11 +41,24 @@ export async function getStudents(userId?: string, role?: Role, classId?: string
   });
 }
 
-export async function getStudentById(id: string) {
-  return await prisma.student.findUnique({
+// Updated getStudentById with access control
+export async function getStudentById(id: string, userId?: string, role?: any) {
+  const student = await prisma.student.findUnique({
     where: { id },
     include: { class: true }
   });
+
+  if (!student) return null;
+
+  const permissions = role?.permissions as Record<string, boolean> || {};
+  if (!permissions.manage_all_students) {
+    // Check if the student belongs to the class managed by the user
+    if (student.class?.managerId !== userId) {
+      return null; // Access denied
+    }
+  }
+
+  return student;
 }
 
 export async function createStudent(data: StudentFormValues) {
@@ -67,9 +80,8 @@ export async function createStudent(data: StudentFormValues) {
 }
 
 export async function importStudents(students: Partial<Student & { className: string }>[]) {
-    // Server-side validation, no translations
     const validationSchema = getStudentRegistrationSchema();
-    const classes = await getClasses();
+    const classes = await prisma.class.findMany();
     const classMap = new Map(classes.map(c => [c.name.toLowerCase(), c.id]));
     
     const validatedStudents: StudentFormValues[] = [];
@@ -277,9 +289,19 @@ export async function deleteUser(id: string) {
 }
 
 
-// Class Functions
-export async function getClasses() {
+// Class Functions with strict access control
+export async function getClasses(userId?: string, role?: any) {
+  let whereClause: Prisma.ClassWhereInput = {};
+
+  const permissions = role?.permissions as Record<string, boolean> || {};
+
+  if (userId && !permissions.manage_all_students) {
+    // Non-super-admins only see the class they manage
+    whereClause.managerId = userId;
+  }
+
   return await prisma.class.findMany({
+    where: whereClause,
     include: {
       manager: true,
       _count: {
