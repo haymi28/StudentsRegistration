@@ -15,19 +15,6 @@ import { Student, Class } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
 import { format } from 'date-fns';
 
-const formatDateDisplay = (date: Date | string | undefined | null): string => {
-  if (!date) return 'N/A';
-  if (typeof date === 'string') {
-      if (!/^\d{1,2} \w+ \d{4}$/.test(date) && isNaN(new Date(date).getTime())) {
-          return date;
-      }
-  }
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return date.toString();
-  return format(d, 'PPP');
-};
-
-
 interface StudentDetailsDialogProps {
   student: (Student & { class: Class | null }) | null;
   open: boolean;
@@ -44,7 +31,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
   const DetailItem = ({ label, value }: { label: string; value: React.ReactNode }) => (
     <div className="grid grid-cols-2 gap-2 text-sm">
       <div className="font-medium text-muted-foreground">{label}</div>
-      <div className="text-foreground">{value || 'N/A'}</div>
+      <div className="text-foreground">{value || t('common.na')}</div>
     </div>
   );
 
@@ -54,7 +41,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
         <DialogHeader>
           <DialogTitle>{t('studentDetails.title')}</DialogTitle>
           <DialogDescription>
-            {t('studentDetails.description').replace('{name}', student.fullName)}
+            {t('studentDetails.description', { name: student.fullName })}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto pr-4">
@@ -66,7 +53,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
             <div>
               <h2 className="text-2xl font-bold">{student.fullName}</h2>
               <p className="text-muted-foreground">{student.registrationNumber}</p>
-              <Badge variant="secondary" className="mt-2">{student.class?.name || 'N/A'}</Badge>
+              <Badge variant="secondary" className="mt-2">{student.class?.name || t('common.na')}</Badge>
             </div>
           </div>
           
@@ -77,7 +64,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
             <DetailItem label={t('studentDetails.label.fullName')} value={student.fullName} />
             <DetailItem label={t('studentDetails.label.baptismalName')} value={student.baptismalName} />
             <DetailItem label={t('studentDetails.label.mothersName')} value={student.mothersName} />
-            <DetailItem label={t('studentDetails.label.gender')} value={student.gender} />
+            <DetailItem label={t('studentDetails.label.gender')} value={student.gender === 'Male' ? t('form.gender.male') : t('form.gender.female')} />
             <DetailItem label={t('studentDetails.label.dob')} value={student.dateOfBirth} />
             <DetailItem label={t('studentDetails.label.education')} value={student.educationLevel} />
             <DetailItem label={t('studentDetails.label.joinDate')} value={student.dateOfJoining} />

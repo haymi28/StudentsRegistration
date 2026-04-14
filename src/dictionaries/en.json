@@ -1,4 +1,3 @@
-
 {
     "nav": {
         "dashboard": "Dashboard",
@@ -100,7 +99,12 @@
         "registerSuccess": "Registration Successful!",
         "registerSuccessDescription": "{name} has been successfully registered.",
         "updateSuccess": "Update Successful!",
-        "updateSuccessDescription": "Information for {name} has been successfully updated."
+        "updateSuccessDescription": "Information for {name} has been successfully updated.",
+        "photo": {
+            "uploadPlaceholder": "Upload a photo",
+            "button": "Upload Image",
+            "remove": "Remove image"
+        }
     },
     "students": {
         "title": "Student List",
@@ -474,7 +478,9 @@
         "confirmPassword": "Confirm New Password",
         "changePasswordButton": "Change Password",
         "changePasswordSuccessTitle": "Password Changed",
-        "changePasswordSuccessDescription": "Your password has been successfully updated."
+        "changePasswordSuccessDescription": "Your password has been successfully updated.",
+        "sessionUpdateFailed": "Session Update Failed",
+        "reloginDescription": "Please log out and log in again."
     },
     "pagination": {
         "previous": "Previous",
@@ -493,6 +499,10 @@
         "errorDescription": "An unexpected error occurred. Please try again.",
         "userNotFound": "User not found. Please log in again.",
         "notAssigned": "Not Assigned",
-        "back": "Back"
+        "back": "Back",
+        "loading": "Loading...",
+        "na": "N/A",
+        "studentNotFound": "Student Not Found",
+        "studentNotFoundDescription": "The student with the given ID could not be found."
     }
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRef } from 'react';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
+import { useLocale } from '@/contexts/locale-provider';
 
 interface ImageUploadProps {
   value?: string;
@@ -13,6 +15,7 @@ interface ImageUploadProps {
 
 export function ImageUpload({ value, onChange }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { t } = useLocale();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -39,21 +42,21 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
                         onClick={() => onChange('')}
                     >
                         <X className="h-4 w-4" />
-                        <span className="sr-only">Remove image</span>
+                        <span className="sr-only">{t('form.photo.remove')}</span>
                     </Button>
                 </>
 
             ) : (
                 <div className="text-center text-muted-foreground">
                     <Upload className="mx-auto h-12 w-12" />
-                    <p className="text-sm mt-2">Upload a photo</p>
+                    <p className="text-sm mt-2">{t('form.photo.uploadPlaceholder')}</p>
                 </div>
             )}
         </div>
       <div className="flex gap-2">
         <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
           <Upload className="mr-2 h-4 w-4" />
-          Upload Image
+          {t('form.photo.button')}
         </Button>
         <Input
             type="file"

@@ -8,9 +8,11 @@ import { getServerSession } from '@/lib/auth';
 import { MainLayout } from '@/components/common/main-layout';
 import { Student, Class } from '@prisma/client';
 import { redirect } from 'next/navigation';
+import { useLocale } from '@/contexts/locale-provider';
 
 function EditStudentPageClient({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
   const { id } = use(paramsPromise);
+  const { t } = useLocale();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [student, setStudent] = useState<Student | null>(null);
@@ -42,7 +44,7 @@ function EditStudentPageClient({ params: paramsPromise }: { params: Promise<{ id
     return (
         <MainLayout isAuthenticated={true}>
             <div className="flex items-center justify-center h-screen">
-                Loading...
+                {t('common.loading')}
             </div>
         </MainLayout>
     );
@@ -52,8 +54,8 @@ function EditStudentPageClient({ params: paramsPromise }: { params: Promise<{ id
     return (
       <MainLayout isAuthenticated={isAuthenticated}>
         <div className="container py-8 text-center">
-          <h1 className="text-2xl font-bold">Student Not Found</h1>
-          <p className="text-muted-foreground">The student with the given ID could not be found.</p>
+          <h1 className="text-2xl font-bold">{t('common.studentNotFound')}</h1>
+          <p className="text-muted-foreground">{t('common.studentNotFoundDescription')}</p>
         </div>
       </MainLayout>
     );
