@@ -18,7 +18,8 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
   const awaitedParams = await searchParams;
   const classId = typeof awaitedParams.class === 'string' ? awaitedParams.class : undefined;
 
-  // Pass session user ID and role to getStudents to enforce access control
+  // Security: Pass session identity to the backend to enforce strict scoping.
+  // The backend will ignore 'classId' if the user isn't authorized to view all classes.
   const students = await getStudents(session.user.id, session.user.role, classId);
 
   return (

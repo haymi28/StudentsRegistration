@@ -16,21 +16,25 @@ type RoleData = { name: string; description?: string | null; permissions: Prisma
 type UserUpdateData = z.infer<typeof serverUpdateUserSchema>;
 
 
-// Updated getStudents function with strict access control
+/**
+ * Fetches students with strict access control.
+ * Super Admins (manage_all_students) can see all students and filter by class.
+ * Other users can only see students in their managed class.
+ */
 export async function getStudents(userId?: string, role?: any, classId?: string) {
   let whereClause: Prisma.StudentWhereInput = {};
 
   const permissions = role?.permissions as Record<string, boolean> || {};
 
   if (!permissions.manage_all_students) {
-    // Non-super-admins can only see their managed class
+    // Non-super-admins are strictly limited to their managed class
     const userClass = await prisma.class.findFirst({
       where: { managerId: userId },
     });
     if (!userClass) return [];
     whereClause.classId = userClass.id;
   } else if (classId && classId !== 'all') {
-    // Super admins can filter by class
+    // Super admins can apply class filters
     whereClause.classId = classId;
   }
   
@@ -41,7 +45,9 @@ export async function getStudents(userId?: string, role?: any, classId?: string)
   });
 }
 
-// Updated getStudentById with access control
+/**
+ * Fetches a single student with ownership verification.
+ */
 export async function getStudentById(id: string, userId?: string, role?: any) {
   const student = await prisma.student.findUnique({
     where: { id },
@@ -52,9 +58,9 @@ export async function getStudentById(id: string, userId?: string, role?: any) {
 
   const permissions = role?.permissions as Record<string, boolean> || {};
   if (!permissions.manage_all_students) {
-    // Check if the student belongs to the class managed by the user
+    // Strict ownership check: Does this student belong to the class managed by the user?
     if (student.class?.managerId !== userId) {
-      return null; // Access denied
+      return null; // Access denied - data leakage prevented
     }
   }
 
@@ -289,14 +295,17 @@ export async function deleteUser(id: string) {
 }
 
 
-// Class Functions with strict access control
+/**
+ * Fetches classes with access control.
+ * Non-super-admins only see the class they manage.
+ */
 export async function getClasses(userId?: string, role?: any) {
   let whereClause: Prisma.ClassWhereInput = {};
 
   const permissions = role?.permissions as Record<string, boolean> || {};
 
   if (userId && !permissions.manage_all_students) {
-    // Non-super-admins only see the class they manage
+    // Class managers only see their own class
     whereClause.managerId = userId;
   }
 
