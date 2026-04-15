@@ -21,16 +21,16 @@ export default async function HomePage() {
             <div className="text-center mb-8">
                 <Image 
                     src="/image/logo.jpg" 
-                    alt="Debre Gelila St. Amanuel Cathedral Logo" 
+                    alt={t('dashboard.welcome.churchName')}
                     width={120} 
                     height={120}
                     className="shadow-lg mx-auto"
                     priority
                 />
                 <h1 className="text-xl sm:text-2xl font-bold text-primary font-headline mt-4 px-4">
-                    የደብረ ገሊላ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት
+                    {t('dashboard.welcome.churchName')}
                 </h1>
-                <p className="text-lg sm:text-xl font-semibold text-muted-foreground mt-2">የተማሪዎች መመዝገቢያና መቆጣጠሪያ ዘዴ</p>
+                <p className="text-lg sm:text-xl font-semibold text-muted-foreground mt-2">{t('dashboard.welcome.systemName')}</p>
             </div>
             <Card className="w-full max-w-md shadow-2xl">
                 <CardHeader className="text-center">

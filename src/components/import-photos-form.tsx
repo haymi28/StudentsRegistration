@@ -17,10 +17,6 @@ import { useLocale } from '@/contexts/locale-provider';
 import Image from 'next/image';
 import { updateStudentPhotos } from '@/lib/data';
 
-const formSchema = z.object({
-  files: z.array(z.instanceof(File)).min(1, 'At least one file is required.'),
-});
-
 interface PreviewFile {
   file: File;
   name: string;
@@ -34,6 +30,10 @@ export function ImportPhotosForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useLocale();
   const { toast } = useToast();
+
+  const formSchema = useMemo(() => z.object({
+    files: z.array(z.instanceof(File)).min(1, t('importPhotos.errors.photoRequired')),
+  }), [t]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

@@ -1,3 +1,4 @@
+
 {
     "nav": {
         "dashboard": "ዳሽቦርድ",
@@ -16,7 +17,12 @@
         "roleManagement": "የሚና አስተዳደር",
         "account": "የኔ መለያ",
         "logout": "ውጣ",
-        "language": "ቋንቋ"
+        "language": "ቋንቋ",
+        "systemName": "የተማሪዎች መመዝገቢያ ቅጽ"
+    },
+    "metadata": {
+        "title": "የደብረ ገሊላ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት የተማሪዎች መመዝገቢያ ቅጽ",
+        "description": "የተማሪዎች ምዝገባ እና ክትትል አስተዳደር ስርዓት።"
     },
     "dashboard": {
         "title": "ዳሽቦርድ",
@@ -203,7 +209,8 @@
             "fileReadError": "ፋይሉን ማንበብ ላይ ስህተት ተፈጥሯል።",
             "fileParseError": "የኤክሴል ፋይሉን መተንተን አልተቻለም።",
             "duplicateRegNumber": "የምዝገባ ቁጥር '{regNumber}' አስቀድሞ አለ።",
-            "invalidClassName": "ክፍል '{className}' የለም።"
+            "invalidClassName": "ክፍል '{className}' የለም።",
+            "fileRequired": "የኤክሴል ፋይል ያስፈልጋል።"
         }
     },
     "export": {
@@ -241,7 +248,8 @@
         "errors": {
             "invalidFileName": "የፋይል ስም የምዝገባ ቁጥር መሆን አለበት።",
             "notFoundTitle": "አንዳንድ ተማሪዎች አልተገኙም",
-            "notFoundDescription": "ከእነዚህ የምዝገባ ቁጥሮች ጋር ተማሪዎችን ማግኘት አልተቻለም፦ {numbers}"
+            "notFoundDescription": "ከእነዚህ የምዝገባ ቁጥሮች ጋር ተማሪዎችን ማግኘት አልተቻለም፦ {numbers}",
+            "photoRequired": "ቢያንስ አንድ የፎቶ ፋይል ያስፈልጋል።"
         }
     },
     "exportPhotos": {

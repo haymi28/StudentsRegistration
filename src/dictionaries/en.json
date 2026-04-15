@@ -1,3 +1,4 @@
+
 {
     "nav": {
         "dashboard": "Dashboard",
@@ -16,7 +17,12 @@
         "roleManagement": "Role Management",
         "account": "My Account",
         "logout": "Logout",
-        "language": "Language"
+        "language": "Language",
+        "systemName": "Student Registration Form"
+    },
+    "metadata": {
+        "title": "Debre Gelila Amanuel Cathedral Sunday School Student Registration",
+        "description": "A student registration and attendance management system."
     },
     "dashboard": {
         "title": "Dashboard",
@@ -203,7 +209,8 @@
             "fileReadError": "Error reading the file.",
             "fileParseError": "Could not parse the Excel file.",
             "duplicateRegNumber": "Registration number '{regNumber}' already exists.",
-            "invalidClassName": "Class '{className}' does not exist."
+            "invalidClassName": "Class '{className}' does not exist.",
+            "fileRequired": "Excel file is required."
         }
     },
     "export": {
@@ -241,7 +248,8 @@
         "errors": {
             "invalidFileName": "Filename must be a registration number.",
             "notFoundTitle": "Some Students Not Found",
-            "notFoundDescription": "Could not find students with registration numbers: {numbers}"
+            "notFoundDescription": "Could not find students with registration numbers: {numbers}",
+            "photoRequired": "At least one photo file is required."
         }
     },
     "exportPhotos": {
@@ -355,7 +363,9 @@
             },
             "createSuccess": {
                 "title": "Class Created!",
-                "description": "Class {name} has been successfully created."
+                "description": "Class {name} has been successfully created.",
+                "titleUpdate": "Class Updated!",
+                "descriptionUpdate": "Class {name} has been successfully updated."
             },
             "updateSuccess": {
                 "title": "Class Updated!",

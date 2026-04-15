@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,10 +19,6 @@ import { readExcelFile, downloadTemplate, studentHeaders } from '@/lib/excel-uti
 import { getStudentRegistrationSchema, StudentValidationTranslations } from '@/lib/validations/student';
 import { getStudents, importStudents, getClasses } from '@/lib/data';
 
-const formSchema = z.object({
-  file: z.instanceof(File).refine(file => file.size > 0, 'File is required.'),
-});
-
 type ValidationResult = {
   validStudents: Partial<Student>[];
   errors: { row: number; messages: string[] }[];
@@ -35,13 +31,17 @@ export function BulkImportForm() {
   const { t } = useLocale();
   const { toast } = useToast();
   
-  const validationTranslations: StudentValidationTranslations = {
+  const validationTranslations: StudentValidationTranslations = useMemo(() => ({
     required: (field: string) => t('validation.required', { field }),
     min: (field: string, length: number) => t('validation.min', { field, length }),
     invalidNumber: t('validation.invalidNumber'),
-  };
+  }), [t]);
 
-  const studentValidationSchema = getStudentRegistrationSchema(validationTranslations);
+  const studentValidationSchema = useMemo(() => getStudentRegistrationSchema(validationTranslations), [validationTranslations]);
+
+  const formSchema = useMemo(() => z.object({
+    file: z.instanceof(File).refine(file => file.size > 0, t('import.errors.fileRequired')),
+  }), [t]);
 
   useEffect(() => {
     getClasses().then(setClasses);
