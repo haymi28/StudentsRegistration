@@ -28,9 +28,9 @@ export default function DashboardPage() {
         redirect('/');
       } else {
         setIsAuthenticated(true);
-        // Pass user ID and role to getClasses to enforce strict backend scoping
-        // Non-superadmins will only get their assigned class data here.
-        const fetchedClasses = await getClasses(session.user.id, session.user.role) as ClassWithDetails[];
+        // The backend internally scopes getClasses() based on session,
+        // so we don't need to pass role/id parameters anymore.
+        const fetchedClasses = await getClasses() as ClassWithDetails[];
         setClasses(fetchedClasses);
         setLoading(false);
       }
@@ -48,7 +48,6 @@ export default function DashboardPage() {
     )
   }
 
-  // Statistics are automatically scoped because 'classes' array is scoped by the backend
   const totalStudents = classes.reduce((acc, curr) => acc + curr._count.students, 0);
   const totalClasses = classes.length;
 

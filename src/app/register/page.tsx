@@ -26,8 +26,8 @@ export default function RegisterPage() {
       setIsAuthenticated(true);
       setSession(sessionData);
 
-      // Pass session info to getClasses to ensure managers only see their assigned class
-      const classData = await getClasses(sessionData.user.id, sessionData.user.role);
+      // Backend internally scopes getClasses() based on session
+      const classData = await getClasses();
       setClasses(classData);
     };
     checkAuthAndFetch();
