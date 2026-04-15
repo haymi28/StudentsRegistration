@@ -26,21 +26,39 @@ async function getAuthenticatedUser() {
 }
 
 /**
+ * Extracts authorized context including the managed class ID.
+ * This is the source of truth for all scoped queries.
+ */
+async function getAuthorizedContext() {
+  const user = await getAuthenticatedUser();
+  const permissions = user.role.permissions as Record<string, boolean> || {};
+  
+  const isSuperAdmin = !!permissions.manage_all_students;
+  let assignedClassId: string | null = null;
+
+  if (!isSuperAdmin) {
+    const userClass = await prisma.class.findFirst({
+      where: { managerId: user.id },
+      select: { id: true }
+    });
+    assignedClassId = userClass?.id || null;
+  }
+
+  return { user, permissions, assignedClassId, isSuperAdmin };
+}
+
+/**
  * Fetches students with strict backend-enforced access control.
  */
 export async function getStudents(classId?: string) {
-  const user = await getAuthenticatedUser();
-  const permissions = user.role.permissions as Record<string, boolean> || {};
+  const { isSuperAdmin, assignedClassId } = await getAuthorizedContext();
 
   let whereClause: Prisma.StudentWhereInput = {};
 
-  if (!permissions.manage_all_students) {
-    // Non-super-admins are strictly limited to their managed class
-    const userClass = await prisma.class.findFirst({
-      where: { managerId: user.id },
-    });
-    if (!userClass) return [];
-    whereClause.classId = userClass.id;
+  if (!isSuperAdmin) {
+    // BLOCK filtering: Ignore any provided classId and force the assigned one
+    if (!assignedClassId) return [];
+    whereClause.classId = assignedClassId;
   } else if (classId && classId !== 'all') {
     // Super admins can apply class filters
     whereClause.classId = classId;
@@ -57,8 +75,7 @@ export async function getStudents(classId?: string) {
  * Fetches a single student with ownership verification at the query level.
  */
 export async function getStudentById(id: string) {
-  const user = await getAuthenticatedUser();
-  const permissions = user.role.permissions as Record<string, boolean> || {};
+  const { isSuperAdmin, assignedClassId } = await getAuthorizedContext();
 
   const student = await prisma.student.findUnique({
     where: { id },
@@ -67,10 +84,10 @@ export async function getStudentById(id: string) {
 
   if (!student) return null;
 
-  if (!permissions.manage_all_students) {
+  if (!isSuperAdmin) {
     // Strict ownership check: Does this student belong to the class managed by the user?
-    if (student.class?.managerId !== user.id) {
-      throw new Error("Access Denied");
+    if (student.classId !== assignedClassId) {
+      throw new Error("Unauthorized Access Attempt");
     }
   }
 
@@ -78,8 +95,7 @@ export async function getStudentById(id: string) {
 }
 
 export async function createStudent(data: StudentFormValues) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { isSuperAdmin, assignedClassId } = await getAuthorizedContext();
     
     const validatedData = getStudentRegistrationSchema({}).safeParse(data);
     if (!validatedData.success) {
@@ -87,9 +103,8 @@ export async function createStudent(data: StudentFormValues) {
     }
 
     // Security check: ensure non-admins only register students to their own class
-    if (!permissions.manage_all_students) {
-        const userClass = await prisma.class.findFirst({ where: { managerId: user.id } });
-        if (!userClass || validatedData.data.classId !== userClass.id) {
+    if (!isSuperAdmin) {
+        if (!assignedClassId || validatedData.data.classId !== assignedClassId) {
             throw new Error("Unauthorized: You can only register students to your assigned class.");
         }
     }
@@ -107,21 +122,13 @@ export async function createStudent(data: StudentFormValues) {
 }
 
 export async function importStudents(students: Partial<Student & { className: string }>[]) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { isSuperAdmin, permissions, assignedClassId } = await getAuthorizedContext();
     
     if (!permissions.import_students) throw new Error("Unauthorized");
 
     const validationSchema = getStudentRegistrationSchema();
     const classes = await prisma.class.findMany();
     const classMap = new Map(classes.map(c => [c.name.toLowerCase(), c.id]));
-    
-    // For non-superadmins, find their allowed class
-    let allowedClassId: string | null = null;
-    if (!permissions.manage_all_students) {
-        const userClass = await prisma.class.findFirst({ where: { managerId: user.id } });
-        allowedClassId = userClass?.id || null;
-    }
 
     const validatedStudents: StudentFormValues[] = [];
 
@@ -134,8 +141,9 @@ export async function importStudents(students: Partial<Student & { className: st
         }
 
         // Security override: force correct class for non-superadmins
-        if (!permissions.manage_all_students && allowedClassId) {
-            studentWithClassId.classId = allowedClassId;
+        if (!isSuperAdmin) {
+            if (!assignedClassId) throw new Error("Unauthorized: No assigned class found for import.");
+            studentWithClassId.classId = assignedClassId;
         }
 
         const result = validationSchema.safeParse(studentWithClassId);
@@ -159,14 +167,13 @@ export async function importStudents(students: Partial<Student & { className: st
 }
 
 export async function updateStudent(id: string, data: Partial<StudentFormValues>) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { isSuperAdmin, assignedClassId } = await getAuthorizedContext();
 
     // Verify ownership before updating
-    const student = await prisma.student.findUnique({ where: { id }, include: { class: true } });
+    const student = await prisma.student.findUnique({ where: { id }, select: { id: true, classId: true } });
     if (!student) throw new Error("Student not found");
     
-    if (!permissions.manage_all_students && student.class?.managerId !== user.id) {
+    if (!isSuperAdmin && student.classId !== assignedClassId) {
         throw new Error("Unauthorized");
     }
 
@@ -176,7 +183,7 @@ export async function updateStudent(id: string, data: Partial<StudentFormValues>
     }
 
     // Prevent non-admins from moving students to other classes via API injection
-    if (!permissions.manage_all_students && validatedData.data.classId && validatedData.data.classId !== student.classId) {
+    if (!isSuperAdmin && validatedData.data.classId && validatedData.data.classId !== student.classId) {
         throw new Error("Unauthorized: You cannot change a student's class.");
     }
 
@@ -186,13 +193,9 @@ export async function updateStudent(id: string, data: Partial<StudentFormValues>
 }
 
 export async function deleteStudent(id: string) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
-
-    const student = await prisma.student.findUnique({ where: { id }, include: { class: true } });
-    if (!student) throw new Error("Student not found");
+    const { isSuperAdmin } = await getAuthorizedContext();
     
-    if (!permissions.manage_all_students) {
+    if (!isSuperAdmin) {
         throw new Error("Unauthorized: Only super admins can delete students.");
     }
 
@@ -201,10 +204,9 @@ export async function deleteStudent(id: string) {
 }
 
 export async function deleteStudents(ids: string[]) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { isSuperAdmin } = await getAuthorizedContext();
     
-    if (!permissions.manage_all_students) {
+    if (!isSuperAdmin) {
         throw new Error("Unauthorized: Only super admins can perform bulk deletion.");
     }
 
@@ -213,8 +215,7 @@ export async function deleteStudents(ids: string[]) {
 }
 
 export async function updateStudentPhotos(photoData: { registrationNumber: string; photo: string }[]) {
-  const user = await getAuthenticatedUser();
-  const permissions = user.role.permissions as Record<string, boolean> || {};
+  const { isSuperAdmin, permissions, assignedClassId } = await getAuthorizedContext();
   
   if (!permissions.import_students) throw new Error("Unauthorized");
 
@@ -225,10 +226,9 @@ export async function updateStudentPhotos(photoData: { registrationNumber: strin
   };
 
   // Restrict to managed class if not superadmin
-  if (!permissions.manage_all_students) {
-    const userClass = await prisma.class.findFirst({ where: { managerId: user.id } });
-    if (!userClass) return { count: 0, notFound: registrationNumbers };
-    whereClause.classId = userClass.id;
+  if (!isSuperAdmin) {
+    if (!assignedClassId) return { count: 0, notFound: registrationNumbers };
+    whereClause.classId = assignedClassId;
   }
   
   const existingStudents = await prisma.student.findMany({
@@ -259,7 +259,11 @@ export async function updateStudentPhotos(photoData: { registrationNumber: strin
 
 // User Functions
 export async function getUsers(excludeSuperAdmin = false) {
-    await getAuthenticatedUser(); // Ensure logged in
+    const { permissions } = await getAuthorizedContext();
+    if (!permissions.manage_users && !permissions.manage_classes) {
+      throw new Error("Unauthorized");
+    }
+
     const users = await prisma.user.findMany({
         include: { role: true },
         orderBy: { createdAt: 'desc' }
@@ -273,7 +277,10 @@ export async function getUsers(excludeSuperAdmin = false) {
 }
 
 export async function getUserById(id: string) {
-    await getAuthenticatedUser();
+    const { user: currentUser, permissions } = await getAuthorizedContext();
+    if (currentUser.id !== id && !permissions.manage_users) {
+        throw new Error("Unauthorized");
+    }
     return await prisma.user.findUnique({ 
         where: { id },
         include: { role: true }
@@ -281,19 +288,23 @@ export async function getUserById(id: string) {
 }
 
 export async function getUserByUsername(username: string) {
-    await getAuthenticatedUser();
-    return await prisma.user.findUnique({ 
+    const { user: currentUser, permissions } = await getAuthorizedContext();
+    const targetUser = await prisma.user.findUnique({ 
         where: { username },
         include: { role: true }
     });
+    
+    if (targetUser && currentUser.id !== targetUser.id && !permissions.manage_users) {
+        throw new Error("Unauthorized");
+    }
+    return targetUser;
 }
 
 export async function updateUser(id: string, data: Partial<UserUpdateData>) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { user: currentUser, permissions } = await getAuthorizedContext();
 
     // Users can update their own profile; admins can update anyone
-    if (user.id !== id && !permissions.manage_users) {
+    if (currentUser.id !== id && !permissions.manage_users) {
         throw new Error("Unauthorized");
     }
 
@@ -331,8 +342,7 @@ export async function updateUser(id: string, data: Partial<UserUpdateData>) {
 }
 
 export async function createUser(data: z.infer<typeof serverCreateUserSchema>) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { permissions } = await getAuthorizedContext();
     if (!permissions.manage_users) throw new Error("Unauthorized");
 
     const validatedData = serverCreateUserSchema.safeParse(data);
@@ -354,8 +364,7 @@ export async function createUser(data: z.infer<typeof serverCreateUserSchema>) {
 }
 
 export async function deleteUser(id: string) {
-    const loggedInUser = await getAuthenticatedUser();
-    const permissions = loggedInUser.role.permissions as Record<string, boolean> || {};
+    const { permissions } = await getAuthorizedContext();
     if (!permissions.manage_users) throw new Error("Unauthorized");
 
     const userToDelete = await prisma.user.findUnique({ where: { id } });
@@ -369,14 +378,14 @@ export async function deleteUser(id: string) {
  * Fetches classes with access control.
  */
 export async function getClasses() {
-  const user = await getAuthenticatedUser();
-  const permissions = user.role.permissions as Record<string, boolean> || {};
+  const { isSuperAdmin, assignedClassId } = await getAuthorizedContext();
 
   let whereClause: Prisma.ClassWhereInput = {};
 
-  if (!permissions.manage_all_students) {
+  if (!isSuperAdmin) {
     // Managers only see their own class
-    whereClause.managerId = user.id;
+    if (!assignedClassId) return [];
+    whereClause.id = assignedClassId;
   }
 
   return await prisma.class.findMany({
@@ -390,8 +399,7 @@ export async function getClasses() {
 }
 
 export async function getClassById(id: string) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { isSuperAdmin, assignedClassId } = await getAuthorizedContext();
 
     const classData = await prisma.class.findUnique({
         where: { id },
@@ -399,7 +407,7 @@ export async function getClassById(id: string) {
     });
 
     if (!classData) return null;
-    if (!permissions.manage_all_students && classData.managerId !== user.id) {
+    if (!isSuperAdmin && classData.id !== assignedClassId) {
         throw new Error("Access Denied");
     }
 
@@ -407,8 +415,7 @@ export async function getClassById(id: string) {
 }
 
 export async function createClass(data: ClassData) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { permissions } = await getAuthorizedContext();
     if (!permissions.manage_classes) throw new Error("Unauthorized");
 
     const validationSchema = getCreateClassSchema();
@@ -420,8 +427,7 @@ export async function createClass(data: ClassData) {
 }
 
 export async function updateClass(id: string, data: ClassData) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { permissions } = await getAuthorizedContext();
     if (!permissions.manage_classes) throw new Error("Unauthorized");
 
     const validationSchema = getCreateClassSchema();
@@ -433,8 +439,7 @@ export async function updateClass(id: string, data: ClassData) {
 }
 
 export async function deleteClass(id: string) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { permissions } = await getAuthorizedContext();
     if (!permissions.manage_classes) throw new Error("Unauthorized");
 
     const studentCount = await prisma.student.count({ where: { classId: id } });
@@ -445,10 +450,9 @@ export async function deleteClass(id: string) {
 }
 
 export async function transferStudentsToClass(studentIds: string[], targetClassId: string) {
-    const user = await getAuthenticatedUser();
-    const permissions = user.role.permissions as Record<string, boolean> || {};
+    const { isSuperAdmin } = await getAuthorizedContext();
     
-    if (!permissions.manage_all_students) throw new Error("Unauthorized: Only super admins can transfer students.");
+    if (!isSuperAdmin) throw new Error("Unauthorized: Only super admins can transfer students.");
 
     await prisma.student.updateMany({
         where: { id: { in: studentIds } },
@@ -459,7 +463,10 @@ export async function transferStudentsToClass(studentIds: string[], targetClassI
 
 // Role Functions
 export async function getRoles() {
-    await getAuthenticatedUser();
+    const { permissions } = await getAuthorizedContext();
+    if (!permissions.manage_roles && !permissions.manage_users) {
+      throw new Error("Unauthorized");
+    }
     return await prisma.role.findMany({
         include: { _count: { select: { users: true } } },
         orderBy: { name: 'asc' }
@@ -467,27 +474,30 @@ export async function getRoles() {
 }
 
 export async function getRoleById(id: string) {
-    await getAuthenticatedUser();
+    const { permissions } = await getAuthorizedContext();
+    if (!permissions.manage_roles && !permissions.manage_users) {
+      throw new Error("Unauthorized");
+    }
     return await prisma.role.findUnique({ where: { id } });
 }
 
 export async function createRole(data: RoleData) {
-    const user = await getAuthenticatedUser();
-    if (!(user.role.permissions as any).manage_roles) throw new Error("Unauthorized");
+    const { permissions } = await getAuthorizedContext();
+    if (!permissions.manage_roles) throw new Error("Unauthorized");
     await prisma.role.create({ data });
     revalidatePath('/roles');
 }
 
 export async function updateRole(id: string, data: RoleData) {
-    const user = await getAuthenticatedUser();
-    if (!(user.role.permissions as any).manage_roles) throw new Error("Unauthorized");
+    const { permissions } = await getAuthorizedContext();
+    if (!permissions.manage_roles) throw new Error("Unauthorized");
     await prisma.role.update({ where: { id }, data });
     revalidatePath('/roles');
 }
 
 export async function deleteRole(id: string) {
-    const user = await getAuthenticatedUser();
-    if (!(user.role.permissions as any).manage_roles) throw new Error("Unauthorized");
+    const { permissions } = await getAuthorizedContext();
+    if (!permissions.manage_roles) throw new Error("Unauthorized");
     await prisma.role.delete({ where: { id } });
     revalidatePath('/roles');
 }

@@ -28,8 +28,8 @@ export default function DashboardPage() {
         redirect('/');
       } else {
         setIsAuthenticated(true);
-        // The backend internally scopes getClasses() based on session,
-        // so we don't need to pass role/id parameters anymore.
+        // The backend internally scopes getClasses() based on the server-side session.
+        // Super Admins will get all classes, Managers will get only their own.
         const fetchedClasses = await getClasses() as ClassWithDetails[];
         setClasses(fetchedClasses);
         setLoading(false);
@@ -48,6 +48,7 @@ export default function DashboardPage() {
     )
   }
 
+  // Dashboard stats are dynamically scoped based on the fetched classes
   const totalStudents = classes.reduce((acc, curr) => acc + curr._count.students, 0);
   const totalClasses = classes.length;
 
@@ -68,6 +69,7 @@ export default function DashboardPage() {
                 width={120} 
                 height={120}
                 className="shadow-lg rounded-full"
+                priority
                 />
                 <div className="text-center md:text-left">
                 <h1 className="text-2xl font-bold font-headline">{t('dashboard.welcome.title')}</h1>
