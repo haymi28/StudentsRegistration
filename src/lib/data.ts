@@ -33,15 +33,12 @@ async function getAuthorizedContext() {
   const user = await getAuthenticatedUser();
   const permissions = user.role.permissions as Record<string, boolean> || {};
   
-  const isSuperAdmin = !!permissions.manage_all_students;
-  let assignedClassId: string | null = null;
+  const isSuperAdmin = user.role.name === 'Super Admin';
+  const assignedClassId = user.assignedClassId;
 
-  if (!isSuperAdmin) {
-    const userClass = await prisma.class.findFirst({
-      where: { managerId: user.id },
-      select: { id: true }
-    });
-    assignedClassId = userClass?.id || null;
+  // STRICT RBAC CHECK: If you are not a super admin, you MUST have an assigned class
+  if (!isSuperAdmin && !assignedClassId) {
+    throw new Error('Unauthorized: Your account is not assigned to any class. Please contact an administrator.');
   }
 
   return { user, permissions, assignedClassId, isSuperAdmin };

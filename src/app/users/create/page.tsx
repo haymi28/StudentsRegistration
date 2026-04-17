@@ -35,7 +35,7 @@ export default function CreateUserPage() {
                 <div className="flex items-center justify-center h-screen">
                     {t('common.loading')}
                 </div>
-            </ProjectLayout>
+            </MainLayout>
         );
     }
     

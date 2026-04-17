@@ -6,7 +6,7 @@ import { useLocale } from '@/contexts/locale-provider';
 import { Student } from '@prisma/client';
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { Download, Loader2 } from 'lucide-react';
+import { Download, Loader2, Image as ImageIcon } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { Checkbox } from './ui/checkbox';
 import { useToast } from '@/hooks/use-toast';

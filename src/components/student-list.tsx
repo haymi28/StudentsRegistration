@@ -87,7 +87,8 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   }, [initialStudents]);
 
   const permissions = session.user.role.permissions as Record<string, boolean> || {};
-  const canManageAll = permissions?.manage_all_students;
+  const isSuperAdmin = session.user.role.name === 'Super Admin';
+  const canManageAll = isSuperAdmin;
 
   useEffect(() => {
     if (canManageAll) {
@@ -190,8 +191,8 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
     return studentsToDisplay;
   }, [students, searchQuery, selectedClass, canManageAll]);
   
-  const canTransfer = permissions?.manage_all_students;
-  const canDelete = permissions?.manage_all_students;
+  const canTransfer = isSuperAdmin;
+  const canDelete = isSuperAdmin;
 
 
   return (
@@ -415,8 +416,9 @@ function RowActions({ student, session, translations, t }: { student: Student, s
     };
     
     const permissions = session.user.role.permissions as Record<string, boolean> || {};
-    const canEdit = permissions?.manage_all_students || permissions?.manage_class_students;
-    const canDelete = permissions?.manage_all_students;
+    const isSuperAdmin = session.user.role.name === 'Super Admin';
+    const canEdit = isSuperAdmin || permissions?.manage_class_students;
+    const canDelete = isSuperAdmin;
 
     return (
         <>

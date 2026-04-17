@@ -20,6 +20,7 @@ type TokenPayload = {
     name: string;
     permissions: Record<string, boolean>;
   };
+  assignedClassId: string | null;
 };
 
 interface SignInResult {
@@ -34,7 +35,7 @@ export async function signIn(credentials: { username: string; password: string }
   try {
     const user = await prisma.user.findUnique({
       where: { username: credentials.username },
-      include: { role: true },
+      include: { role: true, managedClasses: { select: { id: true }, take: 1 } },
     });
 
     if (!user) {
@@ -53,6 +54,7 @@ export async function signIn(credentials: { username: string; password: string }
     }
 
     const { password, ...userWithoutPassword } = user;
+    const assignedClassId = user.managedClasses[0]?.id || null;
 
     const tokenPayload: TokenPayload = {
       id: user.id,
@@ -62,6 +64,7 @@ export async function signIn(credentials: { username: string; password: string }
         name: user.role.name,
         permissions: user.role.permissions as Record<string, boolean>,
       },
+      assignedClassId,
     };
     const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '1d' });
 
