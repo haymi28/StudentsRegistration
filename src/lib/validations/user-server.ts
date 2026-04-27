@@ -13,7 +13,7 @@ export const createUserSchema = baseUserSchema.extend({
   roleId: z.string(),
 });
 
-export const updateUserSchema = baseUserSchema.extend({
-  password: z.string().min(6).optional().or(z.literal('')),
+export const updateUserSchema = baseUserSchema.partial().extend({
+  password: z.string().min(6).or(z.literal('')).optional(),
   roleId: z.string().optional(),
 });
