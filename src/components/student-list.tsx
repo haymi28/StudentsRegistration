@@ -77,6 +77,10 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [allClasses, setAllClasses] = useState<Class[]>([]);
   const [selectedClass, setSelectedClass] = useState('all');
+  const [selectedGender, setSelectedGender] = useState('all');
+  const [selectedEducationLevel, setSelectedEducationLevel] = useState('');
+  const [birthYear, setBirthYear] = useState('');
+  const [joiningYear, setJoiningYear] = useState('');
   const router = useRouter();
   const { t } = useLocale();
   const { toast } = useToast();
@@ -133,6 +137,12 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
       }
   }), [t]);
 
+  const genders = useMemo(() => [
+    { value: 'all', label: t('students.allGenders') || 'All Genders' },
+    { value: 'Male', label: t('form.gender.male') },
+    { value: 'Female', label: t('form.gender.female') },
+  ], [t]);
+
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
       setSelectedRowKeys(new Set(filteredStudents.map(s => s.id)));
@@ -181,6 +191,32 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
       studentsToDisplay = studentsToDisplay.filter(student => student.classId === selectedClass);
     }
 
+    if (selectedGender !== 'all') {
+      studentsToDisplay = studentsToDisplay.filter(student => student.gender === selectedGender);
+    }
+
+    if (selectedEducationLevel) {
+      studentsToDisplay = studentsToDisplay.filter(student => 
+        student.educationLevel?.toLowerCase().includes(selectedEducationLevel.toLowerCase())
+      );
+    }
+
+    if (birthYear) {
+      studentsToDisplay = studentsToDisplay.filter(student => {
+        if (!student.dateOfBirth) return false;
+        const parts = student.dateOfBirth.split(' ');
+        return parts.length === 3 && parts[2] === birthYear;
+      });
+    }
+
+    if (joiningYear) {
+      studentsToDisplay = studentsToDisplay.filter(student => {
+        if (!student.dateOfJoining) return false;
+        const parts = student.dateOfJoining.split(' ');
+        return parts.length === 3 && parts[2] === joiningYear;
+      });
+    }
+
     if (searchQuery) {
       const lowercasedQuery = searchQuery.toLowerCase();
       studentsToDisplay = studentsToDisplay.filter(student =>
@@ -189,9 +225,9 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
       );
     }
     return studentsToDisplay;
-  }, [students, searchQuery, selectedClass, canManageAll]);
+  }, [students, searchQuery, selectedClass, selectedGender, selectedEducationLevel, birthYear, joiningYear, canManageAll]);
   
-  const canTransfer = isSuperAdmin;
+  const canTransfer = isSuperAdmin || permissions.transfer_students;
   const canDelete = isSuperAdmin;
 
 
@@ -208,7 +244,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
         </div>
       </CardHeader>
       <CardContent>
-          <div className="flex flex-col md:flex-row items-center gap-4 w-full mb-4">
+          <div className="flex flex-col md:flex-row md:flex-wrap items-center gap-4 w-full mb-4">
             <div className="relative flex-grow w-full md:flex-grow-0 md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -235,6 +271,46 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                 </Select>
               </div>
             )}
+            <div className="w-full md:w-auto">
+              <Select value={selectedGender} onValueChange={setSelectedGender}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                  <SelectValue placeholder={t('form.label.gender')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {genders.map((g) => (
+                    <SelectItem key={g.value} value={g.value}>
+                      {g.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full md:w-auto">
+              <Input
+                placeholder={t('form.label.education')}
+                value={selectedEducationLevel}
+                onChange={(e) => setSelectedEducationLevel(e.target.value)}
+                className="w-full md:w-[180px]"
+              />
+            </div>
+            <div className="w-full md:w-auto">
+              <Input
+                placeholder={t('form.placeholder.birthYear')}
+                type="number"
+                value={birthYear}
+                onChange={(e) => setBirthYear(e.target.value)}
+                className="w-full md:w-[140px]"
+              />
+            </div>
+            <div className="w-full md:w-auto">
+              <Input
+                placeholder={t('form.placeholder.joiningYear')}
+                type="number"
+                value={joiningYear}
+                onChange={(e) => setJoiningYear(e.target.value)}
+                className="w-full md:w-[140px]"
+              />
+            </div>
             <div className="flex items-center gap-2 self-start md:self-center ml-auto">
                 {selectedRowKeys.size > 0 && canTransfer && (
                   <Button onClick={() => setIsTransferDialogOpen(true)} className="shrink-0">

@@ -13,6 +13,7 @@ export interface ReportTranslations {
   regNumber: string;
   fullName: string;
   gender: string;
+  phone: string;
 }
 
 const getEthiopianDate = (): string => {
@@ -84,11 +85,13 @@ export async function generateTransferReport(
   reportElement.style.color = 'black';
   reportElement.style.fontFamily = '"Noto Sans Ethiopic", "PT Sans", sans-serif';
 
+  console.log('Students passed to report:', students);
   const tableRows = students.map(student => `
     <tr>
       <td>${student.registrationNumber}</td>
       <td>${student.fullName}</td>
       <td>${student.gender}</td>
+      <td>${student.phoneNumber || ''}</td>
     </tr>
   `).join('');
 
@@ -115,6 +118,7 @@ export async function generateTransferReport(
           <th>${translations.regNumber}</th>
           <th>${translations.fullName}</th>
           <th>${translations.gender}</th>
+          <th>${translations.phone}</th>
         </tr>
       </thead>
       <tbody>

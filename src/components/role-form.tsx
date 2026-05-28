@@ -30,6 +30,7 @@ const allPermissionsList = [
     'view_students',
     'import_students',
     'export_students',
+    'transfer_students',
 ];
 
 interface RoleFormProps {

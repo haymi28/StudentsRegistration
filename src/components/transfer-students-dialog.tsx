@@ -99,6 +99,7 @@ export function TransferStudentsDialog({
                   regNumber: t('report.regNumber'),
                   fullName: t('report.fullName'),
                   gender: t('report.gender'),
+                  phone: t('report.phone'),
               },
               displayName
           );

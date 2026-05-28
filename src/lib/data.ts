@@ -447,9 +447,9 @@ export async function deleteClass(id: string) {
 }
 
 export async function transferStudentsToClass(studentIds: string[], targetClassId: string) {
-    const { isSuperAdmin } = await getAuthorizedContext();
+    const { isSuperAdmin, permissions } = await getAuthorizedContext();
     
-    if (!isSuperAdmin) throw new Error("Unauthorized: Only super admins can transfer students.");
+    if (!isSuperAdmin && !permissions.transfer_students) throw new Error("Unauthorized: Only super admins or users with transfer permission can transfer students.");
 
     await prisma.student.updateMany({
         where: { id: { in: studentIds } },

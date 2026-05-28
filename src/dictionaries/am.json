@@ -93,7 +93,9 @@
             "address": "የአካባቢውን ዝርዝር መረጃ ያስገቡ",
             "day": "ቀን",
             "month": "ወር",
-            "year": "ዓመት"
+            "year": "ዓመት",
+            "birthYear": "የትውልድ ዓመት",
+            "joiningYear": "የገቡበት ዓመት"
         },
         "gender": {
             "male": "ወንድ",
@@ -121,6 +123,7 @@
         "transferButton": "{count} ተማሪዎችን አስተላልፍ",
         "deleteSelectedButton": "({count}) ሰርዝ",
         "allClasses": "ሁሉም ክፍሎች",
+        "allGenders": "ሁሉም ጾታዎች",
         "table": {
             "photo": "ፎቶ",
             "regNumber": "የምዝገባ ቁ.",
@@ -284,7 +287,8 @@
         "generatedBy": "ሪፖርቱን ያዘጋጀው፦",
         "regNumber": "የምዝገባ ቁ.",
         "fullName": "ሙሉ ስም",
-        "gender": "ጾታ"
+        "gender": "ጾታ",
+        "phone": "ስልክ ቁጥር"
     },
      "settings": {
         "pageTitle": "ቅንብሮች",
@@ -468,6 +472,10 @@
         "export_students": {
             "title": "ተማሪዎችን ላክ",
             "description": "የተማሪ መረጃን ላክ"
+        },
+        "transfer_students": {
+            "title": "ተማሪዎችን አስተላልፍ",
+            "description": "ተማሪዎችን ከአንድ ክፍል ወደሌላው አስተላልፍ"
         }
     },
     "account": {
