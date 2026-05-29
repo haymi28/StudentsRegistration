@@ -17,7 +17,7 @@ interface LocaleContextType {
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
 
-const getNestedTranslation = (translations: Translations, key: string): string | undefined => {
+const getNestedTranslation = (translations: Translations, key: string): any => {
   return key.split('.').reduce((obj, k) => (obj && typeof obj[k] !== 'undefined') ? obj[k] : undefined, translations);
 }
 
@@ -43,7 +43,9 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   };
 
   const t: TFunction = useCallback((key: string, params?: Record<string, string | number>): string => {
-    let translation = getNestedTranslation(translations, key) || key;
+    const result = getNestedTranslation(translations, key);
+    let translation = typeof result === 'string' ? result : key;
+    
     if (params) {
       Object.keys(params).forEach((paramKey) => {
         translation = translation.replace(`{${paramKey}}`, String(params[paramKey]));

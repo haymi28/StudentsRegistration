@@ -11,14 +11,18 @@ async function main() {
 
   // --- All Permissions Definition ---
   const allPermissions = {
+    view_dashboard: true,
+    view_students: true,
+    manage_class_students: true,
+    manage_classes: true,
     manage_users: true,
     manage_roles: true,
-    manage_classes: true,
+    import_students_text: true,
+    import_students_photos: true,
+    export_students_text: true,
+    export_students_photos: true,
+    transfer_students: true,
     manage_all_students: true,
-    manage_class_students: true,
-    view_students: true,
-    import_students: true,
-    export_students: true,
   };
 
   // --- Create Super Admin Role ---

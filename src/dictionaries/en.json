@@ -327,7 +327,12 @@
             "updateSuccess": {
                 "title": "User Updated!",
                 "description": "User {username} has been successfully updated."
-            }
+            },
+            "tempPasswordTitle": "User Created Successfully",
+            "tempPasswordDescription": "Please share this temporary password with the user. They will be required to change it on their first login.",
+            "passwordCopied": "Password copied to clipboard.",
+            "passwordGenerated": "A secure temporary password has been generated.",
+            "tempPasswordNotice": "For security, this password will not be shown again."
         },
         "table": {
             "displayName": "Display Name",
@@ -521,6 +526,13 @@
         "loading": "Loading...",
         "na": "N/A",
         "studentNotFound": "Student Not Found",
-        "studentNotFoundDescription": "The student with the given ID could not be found."
+        "studentNotFoundDescription": "The student with the given ID could not be found.",
+        "copied": "Copied!",
+        "copy": "Copy Password",
+        "show": "Show Password",
+        "hide": "Hide Password",
+        "done": "Done",
+        "generate": "Generate Password",
+        "regenerate": "Regenerate"
     }
 }

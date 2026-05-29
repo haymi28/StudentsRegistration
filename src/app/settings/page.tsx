@@ -1,41 +1,15 @@
-
-'use client';
-
 import { MainLayout } from '@/components/common/main-layout';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useLocale } from '@/contexts/locale-provider';
-import { getServerSession } from '@/lib/auth';
+import { getTranslator } from '@/lib/i18n';
+import { requireAnyPermission } from '@/lib/auth';
 import { Home, Shield, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
-export default function SettingsPage() {
-  const { t } = useLocale();
-  const [session, setSession] = useState<any>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export default async function SettingsPage() {
+  const session = await requireAnyPermission(['manage_classes', 'manage_users', 'manage_roles']);
+  const t = await getTranslator();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const sessionData = await getServerSession();
-      if (!sessionData) {
-        redirect('/');
-        return;
-      }
-      setIsAuthenticated(true);
-      setSession(sessionData);
-
-      const permissions = sessionData.user.role.permissions as Record<string, boolean> || {};
-      const canViewSettings = permissions.manage_classes || permissions.manage_users || permissions.manage_roles;
-
-      if (!canViewSettings) {
-        redirect('/students');
-      }
-    };
-    checkAuth();
-  }, []);
-
-  const permissions = session?.user?.role?.permissions as Record<string, boolean> || {};
+  const permissions = session.user.role.permissions as Record<string, boolean> || {};
   
   const settingsCards = [
     { 
@@ -64,7 +38,7 @@ export default function SettingsPage() {
   const visibleCards = settingsCards.filter(card => permissions[card.permission]);
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout isAuthenticated={true}>
         <div className="container py-8">
             <div className="mb-8 text-center">
                 <h1 className="text-3xl font-bold font-headline">{t('settings.pageTitle')}</h1>

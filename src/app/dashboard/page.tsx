@@ -1,54 +1,21 @@
-
-'use client';
-
-import { getServerSession } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 import { getClasses } from '@/lib/data';
-import { useLocale } from '@/contexts/locale-provider';
+import { getTranslator } from '@/lib/i18n';
 import { MainLayout } from '@/components/common/main-layout';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Class, User } from '@prisma/client';
-import { redirect } from 'next/navigation';
 import { Users, School } from 'lucide-react';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { DashboardChart } from '@/components/dashboard-chart';
 
 type ClassWithDetails = Class & { manager: User | null; _count: { students: number } };
 
-export default function DashboardPage() {
-  const { t } = useLocale();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [classes, setClasses] = useState<ClassWithDetails[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function DashboardPage() {
+  await requirePermission('view_dashboard');
+  const t = await getTranslator();
+  
+  const classes = await getClasses() as ClassWithDetails[];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const session = await getServerSession();
-      if (!session) {
-        redirect('/');
-      } else {
-        setIsAuthenticated(true);
-        // The backend internally scopes getClasses() based on the server-side session.
-        // Super Admins will get all classes, Managers will get only their own.
-        const fetchedClasses = await getClasses() as ClassWithDetails[];
-        setClasses(fetchedClasses);
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return (
-        <MainLayout isAuthenticated={true}>
-            <div className="flex items-center justify-center h-screen">
-                {t('common.loading')}
-            </div>
-        </MainLayout>
-    )
-  }
-
-  // Dashboard stats are dynamically scoped based on the fetched classes
   const totalStudents = classes.reduce((acc, curr) => acc + curr._count.students, 0);
   const totalClasses = classes.length;
 
@@ -58,7 +25,7 @@ export default function DashboardPage() {
   }));
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated}>
+    <MainLayout isAuthenticated={true}>
       <div className="container py-8">
         <div className="space-y-8">
           <Card>
@@ -105,36 +72,10 @@ export default function DashboardPage() {
               <CardTitle>{t('dashboard.chartTitle')}</CardTitle>
               <CardDescription>{t('dashboard.chartDescription')}</CardDescription>
             </CardHeader>
-            <CardContent className="pl-2">
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={chartData}>
-                  <XAxis
-                    dataKey="name"
-                    stroke="#888888"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    stroke="#888888"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `${value}`}
-                  />
-                  <Tooltip
-                      cursor={{fill: 'hsl(var(--muted))'}}
-                      contentStyle={{
-                          backgroundColor: 'hsl(var(--background))',
-                          borderColor: 'hsl(var(--border))',
-                      }}
-                  />
-                  <Bar dataKey="students" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+            <CardContent className="h-[350px] w-full pl-2">
+              <DashboardChart data={chartData} />
             </CardContent>
           </Card>
-
         </div>
       </div>
     </MainLayout>

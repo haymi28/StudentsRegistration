@@ -52,23 +52,24 @@ export function AppSidebar() {
   };
 
   const permissions = userSession?.role?.permissions || {};
+  const isSuperAdmin = userSession?.role?.name === 'Super Admin';
 
   const mainLinks = [
-    { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutGrid, permission: 'view_students' },
+    { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutGrid, permission: 'view_dashboard' },
     { href: '/students', label: t('nav.students'), icon: Users, permission: 'view_students' },
     { href: '/register', label: t('nav.newStudent'), icon: UserPlus, permission: 'manage_class_students' },
   ];
 
   const adminLinks = [
-    { href: '/students/import', label: t('nav.importText'), icon: FileText, permission: 'import_students' },
-    { href: '/students/export', label: t('nav.exportText'), icon: FileText, permission: 'export_students' },
-    { href: '/students/import-photos', label: t('nav.importPhotos'), icon: ImageIcon, permission: 'import_students' },
-    { href: '/students/export-photos', label: t('nav.exportPhotos'), icon: ImageIcon, permission: 'export_students' },
+    { href: '/students/import', label: t('nav.importText'), icon: FileText, permission: 'import_students_text' },
+    { href: '/students/export', label: t('nav.exportText'), icon: FileText, permission: 'export_students_text' },
+    { href: '/students/import-photos', label: t('nav.importPhotos'), icon: ImageIcon, permission: 'import_students_photos' },
+    { href: '/students/export-photos', label: t('nav.exportPhotos'), icon: ImageIcon, permission: 'export_students_photos' },
   ];
   
-  const visibleMainLinks = mainLinks.filter(link => permissions[link.permission]);
-  const visibleAdminLinks = adminLinks.filter(link => permissions[link.permission]);
-  const canViewSettings = permissions.manage_classes || permissions.manage_users || permissions.manage_roles;
+  const visibleMainLinks = mainLinks.filter(link => isSuperAdmin || permissions[link.permission]);
+  const visibleAdminLinks = adminLinks.filter(link => isSuperAdmin || permissions[link.permission]);
+  const canViewSettings = isSuperAdmin || permissions.manage_classes || permissions.manage_users || permissions.manage_roles;
 
 
   return (
