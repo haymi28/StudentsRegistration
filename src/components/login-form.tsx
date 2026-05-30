@@ -51,7 +51,7 @@ export function LoginForm() {
         title: t('login.success'),
         description: t('login.successDescription').replace('{username}', result.user.displayName || ''),
       });
-      router.push('/dashboard');
+      router.push(result.landingPage || '/dashboard');
       router.refresh();
     } else {
         let description = t('login.failDescription');

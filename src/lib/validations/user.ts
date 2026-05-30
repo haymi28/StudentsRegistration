@@ -14,25 +14,12 @@ const baseUserSchema = (t: TFunction) => z.object({
 export const getCreateUserSchema = (t: TFunction = () => '') => 
     baseUserSchema(t).extend({
       password: z.string().min(6, { message: t('validation.min', { field: t('users.form.label.password'), length: 6}) }),
-      confirmPassword: z.string()
-    }).refine(data => data.password === data.confirmPassword, {
-      message: t('validation.passwordMismatch'),
-      path: ['confirmPassword'],
     });
 
 
 export const getUpdateUserSchema = (t: TFunction = () => '') =>
     baseUserSchema(t).extend({
         password: z.string().min(6, { message: t('validation.min', { field: t('users.form.label.password'), length: 6}) }).optional().or(z.literal('')),
-        confirmPassword: z.string().optional()
-    }).refine(data => {
-        if (data.password) {
-            return data.password === data.confirmPassword;
-        }
-        return true;
-    }, {
-      message: t('validation.passwordMismatch'),
-      path: ['confirmPassword'],
     });
     
 export const getUpdateProfileSchema = (t: TFunction = () => '') => z.object({

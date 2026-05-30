@@ -11,16 +11,20 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useLocale } from '@/contexts/locale-provider';
 import { getChangePasswordSchema } from '@/lib/validations/user';
-import { getUserByUsername, updateUser } from '@/lib/data';
-import bcrypt from 'bcryptjs';
+import { changeUserPassword } from '@/lib/data';
 import { PasswordInput } from './password-input';
+
 import { extractAppError } from '@/lib/errors';
+import { refreshSession } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
+
 
 type PasswordFormValues = z.infer<ReturnType<typeof getChangePasswordSchema>>;
 
 export function ChangePasswordForm() {
   const { toast } = useToast();
   const { t } = useLocale();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const formSchema = getChangePasswordSchema(t);
@@ -37,29 +41,14 @@ export function ChangePasswordForm() {
   async function onSubmit(values: PasswordFormValues) {
     setIsLoading(true);
     
-    const username = localStorage.getItem('username');
-
-    if (!username) {
-        toast({ variant: 'destructive', title: t('common.error'), description: t('common.userNotFound') });
-        setIsLoading(false);
-        return;
-    }
-    
     try {
-      const user = await getUserByUsername(username);
-
-      if (!user) {
-          throw new Error('User not found in storage');
-      }
+      await changeUserPassword({
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      });
       
-      const isPasswordCorrect = await bcrypt.compare(values.currentPassword, user.password);
-      if (!isPasswordCorrect) {
-          form.setError('currentPassword', { type: 'manual', message: t('validation.currentPasswordIncorrect') });
-          setIsLoading(false);
-          return;
-      }
-      
-      await updateUser(user.id, { password: values.newPassword });
+      // Refresh session to update requiresPasswordChange in JWT
+      const result = await refreshSession();
       
       toast({
         title: t('account.changePasswordSuccessTitle'),
@@ -67,7 +56,14 @@ export function ChangePasswordForm() {
       });
       form.reset();
 
+      // Redirect to the first accessible page
+      if (result?.landingPage) {
+        router.push(result.landingPage);
+        router.refresh();
+      }
+
     } catch (error) {
+
       let description = t('common.errorDescription');
       const appError = extractAppError(error);
       if (appError) {
@@ -80,6 +76,18 @@ export function ChangePasswordForm() {
         title: t('common.error'),
         description: description,
       });
+
+       const message = error instanceof Error ? error.message : t('common.errorDescription');
+       if (message === "Current password is incorrect") {
+          form.setError('currentPassword', { type: 'manual', message: t('validation.currentPasswordIncorrect') });
+       } else {
+          toast({
+            variant: 'destructive',
+            title: t('common.error'),
+            description: message,
+          });
+       }
+
     }
 
     setIsLoading(false);

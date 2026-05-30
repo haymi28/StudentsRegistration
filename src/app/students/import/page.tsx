@@ -1,25 +1,14 @@
-
 import { BulkImportForm } from '@/components/bulk-import-form';
 import { getTranslator } from '@/lib/i18n';
-import { getServerSession } from '@/lib/auth';
-import { redirect } from 'next/navigation';
+import { requirePermission } from '@/lib/auth';
 import { MainLayout } from '@/components/common/main-layout';
 
 export default async function ImportPage() {
-  const session = await getServerSession();
-  if (!session) {
-    redirect('/');
-  }
-
-  const permissions = session.user.role.permissions as Record<string, boolean>;
-  if (!permissions?.import_students) {
-    redirect('/students');
-  }
-
+  await requirePermission('import_students_text');
   const t = await getTranslator();
 
   return (
-    <MainLayout isAuthenticated={!!session}>
+    <MainLayout isAuthenticated={true}>
       <div className="container py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 text-center">

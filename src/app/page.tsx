@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { MainLayout } from "@/components/common/main-layout";
 import Image from "next/image";
 import { getTranslator } from "@/lib/i18n";
-import { getServerSession } from "@/lib/auth";
+import { getServerSession, getLandingPage } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 export default async function HomePage() {
@@ -12,7 +12,8 @@ export default async function HomePage() {
   const session = await getServerSession();
 
   if (session) {
-    redirect('/dashboard');
+    const landingPage = await getLandingPage(session.user);
+    redirect(landingPage);
   }
 
   return (

@@ -327,7 +327,12 @@
             "updateSuccess": {
                 "title": "ተጠቃሚ ዘምኗል!",
                 "description": "ተጠቃሚ {username} በተሳካ ሁኔታ ዘምኗል።"
-            }
+            },
+            "tempPasswordTitle": "ተጠቃሚው በተሳካ ሁኔታ ተፈጥሯል",
+            "tempPasswordDescription": "እባክዎ ይህንን ጊዜያዊ የይለፍ ቃል ለተጠቃሚው ያጋሩ። ተጠቃሚው በመጀመሪያው መግቢያ ላይ መቀየር ይኖርበታል።",
+            "passwordCopied": "የይለፍ ቃል ተገልብጧል።",
+            "passwordGenerated": "ጊዜያዊ የይለፍ ቃል ተፈጥሯል።",
+            "tempPasswordNotice": "ለደህንነት ሲባል ይህ የይለፍ ቃል እንደገና አይታይም።"
         },
         "table": {
             "displayName": "የሚታይ ስም",
@@ -519,6 +524,7 @@
         "loading": "በመጫን ላይ...",
         "na": "የለም",
         "studentNotFound": "ተማሪው አልተገኘም",
+
         "studentNotFoundDescription": "በተሰጠው መለያ ቁጥር ተማሪውን ማግኘት አልተቻለም።"
     },
     "errors": {
@@ -530,5 +536,13 @@
         "class_has_students": "ተማሪዎች የተመደቡበትን ክፍል መሰረዝ አይችሉም",
         "cannot_delete_superadmin": "የስፐር አድሚን መለያን መሰረዝ አይችሉም",
         "unknown_error": "አንድ ያልተጠበቀ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ"
+        "studentNotFoundDescription": "በተሰጠው መለያ ቁጥር ተማሪውን ማግኘት አልተቻለም።",
+        "copied": "ተገልብጧል!",
+        "copy": "የይለፍ ቃል ቅዳ",
+        "show": "የይለፍ ቃል አሳይ",
+        "hide": "የይለፍ ቃል ደብቅ",
+        "done": "ተጠናቋል",
+        "generate": "የይለፍ ቃል ፍጠር",
+        "regenerate": "እንደገና ፍጠር"
     }
 }
