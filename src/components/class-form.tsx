@@ -17,6 +17,7 @@ import { getCreateClassSchema } from '@/lib/validations/class';
 import { createClass, updateClass } from '@/lib/data';
 import { useState } from 'react';
 import { useLocale } from '@/contexts/locale-provider';
+import { extractAppError } from '@/lib/errors';
 
 type ClassFormValues = z.infer<ReturnType<typeof getCreateClassSchema>>;
 
@@ -85,10 +86,18 @@ export function ClassForm({ classToEdit, users }: ClassFormProps) {
       router.push('/classes');
       router.refresh();
     } catch (error) {
+      // Handle our custom AppError and use exact messages
+      let description = t('common.errorDescription');
+      const appError = extractAppError(error);
+      if (appError) {
+        // Use the exact message from the backend
+        description = appError.message;
+      }
+      
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'An unexpected error occurred.',
+        title: t('common.error'),
+        description: description,
       });
     } finally {
       setIsLoading(false);

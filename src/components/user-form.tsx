@@ -19,6 +19,7 @@ import { getCreateUserSchema, getUpdateUserSchema } from '@/lib/validations/user
 import { createUser, updateUser, getRoles } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
 import { PasswordInput } from './password-input';
+import { extractAppError } from '@/lib/errors';
 
 type UserFormValues = z.infer<ReturnType<typeof getCreateUserSchema>>;
 
@@ -107,10 +108,18 @@ export function UserForm({ userToEdit }: UserFormProps) {
       router.push('/users');
       router.refresh();
     } catch (error) {
+      // Handle our custom AppError and use exact messages
+      let description = t('common.errorDescription');
+      const appError = extractAppError(error);
+      if (appError) {
+        // Use the exact message from the backend
+        description = appError.message;
+      }
+      
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'An unexpected error occurred.',
+        title: t('common.error'),
+        description: description,
       });
     } finally {
       setIsLoading(false);

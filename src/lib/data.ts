@@ -10,6 +10,7 @@ import bcrypt from 'bcryptjs';
 import { updateUserSchema as serverUpdateUserSchema, createUserSchema as serverCreateUserSchema } from './validations/user-server';
 import { getCreateClassSchema } from './validations/class';
 import { getServerSession } from './auth';
+import { createAppError } from './errors';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
@@ -96,13 +97,13 @@ export async function createStudent(data: StudentFormValues) {
     
     const validatedData = getStudentRegistrationSchema({}).safeParse(data);
     if (!validatedData.success) {
-        throw new Error('Invalid student data');
+        throw createAppError('invalid_data', 'Invalid student data', validatedData.error);
     }
 
     // Security check: ensure non-admins only register students to their own class
     if (!isSuperAdmin) {
         if (!assignedClassId || validatedData.data.classId !== assignedClassId) {
-            throw new Error("Unauthorized: You can only register students to your assigned class.");
+            throw createAppError('unauthorized', 'You are not authorized to perform this action', { action: 'register_student_to_other_class' });
         }
     }
 
@@ -111,7 +112,7 @@ export async function createStudent(data: StudentFormValues) {
     });
 
     if (existingStudent) {
-        throw new Error('A student with this registration number already exists.');
+        throw createAppError('duplicate_registration_number', 'This registration number is already in use', { registrationNumber: validatedData.data.registrationNumber });
     }
 
     await prisma.student.create({ data: validatedData.data });
@@ -121,7 +122,7 @@ export async function createStudent(data: StudentFormValues) {
 export async function importStudents(students: Partial<Student & { className: string }>[]) {
     const { isSuperAdmin, permissions, assignedClassId } = await getAuthorizedContext();
     
-    if (!permissions.import_students) throw new Error("Unauthorized");
+    if (!permissions.import_students) throw createAppError('unauthorized', 'You are not authorized to perform this action', { action: 'import_students' });
 
     const validationSchema = getStudentRegistrationSchema();
     const classes = await prisma.class.findMany();
@@ -139,7 +140,7 @@ export async function importStudents(students: Partial<Student & { className: st
 
         // Security override: force correct class for non-superadmins
         if (!isSuperAdmin) {
-            if (!assignedClassId) throw new Error("Unauthorized: No assigned class found for import.");
+            if (!assignedClassId) throw createAppError('unauthorized', 'You are not authorized to perform this action', { action: 'import_no_assigned_class' });
             studentWithClassId.classId = assignedClassId;
         }
 
@@ -147,7 +148,7 @@ export async function importStudents(students: Partial<Student & { className: st
         if (result.success) {
             validatedStudents.push(result.data as StudentFormValues);
         } else {
-             throw new Error("Validation failed for some students.");
+             throw createAppError('invalid_data', 'Validation failed for some students', result.error);
         }
     }
 
@@ -168,20 +169,20 @@ export async function updateStudent(id: string, data: Partial<StudentFormValues>
 
     // Verify ownership before updating
     const student = await prisma.student.findUnique({ where: { id }, select: { id: true, classId: true } });
-    if (!student) throw new Error("Student not found");
+    if (!student) throw createAppError('student_not_found', 'The student could not be found', { id });
     
     if (!isSuperAdmin && student.classId !== assignedClassId) {
-        throw new Error("Unauthorized");
+        throw createAppError('unauthorized', 'You are not authorized to perform this action', { action: 'update_student_other_class' });
     }
 
     const validatedData = getStudentRegistrationSchema().partial().safeParse(data);
     if (!validatedData.success) {
-        throw new Error('Invalid student data');
+        throw createAppError('invalid_data', 'Invalid student data', validatedData.error);
     }
 
     // Prevent non-admins from moving students to other classes via API injection
     if (!isSuperAdmin && validatedData.data.classId && validatedData.data.classId !== student.classId) {
-        throw new Error("Unauthorized: You cannot change a student's class.");
+        throw createAppError('unauthorized', 'You are not authorized to change student class', { action: 'change_student_class' });
     }
 
     await prisma.student.update({ where: { id }, data: validatedData.data });
@@ -193,7 +194,7 @@ export async function deleteStudent(id: string) {
     const { isSuperAdmin } = await getAuthorizedContext();
     
     if (!isSuperAdmin) {
-        throw new Error("Unauthorized: Only super admins can delete students.");
+        throw createAppError('unauthorized', 'You are not authorized to delete students', { action: 'delete_student' });
     }
 
     await prisma.student.delete({ where: { id }});
@@ -204,7 +205,7 @@ export async function deleteStudents(ids: string[]) {
     const { isSuperAdmin } = await getAuthorizedContext();
     
     if (!isSuperAdmin) {
-        throw new Error("Unauthorized: Only super admins can perform bulk deletion.");
+        throw createAppError('unauthorized', 'You are not authorized to perform bulk deletion', { action: 'delete_students_bulk' });
     }
 
     await prisma.student.deleteMany({ where: { id: { in: ids } } });
@@ -258,7 +259,7 @@ export async function updateStudentPhotos(photoData: { registrationNumber: strin
 export async function getUsers(excludeSuperAdmin = false) {
     const { permissions } = await getAuthorizedContext();
     if (!permissions.manage_users && !permissions.manage_classes) {
-      throw new Error("Unauthorized");
+        throw createAppError('unauthorized', 'You are not authorized to view users', { action: 'get_users' });
     }
 
     const users = await prisma.user.findMany({
@@ -276,7 +277,7 @@ export async function getUsers(excludeSuperAdmin = false) {
 export async function getUserById(id: string) {
     const { user: currentUser, permissions } = await getAuthorizedContext();
     if (currentUser.id !== id && !permissions.manage_users) {
-        throw new Error("Unauthorized");
+        throw createAppError('unauthorized', 'You are not authorized to view this user', { action: 'get_user' });
     }
     return await prisma.user.findUnique({ 
         where: { id },
@@ -292,7 +293,7 @@ export async function getUserByUsername(username: string) {
     });
     
     if (targetUser && currentUser.id !== targetUser.id && !permissions.manage_users) {
-        throw new Error("Unauthorized");
+        throw createAppError('unauthorized', 'You are not authorized to view this user', { action: 'get_user_by_username' });
     }
     return targetUser;
 }
@@ -302,12 +303,12 @@ export async function updateUser(id: string, data: Partial<UserUpdateData>) {
 
     // Users can update their own profile; admins can update anyone
     if (currentUser.id !== id && !permissions.manage_users) {
-        throw new Error("Unauthorized");
+        throw createAppError('unauthorized', 'You are not authorized to update this user', { action: 'update_user' });
     }
 
     const validatedData = serverUpdateUserSchema.safeParse(data);
     if (!validatedData.success) {
-        throw new Error('Invalid user data');
+        throw createAppError('invalid_data', 'Invalid user data', validatedData.error);
     }
     
     const { password, ...rest } = validatedData.data;
@@ -317,7 +318,7 @@ export async function updateUser(id: string, data: Partial<UserUpdateData>) {
         const existingUser = await prisma.user.findFirst({
             where: { username: rest.username, id: { not: id } }
         });
-        if (existingUser) throw new Error("Username is already taken.");
+        if (existingUser) throw createAppError('duplicate_username', 'This username is already taken', { username: rest.username });
     }
 
     if (password) {
@@ -340,15 +341,15 @@ export async function updateUser(id: string, data: Partial<UserUpdateData>) {
 
 export async function createUser(data: z.infer<typeof serverCreateUserSchema>) {
     const { permissions } = await getAuthorizedContext();
-    if (!permissions.manage_users) throw new Error("Unauthorized");
+    if (!permissions.manage_users) throw createAppError('unauthorized', 'You are not authorized to create users', { action: 'create_user' });
 
     const validatedData = serverCreateUserSchema.safeParse(data);
-    if (!validatedData.success) throw new Error('Invalid user data');
+    if (!validatedData.success) throw createAppError('invalid_data', 'Invalid user data', validatedData.error);
 
     const existingUser = await prisma.user.findUnique({
         where: { username: validatedData.data.username },
     });
-    if (existingUser) throw new Error('User with this username already exists.');
+    if (existingUser) throw createAppError('duplicate_username', 'This username is already taken', { username: validatedData.data.username });
 
     const { password, ...userData } = validatedData.data;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -362,10 +363,10 @@ export async function createUser(data: z.infer<typeof serverCreateUserSchema>) {
 
 export async function deleteUser(id: string) {
     const { permissions } = await getAuthorizedContext();
-    if (!permissions.manage_users) throw new Error("Unauthorized");
+    if (!permissions.manage_users) throw createAppError('unauthorized', 'You are not authorized to delete users', { action: 'delete_user' });
 
     const userToDelete = await prisma.user.findUnique({ where: { id } });
-    if (userToDelete?.username === 'superadmin') throw new Error("Cannot delete superadmin.");
+    if (userToDelete?.username === 'superadmin') throw createAppError('cannot_delete_superadmin', 'You cannot delete the super admin account', { action: 'delete_superadmin' });
     
     await prisma.user.delete({ where: { id }});
     revalidatePath('/users');
@@ -396,73 +397,73 @@ export async function getClasses() {
 }
 
 export async function getClassById(id: string) {
-    const { isSuperAdmin, assignedClassId } = await getAuthorizedContext();
+  const { isSuperAdmin, assignedClassId } = await getAuthorizedContext();
 
-    const classData = await prisma.class.findUnique({
-        where: { id },
-        include: { manager: true }
-    });
+  const classData = await prisma.class.findUnique({
+    where: { id },
+    include: { manager: true }
+  });
 
-    if (!classData) return null;
-    if (!isSuperAdmin && classData.id !== assignedClassId) {
-        throw new Error("Access Denied");
-    }
+  if (!classData) return null;
+  if (!isSuperAdmin && classData.id !== assignedClassId) {
+    throw createAppError('unauthorized', 'Access denied', { action: 'get_class', classId: id });
+  }
 
-    return classData;
+  return classData;
 }
 
 export async function createClass(data: ClassData) {
-    const { permissions } = await getAuthorizedContext();
-    if (!permissions.manage_classes) throw new Error("Unauthorized");
+  const { permissions } = await getAuthorizedContext();
+  if (!permissions.manage_classes) throw createAppError('unauthorized', 'You are not authorized to create classes', { action: 'create_class' });
 
-    const validationSchema = getCreateClassSchema();
-    const validatedData = validationSchema.safeParse(data);
-    if (!validatedData.success) throw new Error('Invalid data');
+  const validationSchema = getCreateClassSchema();
+  const validatedData = validationSchema.safeParse(data);
+  if (!validatedData.success) throw createAppError('invalid_data', 'Invalid class data', validatedData.error);
 
-    await prisma.class.create({ data: validatedData.data });
-    revalidatePath('/classes');
+  await prisma.class.create({ data: validatedData.data });
+  revalidatePath('/classes');
 }
 
 export async function updateClass(id: string, data: ClassData) {
-    const { permissions } = await getAuthorizedContext();
-    if (!permissions.manage_classes) throw new Error("Unauthorized");
+  const { permissions } = await getAuthorizedContext();
+  if (!permissions.manage_classes) throw createAppError('unauthorized', 'You are not authorized to update classes', { action: 'update_class' });
 
-    const validationSchema = getCreateClassSchema();
-    const validatedData = validationSchema.safeParse(data);
-    if (!validatedData.success) throw new Error('Invalid data');
+  const validationSchema = getCreateClassSchema();
+  const validatedData = validationSchema.safeParse(data);
+  if (!validatedData.success) throw createAppError('invalid_data', 'Invalid class data', validatedData.error);
 
-    await prisma.class.update({ where: { id }, data: validatedData.data });
-    revalidatePath('/classes');
+  await prisma.class.update({ where: { id }, data: validatedData.data });
+  revalidatePath('/classes');
 }
 
 export async function deleteClass(id: string) {
-    const { permissions } = await getAuthorizedContext();
-    if (!permissions.manage_classes) throw new Error("Unauthorized");
+  const { permissions } = await getAuthorizedContext();
+  if (!permissions.manage_classes) throw createAppError('unauthorized', 'You are not authorized to delete classes', { action: 'delete_class' });
 
-    const studentCount = await prisma.student.count({ where: { classId: id } });
-    if (studentCount > 0) throw new Error("Cannot delete a class with students.");
-    
-    await prisma.class.delete({ where: { id }});
-    revalidatePath('/classes');
+  const studentCount = await prisma.student.count({ where: { classId: id } });
+  if (studentCount > 0) throw createAppError('class_has_students', 'You cannot delete a class that has students assigned to it', { classId: id });
+  
+  await prisma.class.delete({ where: { id }});
+  revalidatePath('/classes');
 }
 
 export async function transferStudentsToClass(studentIds: string[], targetClassId: string) {
-    const { isSuperAdmin, permissions } = await getAuthorizedContext();
-    
-    if (!isSuperAdmin && !permissions.transfer_students) throw new Error("Unauthorized: Only super admins or users with transfer permission can transfer students.");
+  const { isSuperAdmin, permissions } = await getAuthorizedContext();
+  
+  if (!isSuperAdmin && !permissions.transfer_students) throw createAppError('unauthorized', 'You are not authorized to transfer students', { action: 'transfer_students' });
 
-    await prisma.student.updateMany({
-        where: { id: { in: studentIds } },
-        data: { classId: targetClassId },
-    });
-    revalidatePath('/students');
+  await prisma.student.updateMany({
+    where: { id: { in: studentIds } },
+    data: { classId: targetClassId },
+  });
+  revalidatePath('/students');
 }
 
 // Role Functions
 export async function getRoles() {
     const { permissions } = await getAuthorizedContext();
     if (!permissions.manage_roles && !permissions.manage_users) {
-      throw new Error("Unauthorized");
+        throw createAppError('unauthorized', 'You are not authorized to view roles', { action: 'get_roles' });
     }
     return await prisma.role.findMany({
         include: { _count: { select: { users: true } } },
@@ -473,28 +474,28 @@ export async function getRoles() {
 export async function getRoleById(id: string) {
     const { permissions } = await getAuthorizedContext();
     if (!permissions.manage_roles && !permissions.manage_users) {
-      throw new Error("Unauthorized");
+        throw createAppError('unauthorized', 'You are not authorized to view this role', { action: 'get_role' });
     }
     return await prisma.role.findUnique({ where: { id } });
 }
 
 export async function createRole(data: RoleData) {
     const { permissions } = await getAuthorizedContext();
-    if (!permissions.manage_roles) throw new Error("Unauthorized");
+    if (!permissions.manage_roles) throw createAppError('unauthorized', 'You are not authorized to create roles', { action: 'create_role' });
     await prisma.role.create({ data });
     revalidatePath('/roles');
 }
 
 export async function updateRole(id: string, data: RoleData) {
     const { permissions } = await getAuthorizedContext();
-    if (!permissions.manage_roles) throw new Error("Unauthorized");
+    if (!permissions.manage_roles) throw createAppError('unauthorized', 'You are not authorized to update roles', { action: 'update_role' });
     await prisma.role.update({ where: { id }, data });
     revalidatePath('/roles');
 }
 
 export async function deleteRole(id: string) {
     const { permissions } = await getAuthorizedContext();
-    if (!permissions.manage_roles) throw new Error("Unauthorized");
+    if (!permissions.manage_roles) throw createAppError('unauthorized', 'You are not authorized to delete roles', { action: 'delete_role' });
     await prisma.role.delete({ where: { id } });
     revalidatePath('/roles');
 }

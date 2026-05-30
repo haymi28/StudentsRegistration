@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -27,7 +28,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal, Loader2 } from 'lucide-react';
+import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StudentDetailsDialog } from './student-details-dialog';
 import { TransferStudentsDialog } from './transfer-students-dialog';
@@ -36,6 +37,7 @@ import { deleteStudent, getClasses, deleteStudents } from '@/lib/data';
 import { Student, Class } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { extractAppError } from '@/lib/errors';
 
 type StudentWithClass = Student & { class: Class | null };
 
@@ -75,12 +77,15 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [allClasses, setAllClasses] = useState<Class[]>([]);
+  const [allClasses, setAllClasses] = useState<Class[]>(([]));
   const [selectedClass, setSelectedClass] = useState('all');
   const [selectedGender, setSelectedGender] = useState('all');
   const [selectedEducationLevel, setSelectedEducationLevel] = useState('');
   const [birthYear, setBirthYear] = useState('');
   const [joiningYear, setJoiningYear] = useState('');
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const router = useRouter();
   const { t } = useLocale();
   const { toast } = useToast();
@@ -88,6 +93,8 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   useEffect(() => {
     setStudents(initialStudents);
     setSelectedRowKeys(new Set());
+    // Reset to first page when students change
+    setCurrentPage(1);
   }, [initialStudents]);
 
   const permissions = session.user.role.permissions as Record<string, boolean> || {};
@@ -145,7 +152,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedRowKeys(new Set(filteredStudents.map(s => s.id)));
+      setSelectedRowKeys(new Set(currentPageStudents.map(s => s.id)));
     } else {
       setSelectedRowKeys(new Set());
     }
@@ -174,10 +181,20 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
       setSelectedRowKeys(new Set());
       router.refresh();
     } catch (error) {
+      // Handle our custom AppError and use translations
+      let description = t('common.errorDescription');
+      const appError = extractAppError(error);
+      if (appError) {
+        // Check if we have a translation for this error code
+        const errorCode = appError.code;
+        // @ts-ignore
+        description = t(`errors.${errorCode}`) || t('errors.unknown_error');
+      }
+      
       toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: error instanceof Error ? error.message : t('common.errorDescription'),
+        description: description,
       });
     } finally {
       setIsDeleting(false);
@@ -227,6 +244,82 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
     return studentsToDisplay;
   }, [students, searchQuery, selectedClass, selectedGender, selectedEducationLevel, birthYear, joiningYear, canManageAll]);
   
+  // Reset current page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredStudents.length]);
+
+  // Pagination calculations
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredStudents.length / itemsPerPage);
+  }, [filteredStudents.length, itemsPerPage]);
+
+  const currentPageStudents = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredStudents.slice(startIndex, endIndex);
+  }, [filteredStudents, currentPage, itemsPerPage]);
+
+  const startItem = filteredStudents.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+  const endItem = Math.min(currentPage * itemsPerPage, filteredStudents.length);
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handleItemsPerPageChange = (value: string) => {
+    setItemsPerPage(parseInt(value));
+    setCurrentPage(1);
+  };
+
+  // Generate page numbers for display
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisible = 5;
+    
+    if (totalPages <= maxVisible) {
+      // Show all pages if there are few
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // Show first page, last page, and pages around current page
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) pageNumbers.push(i);
+        pageNumbers.push(-1); // Ellipsis
+        pageNumbers.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pageNumbers.push(1);
+        pageNumbers.push(-1); // Ellipsis
+        for (let i = totalPages - 3; i <= totalPages; i++) pageNumbers.push(i);
+      } else {
+        pageNumbers.push(1);
+        pageNumbers.push(-1); // Ellipsis
+        pageNumbers.push(currentPage - 1);
+        pageNumbers.push(currentPage);
+        pageNumbers.push(currentPage + 1);
+        pageNumbers.push(-1); // Ellipsis
+        pageNumbers.push(totalPages);
+      }
+    }
+    
+    return pageNumbers;
+  };
+
   const canTransfer = isSuperAdmin || permissions.transfer_students;
   const canDelete = isSuperAdmin;
 
@@ -360,10 +453,10 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                   <TableRow>
                     <TableHead className="w-[50px]">
                         <Checkbox
-                            checked={selectedRowKeys.size > 0 && filteredStudents.length > 0 && selectedRowKeys.size === filteredStudents.length}
+                            checked={selectedRowKeys.size > 0 && currentPageStudents.length > 0 && currentPageStudents.every(s => selectedRowKeys.has(s.id))}
                             onCheckedChange={(checked) => handleSelectAll(!!checked)}
                             aria-label="Select all students"
-                            disabled={filteredStudents.length === 0}
+                            disabled={currentPageStudents.length === 0}
                         />
                     </TableHead>
                     <TableHead className="w-[80px]">{translations.table.photo}</TableHead>
@@ -375,8 +468,8 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredStudents.length > 0 ? (
-                    filteredStudents.map((student) => (
+                  {currentPageStudents.length > 0 ? (
+                    currentPageStudents.map((student) => (
                       <TableRow key={student.id}>
                         <TableCell>
                           <Checkbox
@@ -415,8 +508,8 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
 
             {/* Mobile Card View */}
             <div className="md:hidden space-y-4 w-full">
-              {filteredStudents.length > 0 ? (
-                filteredStudents.map((student) => (
+              {currentPageStudents.length > 0 ? (
+                currentPageStudents.map((student) => (
                   <Card key={student.id}>
                       <div className="flex items-start p-4 gap-4">
                           <div className="flex-shrink-0 pt-1">
@@ -450,6 +543,75 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                 </div>
               )}
             </div>
+            
+            {/* Pagination Controls */}
+            {filteredStudents.length > 0 && (
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t mt-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {filteredStudents.length > 0 
+                      ? `Showing ${startItem}-${endItem} of ${filteredStudents.length} students` 
+                      : 'No students'}
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Show</span>
+                  <Select 
+                    value={String(itemsPerPage)} 
+                    onValueChange={handleItemsPerPageChange}
+                  >
+                    <SelectTrigger className="w-[80px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="20">20</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                      <SelectItem value="100">100</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <span className="text-sm text-muted-foreground">per page</span>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={goToPreviousPage}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  {getPageNumbers().map((pageNum, index) => (
+                    <div key={index}>
+                      {pageNum === -1 ? (
+                        <span className="px-2 text-muted-foreground">...</span>
+                      ) : (
+                        <Button
+                          variant={currentPage === pageNum ? "default" : "ghost"}
+                          size="sm"
+                          onClick={() => goToPage(pageNum)}
+                          className="min-w-[32px]"
+                        >
+                          {pageNum}
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={goToNextPage}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
       </CardContent>
     </Card>
   );
@@ -481,10 +643,18 @@ function RowActions({ student, session, translations, t }: { student: Student, s
             setStudentToDelete(null);
             router.refresh();
         } catch (error) {
+            // Handle our custom AppError and use exact messages
+            let description = t('common.errorDescription');
+            const appError = extractAppError(error);
+            if (appError) {
+                // Use the exact message from the backend
+                description = appError.message;
+            }
+            
             toast({
                 variant: 'destructive',
                 title: t('common.error'),
-                description: t('common.errorDescription'),
+                description: description,
             });
         } finally {
             setIsDeleting(false);
@@ -558,4 +728,3 @@ function RowActions({ student, session, translations, t }: { student: Student, s
 
     
 
-    

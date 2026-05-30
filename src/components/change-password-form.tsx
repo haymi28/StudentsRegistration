@@ -14,6 +14,7 @@ import { getChangePasswordSchema } from '@/lib/validations/user';
 import { getUserByUsername, updateUser } from '@/lib/data';
 import bcrypt from 'bcryptjs';
 import { PasswordInput } from './password-input';
+import { extractAppError } from '@/lib/errors';
 
 type PasswordFormValues = z.infer<ReturnType<typeof getChangePasswordSchema>>;
 
@@ -67,10 +68,17 @@ export function ChangePasswordForm() {
       form.reset();
 
     } catch (error) {
+      let description = t('common.errorDescription');
+      const appError = extractAppError(error);
+      if (appError) {
+        description = appError.message;
+      } else if (error instanceof Error) {
+        description = error.message;
+      }
        toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: error instanceof Error ? error.message : t('common.errorDescription'),
+        description: description,
       });
     }
 

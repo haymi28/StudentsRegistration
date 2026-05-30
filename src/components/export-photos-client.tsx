@@ -76,10 +76,17 @@ export function ExportPhotosClient({ students }: ExportPhotosClientProps) {
       });
 
     } catch (error) {
+      let description = t('common.errorDescription');
+      const appError = extractAppError(error);
+      if (appError) {
+        description = appError.message;
+      } else if (error instanceof Error) {
+        description = error.message;
+      }
         toast({
             variant: 'destructive',
             title: t('common.error'),
-            description: error instanceof Error ? error.message : t('common.errorDescription'),
+            description: description,
         });
     } finally {
         setIsLoading(false);

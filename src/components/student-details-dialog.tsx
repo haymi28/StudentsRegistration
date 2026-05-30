@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,9 +12,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import { Student, Class } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
 import { format } from 'date-fns';
+import { CreditCard } from 'lucide-react';
+import { StudentIDCardDialog } from './student-id-card-dialog';
 
 interface StudentDetailsDialogProps {
   student: (Student & { class: Class | null }) | null;
@@ -23,6 +27,7 @@ interface StudentDetailsDialogProps {
 
 export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDetailsDialogProps) {
   const { t } = useLocale();
+  const [isIdCardOpen, setIsIdCardOpen] = useState(false);
 
   if (!student) {
     return null;
@@ -36,14 +41,25 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
   );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{t('studentDetails.title')}</DialogTitle>
-          <DialogDescription>
-            {t('studentDetails.description', { name: student.fullName })}
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader className="flex flex-row items-center justify-between">
+            <div>
+              <DialogTitle>{t('studentDetails.title')}</DialogTitle>
+              <DialogDescription>
+                {t('studentDetails.description', { name: student.fullName })}
+              </DialogDescription>
+            </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsIdCardOpen(true)}
+            >
+              <CreditCard className="h-4 w-4 mr-2" />
+              ID Card
+            </Button>
+          </DialogHeader>
         <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto pr-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24">
@@ -93,5 +109,11 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
         </div>
       </DialogContent>
     </Dialog>
+    <StudentIDCardDialog
+      student={student}
+      open={isIdCardOpen}
+      onOpenChange={setIsIdCardOpen}
+    />
+    </>
   );
 }

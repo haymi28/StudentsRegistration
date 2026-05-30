@@ -20,6 +20,7 @@ import { getClasses, transferStudentsToClass } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { generateTransferReport } from '@/lib/reporting';
 import { useRouter } from 'next/navigation';
+import { extractAppError } from '@/lib/errors';
 
 interface TransferStudentsDialogProps {
   open: boolean;
@@ -108,11 +109,19 @@ export function TransferStudentsDialog({
         onTransferSuccess();
         router.refresh();
     } catch(error) {
-        toast({
-            variant: 'destructive',
-            title: t('common.error'),
-            description: error instanceof Error ? error.message : t('common.errorDescription'),
-        });
+      // Handle our custom AppError and use exact messages
+      let description = t('common.errorDescription');
+      const appError = extractAppError(error);
+      if (appError) {
+        // Use the exact message from the backend
+        description = appError.message;
+      }
+      
+      toast({
+        variant: 'destructive',
+        title: t('common.error'),
+        description: description,
+      });
     }
 
 

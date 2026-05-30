@@ -520,5 +520,15 @@
         "na": "የለም",
         "studentNotFound": "ተማሪው አልተገኘም",
         "studentNotFoundDescription": "በተሰጠው መለያ ቁጥር ተማሪውን ማግኘት አልተቻለም።"
+    },
+    "errors": {
+        "duplicate_registration_number": "ይህ የምዝገባ ቁጥር አስቀድሞ ጥቅም ላይ ውሏል",
+        "duplicate_username": "ይህ የተጠቃሚ ስም አስቀድሞ ተወስኗል",
+        "unauthorized": "ይህንን ድርጊት ለማድረግ ፈቃድ የለዎትም",
+        "invalid_data": "የተሰጠው መረጃ ልክ አይደለም። ግብአቶችዎን ያረጋግጡ",
+        "student_not_found": "ተማሪውን ማግኘት አልተቻለም",
+        "class_has_students": "ተማሪዎች የተመደቡበትን ክፍል መሰረዝ አይችሉም",
+        "cannot_delete_superadmin": "የስፐር አድሚን መለያን መሰረዝ አይችሉም",
+        "unknown_error": "አንድ ያልተጠበቀ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ"
     }
 }

@@ -522,5 +522,15 @@
         "na": "N/A",
         "studentNotFound": "Student Not Found",
         "studentNotFoundDescription": "The student with the given ID could not be found."
+    },
+    "errors": {
+        "duplicate_registration_number": "This registration number is already in use",
+        "duplicate_username": "This username is already taken",
+        "unauthorized": "You are not authorized to perform this action",
+        "invalid_data": "The provided data is invalid. Please check your inputs",
+        "student_not_found": "The student could not be found",
+        "class_has_students": "You cannot delete a class that has students assigned to it",
+        "cannot_delete_superadmin": "You cannot delete the super admin account",
+        "unknown_error": "An unexpected error occurred. Please try again"
     }
 }

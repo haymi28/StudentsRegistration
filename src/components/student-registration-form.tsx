@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import { Student, Class } from '@prisma/client';
 import { createStudent, updateStudent } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
+import { extractAppError } from '@/lib/errors';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -199,10 +200,20 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
       router.push('/students');
       router.refresh();
     } catch (error) {
+      // Handle our custom AppError and use exact messages
+      console.log('Caught error:', error);
+      let description = t('common.errorDescription');
+      const appError = extractAppError(error);
+      console.log('Extracted appError:', appError);
+      if (appError) {
+        // Use the exact message from the backend
+        description = appError.message;
+      }
+      
        toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: error instanceof Error ? error.message : t('common.errorDescription'),
+        description: description,
       });
     } finally {
       setIsLoading(false);

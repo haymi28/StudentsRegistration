@@ -18,6 +18,7 @@ import { Student, Class } from '@prisma/client';
 import { readExcelFile, downloadTemplate, studentHeaders } from '@/lib/excel-utils';
 import { getStudentRegistrationSchema, StudentValidationTranslations } from '@/lib/validations/student';
 import { getStudents, importStudents, getClasses } from '@/lib/data';
+import { extractAppError } from '@/lib/errors';
 
 type ValidationResult = {
   validStudents: Partial<Student>[];
@@ -120,11 +121,18 @@ export function BulkImportForm() {
         setValidationResult(null);
         form.reset();
     } catch (error) {
-        toast({
-            variant: 'destructive',
-            title: t('common.error'),
-            description: error instanceof Error ? error.message : t('common.errorDescription'),
-        });
+      let description = t('common.errorDescription');
+      const appError = extractAppError(error);
+      if (appError) {
+        description = appError.message;
+      } else if (error instanceof Error) {
+        description = error.message;
+      }
+      toast({
+        variant: 'destructive',
+        title: t('common.error'),
+        description: description,
+      });
     } finally {
         setIsLoading(false);
     }

@@ -28,6 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/locale-provider';
 import { Role } from '@prisma/client';
 import { deleteRole } from '@/lib/data';
+import { extractAppError } from '@/lib/errors';
 
 type RoleWithDetails = Role & {
     _count: { users: number };
@@ -56,10 +57,18 @@ export function RoleList({ roles }: RoleListProps) {
       setRoleToDelete(null);
       router.refresh();
     } catch (error) {
+      // Handle our custom AppError and use exact messages
+      let description = t('common.errorDescription');
+      const appError = extractAppError(error);
+      if (appError) {
+        // Use the exact message from the backend
+        description = appError.message;
+      }
+      
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to delete role.',
+        title: t('common.error'),
+        description: description,
       });
     } finally {
       setIsDeleting(false);
