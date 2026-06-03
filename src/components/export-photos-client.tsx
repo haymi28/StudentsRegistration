@@ -12,6 +12,7 @@ import { Checkbox } from './ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { getUserFacingErrorMessage } from '@/lib/errors';
 
 interface ExportPhotosClientProps {
   students: Student[];
@@ -76,17 +77,10 @@ export function ExportPhotosClient({ students }: ExportPhotosClientProps) {
       });
 
     } catch (error) {
-      let description = t('common.errorDescription');
-      const appError = extractAppError(error);
-      if (appError) {
-        description = appError.message;
-      } else if (error instanceof Error) {
-        description = error.message;
-      }
         toast({
             variant: 'destructive',
             title: t('common.error'),
-            description: description,
+            description: getUserFacingErrorMessage(error, t),
         });
     } finally {
         setIsLoading(false);

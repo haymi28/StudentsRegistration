@@ -19,7 +19,7 @@ import { getRoleSchema } from '@/lib/validations/role';
 import { createRole, updateRole } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
 import { useState, useMemo, useEffect } from 'react';
-import { extractAppError } from '@/lib/errors';
+import { getUserFacingErrorMessage } from '@/lib/errors';
 
 type RoleFormValues = z.infer<ReturnType<typeof getRoleSchema>>;
 
@@ -159,18 +159,10 @@ export function RoleForm({ roleToEdit }: RoleFormProps) {
       router.push('/roles');
       router.refresh();
     } catch (error) {
-      // Handle our custom AppError and use exact messages
-      let description = t('common.errorDescription');
-      const appError = extractAppError(error);
-      if (appError) {
-        // Use the exact message from the backend
-        description = appError.message;
-      }
-      
       toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: description,
+        description: getUserFacingErrorMessage(error, t),
       });
     } finally {
       setIsLoading(false);

@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/locale-provider';
 import Image from 'next/image';
 import { updateStudentPhotos } from '@/lib/data';
+import { getUserFacingErrorMessage } from '@/lib/errors';
 
 interface PreviewFile {
   file: File;
@@ -104,17 +105,10 @@ export function ImportPhotosForm() {
       setPreviewFiles([]);
       form.reset();
     } catch (error) {
-      let description = t('common.errorDescription');
-      const appError = extractAppError(error);
-      if (appError) {
-        description = appError.message;
-      } else if (error instanceof Error) {
-        description = error.message;
-      }
       toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: description,
+        description: getUserFacingErrorMessage(error, t),
       });
     } finally {
       setIsLoading(false);

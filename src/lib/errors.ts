@@ -12,113 +12,181 @@ export type AppErrorCode =
 export interface AppError {
   code: AppErrorCode;
   message: string;
-  details?: any;
+  details?: unknown;
 }
+
+const APP_ERROR_CODE_PATTERN =
+  /"code"\s*:\s*"(duplicate_registration_number|duplicate_username|unauthorized|invalid_data|student_not_found|class_has_students|cannot_delete_superadmin|unknown_error)"/;
 
 export function createAppError(
   code: AppErrorCode, 
   message: string, 
-  details?: any
+  details?: unknown
 ): AppError {
-  // Log technical details to server console
   console.error(`[${code}]`, { message, details });
-  
   return { code, message, details };
 }
 
-export function isAppError(error: any): error is AppError {
+/**
+ * Throws an Error that survives Next.js server-action serialization.
+ * Technical details stay in server logs only; the client receives code + message.
+ */
+export function throwAppError(
+  code: AppErrorCode,
+  message: string,
+  details?: unknown
+): never {
+  createAppError(code, message, details);
+  const payload = JSON.stringify({ code, message });
+  const error = new Error(payload);
+  error.name = 'AppError';
+  throw error;
+}
+
+export function isAppError(error: unknown): error is AppError {
   if (!error || typeof error !== 'object') {
     return false;
   }
-  const hasRequiredProps = 'code' in error && 'message' in error;
-  if (!hasRequiredProps) {
-    return false;
+  const record = error as Record<string, unknown>;
+  return typeof record.code === 'string' && typeof record.message === 'string';
+}
+
+function isUserFriendlyMessage(message: string): boolean {
+  const trimmed = message.trim();
+  if (!trimmed) return false;
+  if (trimmed.startsWith('{') || trimmed.startsWith('[')) return false;
+  if (trimmed.includes('digest:')) return false;
+  if (trimmed.includes(' at ') && trimmed.includes('.ts')) return false;
+  if (trimmed.length > 500) return false;
+  return true;
+}
+
+function tryParseAppErrorJson(text: string): AppError | null {
+  const trimmed = text.trim();
+  const candidates = [
+    trimmed,
+    trimmed.replace(/^Error:\s*/i, ''),
+  ];
+
+  for (const candidate of candidates) {
+    if (!candidate.includes('"code"')) continue;
+
+    const jsonStart = candidate.indexOf('{');
+    const jsonEnd = candidate.lastIndexOf('}');
+    if (jsonStart === -1 || jsonEnd <= jsonStart) continue;
+
+    const jsonSlice = candidate.slice(jsonStart, jsonEnd + 1);
+    try {
+      const parsed = JSON.parse(jsonSlice) as unknown;
+      if (isAppError(parsed) && isUserFriendlyMessage(parsed.message)) {
+        return { code: parsed.code, message: parsed.message.trim() };
+      }
+    } catch {
+      // try next candidate
+    }
   }
-  // Verify code is one of our known error codes or a string
-  return typeof error.code === 'string' && typeof error.message === 'string';
+
+  const codeMatch = trimmed.match(APP_ERROR_CODE_PATTERN);
+  if (codeMatch) {
+    const messageMatch = trimmed.match(/"message"\s*:\s*"((?:\\.|[^"\\])*)"/);
+    if (messageMatch) {
+      const message = messageMatch[1].replace(/\\"/g, '"').trim();
+      if (isUserFriendlyMessage(message)) {
+        return {
+          code: codeMatch[1] as AppErrorCode,
+          message,
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+function findAppErrorDeep(value: unknown, depth = 0, seen = new Set<unknown>()): AppError | null {
+  if (depth > 6 || value == null) return null;
+  if (typeof value === 'object' || typeof value === 'function') {
+    if (seen.has(value)) return null;
+    seen.add(value);
+  }
+
+  if (isAppError(value)) {
+    return { code: value.code, message: value.message.trim() };
+  }
+
+  if (typeof value === 'string') {
+    const fromJson = tryParseAppErrorJson(value);
+    if (fromJson) return fromJson;
+    return null;
+  }
+
+  if (value instanceof Error) {
+    return (
+      findAppErrorDeep(value.message, depth + 1, seen) ??
+      findAppErrorDeep((value as Error & { cause?: unknown }).cause, depth + 1, seen)
+    );
+  }
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const found = findAppErrorDeep(item, depth + 1, seen);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  if (typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    for (const key of ['message', 'error', 'cause', 'data', 'err', 'value']) {
+      if (key in record) {
+        const found = findAppErrorDeep(record[key], depth + 1, seen);
+        if (found) return found;
+      }
+    }
+    for (const nested of Object.values(record)) {
+      const found = findAppErrorDeep(nested, depth + 1, seen);
+      if (found) return found;
+    }
+  }
+
+  return null;
 }
 
 /**
- * Extracts an AppError from a caught error (handles Next.js server action serialization)
+ * Extracts an AppError from a caught error (handles Next.js server action serialization).
  */
 export function extractAppError(error: unknown): AppError | null {
-  console.log('extractAppError called with:', error);
-  console.log('typeof error:', typeof error);
-  console.log('error instanceof Error:', error instanceof Error);
-  
-  // Check if it's already an AppError
-  if (isAppError(error)) {
-    console.log('Directly is an AppError');
-    return error;
+  return findAppErrorDeep(error);
+}
+
+type TranslateFn = (key: string, params?: Record<string, string | number>) => string;
+
+/**
+ * Resolves a user-facing message from a caught error.
+ * Always prioritizes the backend `message` field when present.
+ */
+export function getUserFacingErrorMessage(
+  error: unknown,
+  t: TranslateFn,
+  fallbackKey = 'common.errorDescription'
+): string {
+  const appError = extractAppError(error);
+
+  if (appError?.message && isUserFriendlyMessage(appError.message)) {
+    return appError.message;
   }
-  
-  // Check if it's an Error object
-  if (error instanceof Error) {
-    console.log('Is Error object');
-    console.log('error.message:', error.message);
-    console.log('error.name:', error.name);
-    console.log('error.stack:', error.stack);
-    console.log('Object.keys(error):', Object.keys(error));
-    
-    // First try to parse message as JSON
-    try {
-      const parsed = JSON.parse(error.message);
-      console.log('Parsed JSON from message:', parsed);
-      if (isAppError(parsed)) {
-        console.log('✓ Successfully extracted AppError from message JSON');
-        return parsed;
-      }
-    } catch (e) {
-      console.log('JSON parse of message failed:', e);
-    }
-    
-    // Check all properties of the error object for something that looks like an AppError
-    const errorObj = error as any;
-    for (const key of Object.keys(errorObj)) {
-      const value = errorObj[key];
-      if (isAppError(value)) {
-        console.log(`✓ Found AppError in property: ${key}`);
-        return value;
-      }
-    }
-    
-    // Check for Next.js specific error formats
-    // Next.js sometimes wraps server errors in special ways
-    if (errorObj.digest) {
-      console.log('Error has digest property');
+
+  if (appError?.code) {
+    const dictKey = `errors.${appError.code}`;
+    const fromDictionary = t(dictKey);
+    const missingKeyLabel = appError.code
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+
+    if (fromDictionary !== missingKeyLabel && !fromDictionary.includes('.')) {
+      return fromDictionary;
     }
   }
-  
-  // Check if the error is an object - try various nested locations
-  if (typeof error === 'object' && error !== null) {
-    const errorObj = error as any;
-    
-    const placesToCheck = [
-      errorObj,
-      errorObj.error,
-      errorObj.cause,
-      errorObj.data,
-      errorObj.errors
-    ];
-    
-    for (const place of placesToCheck) {
-      if (isAppError(place)) {
-        console.log('✓ Found AppError in nested location');
-        return place;
-      }
-    }
-    
-    // If it's an array, check all elements
-    if (Array.isArray(errorObj)) {
-      for (const item of errorObj) {
-        if (isAppError(item)) {
-          console.log('✓ Found AppError in array');
-          return item;
-        }
-      }
-    }
-  }
-  
-  console.log('✗ No AppError found in any location');
-  return null;
+
+  return t(fallbackKey);
 }

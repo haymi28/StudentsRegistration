@@ -9,6 +9,11 @@ import { MainLayout } from '@/components/common/main-layout';
 import { Student, Class } from '@prisma/client';
 import { redirect } from 'next/navigation';
 import { useLocale } from '@/contexts/locale-provider';
+import { extractAppError, isAppError } from '@/lib/errors';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ShieldAlert } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 function EditStudentPageClient({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
   const { id } = use(paramsPromise);
@@ -18,6 +23,7 @@ function EditStudentPageClient({ params: paramsPromise }: { params: Promise<{ id
   const [student, setStudent] = useState<Student | null>(null);
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
+  const [accessDeniedMessage, setAccessDeniedMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuthAndFetch = async () => {
@@ -44,8 +50,13 @@ function EditStudentPageClient({ params: paramsPromise }: { params: Promise<{ id
         setStudent(studentData);
         setClasses(classData);
       } catch (e) {
-        console.error("Authorization check failed", e);
-        redirect('/students');
+        const appError = extractAppError(e) ?? (isAppError(e) ? e : null);
+        if (appError?.code === 'unauthorized') {
+          setAccessDeniedMessage(t('common.studentAccessDeniedDescription'));
+        } else {
+          console.error("Authorization check failed", e);
+          redirect('/students');
+        }
       } finally {
         setLoading(false);
       }
@@ -63,6 +74,25 @@ function EditStudentPageClient({ params: paramsPromise }: { params: Promise<{ id
     );
   }
   
+  if (accessDeniedMessage) {
+    return (
+      <MainLayout isAuthenticated={isAuthenticated}>
+        <div className="container py-8 max-w-2xl mx-auto">
+          <Alert variant="destructive">
+            <ShieldAlert className="h-4 w-4" />
+            <AlertTitle>{t('common.studentAccessDenied')}</AlertTitle>
+            <AlertDescription>{accessDeniedMessage}</AlertDescription>
+          </Alert>
+          <div className="mt-6">
+            <Button asChild variant="outline">
+              <Link href="/students">{t('common.back')}</Link>
+            </Button>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
   if (!student) {
     return (
       <MainLayout isAuthenticated={isAuthenticated}>

@@ -37,7 +37,7 @@ export default async function RootLayout({
 }>) {
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="am" suppressHydrationWarning>
       <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable, notoSansEthiopic.variable)}>
         <LocaleProvider>
             {children}

@@ -9,7 +9,7 @@ export function Logo({ className }: { className?: string }) {
   const { t } = useLocale();
 
   return (
-    <Link href="/" className={cn("flex items-center gap-2", className)} aria-label="Back to homepage">
+    <Link href="/" className={cn("flex items-center gap-2", className)} aria-label={t('common.backToHomepage')}>
       <span className="hidden sm:inline-block text-xl font-bold text-primary-foreground tracking-tight group-data-[state=collapsed]:hidden">
         {t('nav.systemName')}
       </span>

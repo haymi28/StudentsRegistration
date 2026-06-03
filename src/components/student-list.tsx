@@ -37,7 +37,7 @@ import { deleteStudent, getClasses, deleteStudents } from '@/lib/data';
 import { Student, Class } from '@prisma/client';
 import { useLocale } from '@/contexts/locale-provider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { extractAppError } from '@/lib/errors';
+import { getUserFacingErrorMessage } from '@/lib/errors';
 
 type StudentWithClass = Student & { class: Class | null };
 
@@ -145,7 +145,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   }), [t]);
 
   const genders = useMemo(() => [
-    { value: 'all', label: t('students.allGenders') || 'All Genders' },
+    { value: 'all', label: t('students.allGenders') },
     { value: 'Male', label: t('form.gender.male') },
     { value: 'Female', label: t('form.gender.female') },
   ], [t]);
@@ -181,20 +181,10 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
       setSelectedRowKeys(new Set());
       router.refresh();
     } catch (error) {
-      // Handle our custom AppError and use translations
-      let description = t('common.errorDescription');
-      const appError = extractAppError(error);
-      if (appError) {
-        // Check if we have a translation for this error code
-        const errorCode = appError.code;
-        // @ts-ignore
-        description = t(`errors.${errorCode}`) || t('errors.unknown_error');
-      }
-      
       toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: description,
+        description: getUserFacingErrorMessage(error, t),
       });
     } finally {
       setIsDeleting(false);
@@ -455,7 +445,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                         <Checkbox
                             checked={selectedRowKeys.size > 0 && currentPageStudents.length > 0 && currentPageStudents.every(s => selectedRowKeys.has(s.id))}
                             onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                            aria-label="Select all students"
+                            aria-label={t('common.selectAllStudents')}
                             disabled={currentPageStudents.length === 0}
                         />
                     </TableHead>
@@ -487,7 +477,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                         <TableCell className="font-medium whitespace-nowrap">{student.registrationNumber}</TableCell>
                         <TableCell className="whitespace-nowrap">{student.fullName}</TableCell>
                         <TableCell>
-                          <Badge variant="secondary" className="whitespace-nowrap">{student.class?.name || 'N/A'}</Badge>
+                          <Badge variant="secondary" className="whitespace-nowrap">{student.class?.name || t('common.na')}</Badge>
                         </TableCell>
                         <TableCell className="whitespace-nowrap">{student.phoneNumber}</TableCell>
                         <TableCell className="text-right">
@@ -527,7 +517,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                               <p className="font-semibold leading-tight">{student.fullName}</p>
                               <p className="text-sm text-muted-foreground">{student.registrationNumber}</p>
                               <div className="pt-1">
-                                  <Badge variant="secondary">{student.class?.name || 'N/A'}</Badge>
+                                  <Badge variant="secondary">{student.class?.name || t('common.na')}</Badge>
                               </div>
                               <p className="text-sm text-muted-foreground pt-1">{student.phoneNumber}</p>
                           </div>
@@ -550,13 +540,13 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
                     {filteredStudents.length > 0 
-                      ? `Showing ${startItem}-${endItem} of ${filteredStudents.length} students` 
-                      : 'No students'}
+                      ? t('pagination.showing', { start: startItem, end: endItem, total: filteredStudents.length })
+                      : t('pagination.noStudentsShort')}
                   </span>
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Show</span>
+                  <span className="text-sm text-muted-foreground">{t('pagination.show')}</span>
                   <Select 
                     value={String(itemsPerPage)} 
                     onValueChange={handleItemsPerPageChange}
@@ -571,7 +561,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                       <SelectItem value="100">100</SelectItem>
                     </SelectContent>
                   </Select>
-                  <span className="text-sm text-muted-foreground">per page</span>
+                  <span className="text-sm text-muted-foreground">{t('pagination.perPage')}</span>
                 </div>
 
                 <div className="flex items-center gap-1">
@@ -643,18 +633,10 @@ function RowActions({ student, session, translations, t }: { student: Student, s
             setStudentToDelete(null);
             router.refresh();
         } catch (error) {
-            // Handle our custom AppError and use exact messages
-            let description = t('common.errorDescription');
-            const appError = extractAppError(error);
-            if (appError) {
-                // Use the exact message from the backend
-                description = appError.message;
-            }
-            
             toast({
                 variant: 'destructive',
                 title: t('common.error'),
-                description: description,
+                description: getUserFacingErrorMessage(error, t),
             });
         } finally {
             setIsDeleting(false);
@@ -671,7 +653,7 @@ function RowActions({ student, session, translations, t }: { student: Student, s
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
+                        <span className="sr-only">{t('common.openMenu')}</span>
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>

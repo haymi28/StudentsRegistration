@@ -20,7 +20,7 @@ import { getClasses, transferStudentsToClass } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { generateTransferReport } from '@/lib/reporting';
 import { useRouter } from 'next/navigation';
-import { extractAppError } from '@/lib/errors';
+import { getUserFacingErrorMessage } from '@/lib/errors';
 
 interface TransferStudentsDialogProps {
   open: boolean;
@@ -85,7 +85,7 @@ export function TransferStudentsDialog({
             description: t('transfer.successDescription').replace('{count}', String(selectedStudents.length)).replace('{to}', targetClass?.name || ''),
         });
 
-        const displayName = localStorage.getItem('displayName') || 'N/A';
+        const displayName = localStorage.getItem('displayName') || t('common.na');
         if (targetClass) {
           await generateTransferReport(
               selectedStudents,
@@ -110,17 +110,10 @@ export function TransferStudentsDialog({
         router.refresh();
     } catch(error) {
       // Handle our custom AppError and use exact messages
-      let description = t('common.errorDescription');
-      const appError = extractAppError(error);
-      if (appError) {
-        // Use the exact message from the backend
-        description = appError.message;
-      }
-      
       toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: description,
+        description: getUserFacingErrorMessage(error, t),
       });
     }
 

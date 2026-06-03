@@ -18,7 +18,9 @@
         "account": "My Account",
         "logout": "Logout",
         "language": "Language",
-        "systemName": "Student Registration Form"
+        "systemName": "Student Registration Form",
+        "english": "English",
+        "amharic": "አማርኛ"
     },
     "metadata": {
         "title": "Debre Gelila Amanuel Cathedral Sunday School Student Registration",
@@ -31,6 +33,8 @@
         "totalClasses": "Total Classes",
         "chartTitle": "Student Distribution by Class",
         "chartDescription": "See how many students are in each class.",
+        "chartStudents": "Students",
+        "noClasses": "No class data to display.",
         "welcome": {
             "title": "Welcome to the Student Management System",
             "churchName": "Debre Gelila Amanuel Cathedral Sunday School",
@@ -97,6 +101,21 @@
             "birthYear": "Birth Year",
             "joiningYear": "Joining Year"
         },
+        "ethiopianMonthLabels": [
+            "Meskerem",
+            "Tikimt",
+            "Hidar",
+            "Tahsas",
+            "Tir",
+            "Yekatit",
+            "Megabit",
+            "Miazia",
+            "Ginbot",
+            "Sene",
+            "Hamle",
+            "Nehase",
+            "Pagumen"
+        ],
         "gender": {
             "male": "Male",
             "female": "Female"
@@ -213,7 +232,8 @@
             "fileParseError": "Could not parse the Excel file.",
             "duplicateRegNumber": "Registration number '{regNumber}' already exists.",
             "invalidClassName": "Class '{className}' does not exist.",
-            "fileRequired": "Excel file is required."
+            "fileRequired": "Excel file is required.",
+            "row": "Row {row}"
         }
     },
     "export": {
@@ -223,7 +243,8 @@
         "noSelectionTitle": "No Students Selected",
         "noSelectionDescription": "Please select at least one student to export.",
         "successTitle": "Export Successful!",
-        "successDescription": "{count} students have been successfully exported."
+        "successDescription": "{count} students have been successfully exported.",
+        "sheetName": "Students"
     },
     "importPhotos": {
         "pageTitle": "Bulk Import Photos",
@@ -292,7 +313,9 @@
     },
      "settings": {
         "pageTitle": "Settings",
-        "pageDescription": "Access and manage system-wide settings and configurations."
+        "pageDescription": "Access and manage system-wide settings and configurations.",
+        "noAccessTitle": "No settings available",
+        "noAccessDescription": "You do not have permission to manage classes, users, or roles."
     },
     "users": {
         "title": "User Management",
@@ -332,7 +355,8 @@
             "tempPasswordDescription": "Please share this temporary password with the user. They will be required to change it on their first login.",
             "passwordCopied": "Password copied to clipboard.",
             "passwordGenerated": "A secure temporary password has been generated.",
-            "tempPasswordNotice": "For security, this password will not be shown again."
+            "tempPasswordNotice": "For security, this password will not be shown again.",
+            "passwordHint": "Enter a password or use the generator to create a secure temporary one."
         },
         "table": {
             "displayName": "Display Name",
@@ -448,6 +472,26 @@
         }
     },
     "permissions": {
+        "view_dashboard": {
+            "title": "View Dashboard",
+            "description": "Access the dashboard and view statistics"
+        },
+        "import_students_text": {
+            "title": "Import Text Data",
+            "description": "Bulk import student records from Excel files"
+        },
+        "import_students_photos": {
+            "title": "Import Photos",
+            "description": "Bulk import and assign student photos"
+        },
+        "export_students_text": {
+            "title": "Export Text Data",
+            "description": "Export student records to Excel"
+        },
+        "export_students_photos": {
+            "title": "Export Photos",
+            "description": "Export student photos as a ZIP archive"
+        },
         "manage_users": {
             "title": "Manage Users",
             "description": "Create, edit, and delete users"
@@ -508,7 +552,11 @@
     "pagination": {
         "previous": "Previous",
         "next": "Next",
-        "page": "Page {currentPage} of {totalPages}"
+        "page": "Page {currentPage} of {totalPages}",
+        "showing": "Showing {start}-{end} of {total} students",
+        "noStudentsShort": "No students",
+        "show": "Show",
+        "perPage": "per page"
     },
     "validation": {
         "required": "{field} is required.",
@@ -524,15 +572,53 @@
         "notAssigned": "Not Assigned",
         "back": "Back",
         "loading": "Loading...",
+        "loadingLocale": "Loading...",
         "na": "N/A",
         "studentNotFound": "Student Not Found",
         "studentNotFoundDescription": "The student with the given ID could not be found.",
+        "studentAccessDenied": "Access Denied",
+        "studentAccessDeniedDescription": "You do not have permission to view or edit this student. They belong to a class you are not assigned to.",
         "copied": "Copied!",
         "copy": "Copy Password",
         "show": "Show Password",
         "hide": "Hide Password",
         "done": "Done",
         "generate": "Generate Password",
-        "regenerate": "Regenerate"
+        "regenerate": "Regenerate",
+        "actions": "Actions",
+        "openMenu": "Open menu",
+        "selectAllStudents": "Select all students",
+        "backToHomepage": "Back to homepage"
+    },
+    "errors": {
+        "duplicate_registration_number": "This registration number is already in use",
+        "duplicate_username": "This username is already taken",
+        "unauthorized": "You are not authorized to perform this action",
+        "invalid_data": "Invalid data provided. Please check your inputs.",
+        "student_not_found": "Student could not be found",
+        "class_has_students": "You cannot delete a class that has students assigned",
+        "cannot_delete_superadmin": "You cannot delete the superadmin account",
+        "unknown_error": "An unexpected error occurred. Please try again.",
+        "view_students_other_class": "You do not have permission to view students in this class.",
+        "student_access_denied": "You do not have permission to access this student record."
+    },
+    "idCard": {
+        "title": "Student ID Card",
+        "front": "Front",
+        "back": "Back",
+        "showFront": "Show Front",
+        "showBack": "Show Back",
+        "print": "Print Both",
+        "download": "Download Both Sides",
+        "generating": "Generating...",
+        "schoolAddress": "Addis Ababa, Ethiopia",
+        "scanVerification": "Scan for Student Verification",
+        "propertyNotice": "Property of",
+        "returnNotice": "If found, please return to school office",
+        "authorizedSignature": "Authorized Signature",
+        "noEmergencyContact": "No emergency contact available",
+        "failedPrint": "Failed to print ID card. Please try again.",
+        "elementsNotFound": "Card elements not found. Please refresh and try again.",
+        "failedPDF": "Failed to generate PDF. Please try again or use the Print button."
     }
 }

@@ -24,7 +24,7 @@ interface StudentIDCardDialogProps {
 }
 
 export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCardDialogProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showBack, setShowBack] = useState(false);
@@ -36,8 +36,8 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
   }
 
   const schoolName = "የደብረ ገሊላ ዑማኑኤል ካቴድራል ሰ/ት/ቤት";
-  const schoolAddress = "Addis Ababa, Ethiopia";
-  const issueDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const schoolAddress = t('idCard.schoolAddress');
+  const issueDate = new Date().toLocaleDateString(locale === 'am' ? 'am-ET' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
   // Get first available emergency contact
   const getEmergencyContact = () => {
@@ -48,7 +48,7 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
       student.mothersPhoneNumber,
     ];
     const firstValidContact = contacts.find((contact) => contact && contact.trim() !== '');
-    return firstValidContact || 'No emergency contact available';
+    return firstValidContact || t('idCard.noEmergencyContact');
   };
 
   const emergencyContact = getEmergencyContact();
@@ -68,13 +68,13 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
       window.print();
     } catch (err) {
       console.error('Print error:', err);
-      setError('Failed to print ID card. Please try again.');
+      setError(t('idCard.failedPrint'));
     }
   };
 
   const handleDownloadPDF = async () => {
     if (!idCardFrontRef.current || !idCardBackRef.current) {
-      setError('Card elements not found. Please refresh and try again.');
+      setError(t('idCard.elementsNotFound'));
       return;
     }
 
@@ -123,7 +123,7 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
       
     } catch (err) {
       console.error('PDF generation error:', err);
-      setError('Failed to generate PDF. Please try again or use the Print button.');
+      setError(t('idCard.failedPDF'));
     } finally {
       setIsGenerating(false);
     }
@@ -135,7 +135,7 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
         <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle className="flex items-center gap-2">
             <CreditCard className="h-5 w-5" />
-            Student ID Card - {showBack ? 'Back' : 'Front'}
+            {t('idCard.title')} - {showBack ? t('idCard.back') : t('idCard.front')}
           </DialogTitle>
           <div className="flex items-center gap-2">
             <Button
@@ -145,7 +145,7 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
               disabled={isGenerating}
             >
               <RefreshCw className="h-4 w-4" />
-              {showBack ? 'Show Front' : 'Show Back'}
+              {showBack ? t('idCard.showFront') : t('idCard.showBack')}
             </Button>
             <Button
               variant="secondary"
@@ -153,7 +153,7 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
               disabled={isGenerating}
             >
               <Printer className="mr-2 h-4 w-4" />
-              Print Both
+              {t('idCard.print')}
             </Button>
             <Button
               onClick={handleDownloadPDF}
@@ -164,7 +164,7 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
               ) : (
                 <Download className="mr-2 h-4 w-4" />
               )}
-              {isGenerating ? 'Generating...' : 'Download Both Sides'}
+              {isGenerating ? t('idCard.generating') : t('idCard.download')}
             </Button>
           </div>
         </DialogHeader>
@@ -262,7 +262,7 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-0.5">
                       <div className="space-y-0.5">
                         <p className="text-[6px] text-slate-500 font-medium tracking-wide">{labels.class}</p>
-                        <p className="text-[11px] font-semibold text-slate-700">{student.class?.name || 'N/A'}</p>
+                        <p className="text-[11px] font-semibold text-slate-700">{student.class?.name || t('common.na')}</p>
                       </div>
                       <div className="space-y-0.5">
                         <p className="text-[6px] text-slate-500 font-medium tracking-wide">{labels.gender}</p>
@@ -320,7 +320,7 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
               {/* QR Code Label */}
               <div className="relative px-5 text-center">
                 <p className="text-blue-700 text-[9px] font-semibold">
-                  Scan for Student Verification
+                  {t('idCard.scanVerification')}
                 </p>
               </div>
 
@@ -340,10 +340,10 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
                 {/* Property Notice */}
                 <div className="mt-4 pt-2 border-t border-blue-200">
                   <p className="text-center text-[7px] text-slate-500 font-medium">
-                    Property of {schoolName}
+                    {t('idCard.propertyNotice')} {schoolName}
                   </p>
                   <p className="text-center text-[6px] text-slate-400 mt-0.5">
-                    If found, please return to school office
+                    {t('idCard.returnNotice')}
                   </p>
                 </div>
 
@@ -351,7 +351,7 @@ export function StudentIDCardDialog({ student, open, onOpenChange }: StudentIDCa
                 <div className="mt-3 flex justify-end">
                   <div className="text-right">
                     <div className="border-b border-blue-300 w-20 mb-0.5" />
-                    <p className="text-[6px] text-slate-400">Authorized Signature</p>
+                    <p className="text-[6px] text-slate-400">{t('idCard.authorizedSignature')}</p>
                   </div>
                 </div>
               </div>

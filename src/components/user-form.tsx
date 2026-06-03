@@ -20,7 +20,7 @@ import { createUser, updateUser, getRoles } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
 import { PasswordInput } from './password-input';
 
-import { extractAppError } from '@/lib/errors';
+import { getUserFacingErrorMessage } from '@/lib/errors';
 import { generateSecureRandomString } from '@/lib/crypto';
 
 
@@ -114,18 +114,10 @@ export function UserForm({ userToEdit }: UserFormProps) {
         });
       }
     } catch (error) {
-      // Handle our custom AppError and use exact messages
-      let description = t('common.errorDescription');
-      const appError = extractAppError(error);
-      if (appError) {
-        // Use the exact message from the backend
-        description = appError.message;
-      }
-      
       toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: description,
+        description: getUserFacingErrorMessage(error, t),
       });
     } finally {
       setIsLoading(false);
@@ -184,7 +176,7 @@ export function UserForm({ userToEdit }: UserFormProps) {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={copyToClipboard} variant="outline" className="gap-2">
+            <Button onClick={() => copyToClipboard(tempPassword)} variant="outline" className="gap-2">
               {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               {isCopied ? t('common.copied') : t('common.copy')}
             </Button>
@@ -210,10 +202,10 @@ export function UserForm({ userToEdit }: UserFormProps) {
           <CardContent className="space-y-8 pt-6">
             <div className="grid md:grid-cols-2 gap-6">
               <FormField control={form.control} name="displayName" render={({ field }) => (
-                <FormItem><FormLabel>{translations.labels.displayName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{translations.labels.displayName}</FormLabel><FormControl><Input {...field} autoComplete="off" /></FormControl><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="username" render={({ field }) => (
-                <FormItem><FormLabel>{translations.labels.username}</FormLabel><FormControl><Input {...field} readOnly={isEditMode} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{translations.labels.username}</FormLabel><FormControl><Input {...field} readOnly={isEditMode} autoComplete="new-username" /></FormControl><FormMessage /></FormItem>
               )} />
             </div>
 
@@ -230,6 +222,7 @@ export function UserForm({ userToEdit }: UserFormProps) {
                                             type={showPassword ? "text" : "password"} 
                                             placeholder={isEditMode ? translations.placeholders.password : '••••••••'} 
                                             className="pr-10 font-mono"
+                                            autoComplete="new-password"
                                         />
                                         <Button
                                             type="button"
@@ -267,7 +260,7 @@ export function UserForm({ userToEdit }: UserFormProps) {
                                 )}
                             </div>
                             {isEditMode && <FormDescription>{translations.placeholders.password}</FormDescription>}
-                            {!isEditMode && !field.value && <FormDescription>Enter a password or use the generator to create a secure temporary one.</FormDescription>}
+                            {!isEditMode && !field.value && <FormDescription>{t('users.form.passwordHint')}</FormDescription>}
                         </div>
                         <FormMessage />
                     </FormItem>

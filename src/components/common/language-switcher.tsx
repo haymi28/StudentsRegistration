@@ -13,8 +13,8 @@ export function LanguageSwitcher() {
           <SelectValue placeholder={t('nav.language')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="en">English</SelectItem>
-          <SelectItem value="am">አማርኛ</SelectItem>
+          <SelectItem value="en">{t('nav.english')}</SelectItem>
+          <SelectItem value="am">{t('nav.amharic')}</SelectItem>
         </SelectContent>
       </Select>
     </div>

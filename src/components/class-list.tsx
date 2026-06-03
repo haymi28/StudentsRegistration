@@ -28,7 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/locale-provider';
 import { Class, User } from '@prisma/client';
 import { deleteClass } from '@/lib/data';
-import { extractAppError } from '@/lib/errors';
+import { getUserFacingErrorMessage } from '@/lib/errors';
 
 type ClassWithDetails = Class & {
     manager: User | null;
@@ -58,18 +58,10 @@ export function ClassList({ classes }: ClassListProps) {
       setClassToDelete(null);
       router.refresh();
     } catch (error) {
-      // Handle our custom AppError and use exact messages
-      let description = t('common.errorDescription');
-      const appError = extractAppError(error);
-      if (appError) {
-        // Use the exact message from the backend
-        description = appError.message;
-      }
-      
       toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: description,
+        description: getUserFacingErrorMessage(error, t),
       });
     } finally {
       setIsDeleting(false);
@@ -112,13 +104,13 @@ export function ClassList({ classes }: ClassListProps) {
                 classes.map((c) => (
                   <TableRow key={c.id}>
                     <TableCell className="font-medium">{c.name}</TableCell>
-                    <TableCell>{c.manager?.displayName || 'N/A'}</TableCell>
+                    <TableCell>{c.manager?.displayName || t('common.na')}</TableCell>
                     <TableCell>{c._count.students}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">{t('common.openMenu')}</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

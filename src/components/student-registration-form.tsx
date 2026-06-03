@@ -20,7 +20,8 @@ import { useRouter } from 'next/navigation';
 import { Student, Class } from '@prisma/client';
 import { createStudent, updateStudent } from '@/lib/data';
 import { useLocale } from '@/contexts/locale-provider';
-import { extractAppError } from '@/lib/errors';
+import { extractAppError, getUserFacingErrorMessage } from '@/lib/errors';
+import { getEthiopianMonthOptions } from '@/lib/translations';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 
@@ -32,14 +33,15 @@ interface StudentRegistrationFormProps {
 
 export function StudentRegistrationForm({ studentToEdit, classes, session }: StudentRegistrationFormProps) {
   const { toast } = useToast();
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEditMode = !!studentToEdit;
   
-  const amharicMonths = useMemo(() => [
-    'መስከረም', 'ጥቅምት', 'ኅዳር', 'ታኅሣሥ', 'ጥር', 'የካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜን'
-  ], []);
+  const ethiopianMonthOptions = useMemo(
+    () => getEthiopianMonthOptions(locale),
+    [locale]
+  );
   
   const [joinDay, setJoinDay] = useState('');
   const [joinMonth, setJoinMonth] = useState('');
@@ -62,13 +64,15 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
     { value: 'Female', label: t('form.gender.female') },
   ], [t]);
 
-  const permissions = session.user.role.permissions || {};
-  const canChangeClass = permissions.manage_all_students;
-  const assignedClass = canChangeClass ? null : classes.find(c => c.managerId === session.user.id);
+  const isSuperAdmin = session.user.role.name === 'Super Admin';
+  // classes are already scoped server-side via getClasses()
+  const assignableClasses = classes;
+  const canChangeClass = isSuperAdmin || assignableClasses.length > 1;
+  const assignedClass = assignableClasses.length === 1 ? assignableClasses[0] : null;
   
   const defaultClassId = isEditMode 
     ? studentToEdit.classId 
-    : (canChangeClass ? '' : (assignedClass?.id || ''));
+    : (canChangeClass && isSuperAdmin ? '' : (assignedClass?.id || assignableClasses[0]?.id || ''));
 
 
   const defaultFormValues = useMemo(() => ({
@@ -200,20 +204,20 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
       router.push('/students');
       router.refresh();
     } catch (error) {
-      // Handle our custom AppError and use exact messages
-      console.log('Caught error:', error);
-      let description = t('common.errorDescription');
       const appError = extractAppError(error);
-      console.log('Extracted appError:', appError);
-      if (appError) {
-        // Use the exact message from the backend
-        description = appError.message;
+      const description = getUserFacingErrorMessage(error, t);
+
+      if (appError?.code === 'duplicate_registration_number') {
+        form.setError('registrationNumber', {
+          type: 'manual',
+          message: description,
+        });
       }
-      
-       toast({
+
+      toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: description,
+        description,
       });
     } finally {
       setIsLoading(false);
@@ -297,7 +301,7 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
                                 </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                {assignableClasses.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         ) : (
@@ -338,7 +342,9 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
                                       <SelectValue placeholder={t('form.placeholder.month')} />
                                       </SelectTrigger>
                                       <SelectContent>
-                                          {amharicMonths.map(month => <SelectItem key={month} value={month}>{month}</SelectItem>)}
+                                          {ethiopianMonthOptions.map((month) => (
+                                            <SelectItem key={month.value} value={month.value}>{month.label}</SelectItem>
+                                          ))}
                                       </SelectContent>
                                   </Select>
                                   <Input
@@ -385,7 +391,9 @@ export function StudentRegistrationForm({ studentToEdit, classes, session }: Stu
                                         <SelectValue placeholder={t('form.placeholder.month')} />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {amharicMonths.map(month => <SelectItem key={month} value={month}>{month}</SelectItem>)}
+                                            {ethiopianMonthOptions.map((month) => (
+                                            <SelectItem key={month.value} value={month.value}>{month.label}</SelectItem>
+                                          ))}
                                         </SelectContent>
                                     </Select>
                                     <Input

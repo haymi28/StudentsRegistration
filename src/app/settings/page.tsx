@@ -44,6 +44,12 @@ export default async function SettingsPage() {
                 <h1 className="text-3xl font-bold font-headline">{t('settings.pageTitle')}</h1>
                 <p className="text-muted-foreground">{t('settings.pageDescription')}</p>
             </div>
+            {visibleCards.length === 0 ? (
+              <div className="text-center text-muted-foreground py-12">
+                <h2 className="text-xl font-semibold text-foreground mb-2">{t('settings.noAccessTitle')}</h2>
+                <p>{t('settings.noAccessDescription')}</p>
+              </div>
+            ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {visibleCards.map((card) => (
                     <Link href={card.href} key={card.href} className="block h-full">
@@ -61,6 +67,7 @@ export default async function SettingsPage() {
                     </Link>
                 ))}
             </div>
+            )}
         </div>
     </MainLayout>
   );

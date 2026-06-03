@@ -16,7 +16,7 @@ import { User } from '@prisma/client';
 import { getUpdateProfileSchema } from '@/lib/validations/user';
 import { signIn } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
-import { extractAppError } from '@/lib/errors';
+import { getUserFacingErrorMessage } from '@/lib/errors';
 
 type ProfileFormValues = z.infer<ReturnType<typeof getUpdateProfileSchema>>;
 
@@ -91,17 +91,10 @@ export function UpdateProfileForm() {
         }
 
     } catch (error) {
-      let description = t('common.errorDescription');
-      const appError = extractAppError(error);
-      if (appError) {
-        description = appError.message;
-      } else if (error instanceof Error) {
-        description = error.message;
-      }
        toast({
         variant: 'destructive',
         title: t('common.error'),
-        description: description,
+        description: getUserFacingErrorMessage(error, t),
       });
     }
 

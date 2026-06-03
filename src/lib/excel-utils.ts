@@ -35,7 +35,7 @@ export const exportToExcel = (students: StudentWithClass[], fileName: string, t:
     const row: Record<string, any> = {};
     headers.forEach(header => {
       if (header.key === 'className') {
-        row[header.label] = student.class?.name || 'N/A';
+        row[header.label] = student.class?.name || t('common.na');
       } else {
         row[header.label] = (student as any)[header.key] || '';
       }
@@ -45,7 +45,7 @@ export const exportToExcel = (students: StudentWithClass[], fileName: string, t:
 
   const worksheet = XLSX.utils.json_to_sheet(worksheetData);
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
+  XLSX.utils.book_append_sheet(workbook, worksheet, t('export.sheetName'));
   
   // Set column widths
   const colWidths = headers.map(header => ({ wch: Math.max(header.label.length, 20) }));

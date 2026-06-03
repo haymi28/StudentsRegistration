@@ -18,7 +18,9 @@
         "account": "የኔ መለያ",
         "logout": "ውጣ",
         "language": "ቋንቋ",
-        "systemName": "የተማሪዎች መመዝገቢያ ቅጽ"
+        "systemName": "የተማሪዎች መመዝገቢያ ቅጽ",
+        "english": "English",
+        "amharic": "አማርኛ"
     },
     "metadata": {
         "title": "የደብረ ገሊላ ዐማኑኤል ካቴድራል እግዚአብሔር ምስሌነ ሰ/ት/ቤት የተማሪዎች መመዝገቢያ ቅጽ",
@@ -31,6 +33,8 @@
         "totalClasses": "ጠቅላላ ክፍሎች",
         "chartTitle": "የተማሪ ስርጭት በክፍል",
         "chartDescription": "በእያንዳንዱ ክፍል ውስጥ ምን ያህል ተማሪዎች እንዳሉ ይመልከቱ።",
+        "chartStudents": "ተማሪዎች",
+        "noClasses": "ለማሳየት የክፍል መረጃ የለም።",
         "welcome": {
             "title": "እንኳን ወደ የተማሪ አስተዳደር ስርዓት በደህና መጡ",
             "churchName": "የደብረ ገሊላ ዐማኑኤል ካቴድራል ሰ/ት/ቤት",
@@ -97,6 +101,21 @@
             "birthYear": "የትውልድ ዓመት",
             "joiningYear": "የገቡበት ዓመት"
         },
+        "ethiopianMonthLabels": [
+            "መስከረም",
+            "ጥቅምት",
+            "ኅዳር",
+            "ታኅሣሥ",
+            "ጥር",
+            "የካቲት",
+            "መጋቢት",
+            "ሚያዝያ",
+            "ግንቦት",
+            "ሰኔ",
+            "ሐምሌ",
+            "ነሐሴ",
+            "ጳጉሜን"
+        ],
         "gender": {
             "male": "ወንድ",
             "female": "ሴት"
@@ -213,7 +232,8 @@
             "fileParseError": "የኤክሴል ፋይሉን መተንተን አልተቻለም።",
             "duplicateRegNumber": "የምዝገባ ቁጥር '{regNumber}' አስቀድሞ አለ።",
             "invalidClassName": "ክፍል '{className}' የለም።",
-            "fileRequired": "የኤክሴል ፋይል ያስፈልጋል።"
+            "fileRequired": "የኤክሴል ፋይል ያስፈልጋል።",
+            "row": "ረድፍ {row}"
         }
     },
     "export": {
@@ -223,7 +243,8 @@
         "noSelectionTitle": "ምንም ተማሪ አልተመረጠም",
         "noSelectionDescription": "እባክዎ ለመላክ ቢያንስ አንድ ተማሪ ይምረጡ።",
         "successTitle": "መላክ ተሳክቷል!",
-        "successDescription": "{count} የተማሪዎች መረጃ በተሳካ ሁኔታ ተልኳል።"
+        "successDescription": "{count} የተማሪዎች መረጃ በተሳካ ሁኔታ ተልኳል።",
+        "sheetName": "ተማሪዎች"
     },
     "importPhotos": {
         "pageTitle": "ፎቶዎችን በብዛት አስመጣ",
@@ -292,7 +313,9 @@
     },
      "settings": {
         "pageTitle": "ቅንብሮች",
-        "pageDescription": "የስርዓት-ሰፊ ቅንብሮችን እና ውቅሮችን ይድረሱ እና ያስተዳድሩ።"
+        "pageDescription": "የስርዓት-ሰፊ ቅንብሮችን እና ውቅሮችን ይድረሱ እና ያስተዳድሩ።",
+        "noAccessTitle": "ምንም ቅንብር የለም",
+        "noAccessDescription": "ክፍሎችን፣ ተጠቃሚዎችን ወይም ሚናዎችን ለማስተዳደር ፈቃድ የለዎትም።"
     },
      "users": {
         "title": "የተጠቃሚ አስተዳደር",
@@ -332,7 +355,8 @@
             "tempPasswordDescription": "እባክዎ ይህንን ጊዜያዊ የይለፍ ቃል ለተጠቃሚው ያጋሩ። ተጠቃሚው በመጀመሪያው መግቢያ ላይ መቀየር ይኖርበታል።",
             "passwordCopied": "የይለፍ ቃል ተገልብጧል።",
             "passwordGenerated": "ጊዜያዊ የይለፍ ቃል ተፈጥሯል።",
-            "tempPasswordNotice": "ለደህንነት ሲባል ይህ የይለፍ ቃል እንደገና አይታይም።"
+            "tempPasswordNotice": "ለደህንነት ሲባል ይህ የይለፍ ቃል እንደገና አይታይም።",
+            "passwordHint": "የይለፍ ቃል ያስገቡ ወይም ደህንነቱ የተጠበቀ ጊዜያዊ የይለፍ ቃል ለመፍጠር ጀነሬተሩን ይጠቀሙ።"
         },
         "table": {
             "displayName": "የሚታይ ስም",
@@ -372,7 +396,9 @@
             },
             "createSuccess": {
                 "title": "ክፍል ተፈጥሯል!",
-                "description": "ክፍል {name} በተሳካ ሁኔታ ተፈጥሯል።"
+                "description": "ክፍል {name} በተሳካ ሁኔታ ተፈጥሯል።",
+                "titleUpdate": "ክፍል ዘምኗል!",
+                "descriptionUpdate": "ክፍል {name} በተሳካ ሁኔታ ዘምኗል።"
             },
             "updateSuccess": {
                 "title": "ክፍል ዘምኗል!",
@@ -446,6 +472,26 @@
         }
     },
     "permissions": {
+        "view_dashboard": {
+            "title": "ዳሽቦርድ ይመልከቱ",
+            "description": "ዳሽቦርድን ለመድረስ እና ስታቲስቲክስን ለማየት"
+        },
+        "import_students_text": {
+            "title": "የጽሑፍ መረጃ አስመጣ",
+            "description": "የተማሪ መዝገቦችን ከኤክሴል ፋይሎች በብዛት ማስመጣት"
+        },
+        "import_students_photos": {
+            "title": "ፎቶዎችን አስመጣ",
+            "description": "የተማሪ ፎቶዎችን በብዛት ማስመጣት እና መመደብ"
+        },
+        "export_students_text": {
+            "title": "የጽሑፍ መረጃ ላክ",
+            "description": "የተማሪ መዝገቦችን ወደ ኤክሴል ማስላክ"
+        },
+        "export_students_photos": {
+            "title": "ፎቶዎችን ላክ",
+            "description": "የተማሪ ፎቶዎችን እንደ ZIP መዝገብ ማስላክ"
+        },
         "manage_users": {
             "title": "ተጠቃሚዎችን አስተዳድር",
             "description": "ተጠቃሚዎችን ይፍጠሩ፣ ያርትዑ እና ይሰርዙ"
@@ -506,7 +552,11 @@
     "pagination": {
         "previous": "የኋላ",
         "next": "ቀጣይ",
-        "page": "ገጽ {currentPage} ከ {totalPages}"
+        "page": "ገጽ {currentPage} ከ {totalPages}",
+        "showing": "{start}-{end} ከ {total} ተማሪዎች ታይተዋል",
+        "noStudentsShort": "ምንም ተማሪዎች የሉም",
+        "show": "አሳይ",
+        "perPage": "በገጽ"
     },
     "validation": {
         "required": "{field} ያስፈልጋል።",
@@ -522,10 +572,23 @@
         "notAssigned": "አልተመደበም",
         "back": "ተመለስ",
         "loading": "በመጫን ላይ...",
+        "loadingLocale": "በመጫን ላይ...",
         "na": "የለም",
         "studentNotFound": "ተማሪው አልተገኘም",
-
-        "studentNotFoundDescription": "በተሰጠው መለያ ቁጥር ተማሪውን ማግኘት አልተቻለም።"
+        "studentNotFoundDescription": "በተሰጠው መለያ ቁጥር ተማሪውን ማግኘት አልተቻለም።",
+        "studentAccessDenied": "መዳረሻ ተከልክሏል",
+        "studentAccessDeniedDescription": "ይህንን ተማሪ ለማየት ወይም ለማስተካከል ፈቃድ የለዎትም። ተማሪው በእርስዎ የተመደቡት ክፍል ውስጥ አይደለም።",
+        "copied": "ተገልብጧል!",
+        "copy": "የይለፍ ቃል ቅዳ",
+        "show": "የይለፍ ቃል አሳይ",
+        "hide": "የይለፍ ቃል ደብቅ",
+        "done": "ተጠናቋል",
+        "generate": "የይለፍ ቃል ፍጠር",
+        "regenerate": "እንደገና ፍጠር",
+        "actions": "ድርጊቶች",
+        "openMenu": "ምናሌ ክፈት",
+        "selectAllStudents": "ሁሉንም ተማሪዎች ምረጥ",
+        "backToHomepage": "ወደ መነሻ ገጽ ተመለስ"
     },
     "errors": {
         "duplicate_registration_number": "ይህ የምዝገባ ቁጥር አስቀድሞ ጥቅም ላይ ውሏል",
@@ -535,14 +598,27 @@
         "student_not_found": "ተማሪውን ማግኘት አልተቻለም",
         "class_has_students": "ተማሪዎች የተመደቡበትን ክፍል መሰረዝ አይችሉም",
         "cannot_delete_superadmin": "የስፐር አድሚን መለያን መሰረዝ አይችሉም",
-        "unknown_error": "አንድ ያልተጠበቀ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ"
-        "studentNotFoundDescription": "በተሰጠው መለያ ቁጥር ተማሪውን ማግኘት አልተቻለም።",
-        "copied": "ተገልብጧል!",
-        "copy": "የይለፍ ቃል ቅዳ",
-        "show": "የይለፍ ቃል አሳይ",
-        "hide": "የይለፍ ቃል ደብቅ",
-        "done": "ተጠናቋል",
-        "generate": "የይለፍ ቃል ፍጠር",
-        "regenerate": "እንደገና ፍጠር"
+        "unknown_error": "አንድ ያልተጠበቀ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ",
+        "view_students_other_class": "በዚህ ክፍል ውስጥ ያሉ ተማሪዎችን ለማየት ፈቃድ የለዎትም።",
+        "student_access_denied": "ይህንን ተማሪ መዝገብ ለመድረስ ፈቃድ የለዎትም።"
+    },
+    "idCard": {
+        "title": "የተማሪ መታወቂያ ካርድ",
+        "front": "ፊት",
+        "back": "ጀርባ",
+        "showFront": "ፊቱን አሳይ",
+        "showBack": "ጀርቡን አሳይ",
+        "print": "ሁለቱም አትምርጥ",
+        "download": "ሁለቱንም ገጾች አውርድ",
+        "generating": "በመዘጋጀት ላይ...",
+        "schoolAddress": "አዲስ አበባ፣ ኢትዮጵያ",
+        "scanVerification": "ለተማሪ ማረጋገጫ ይሰራ",
+        "propertyNotice": "የሚወደው ስርዓት ነው",
+        "returnNotice": "ከተገኙት ከተማሪውን ወደ ትምህርት ቤቱ ይመልሱ",
+        "authorizedSignature": "የተፈቀደ ፊርማ",
+        "noEmergencyContact": "የአደጋ ተጠሪ የለም",
+        "failedPrint": "መታወቂያውን ለማተም አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+        "elementsNotFound": "የካርድ ክፍሎች አልተገኙም። እባክዎ ድምጽ ይውሰጡ እና እንደገና ይሞክሩ።",
+        "failedPDF": "PDF መዘጋጀት አልተሳካም። እባክዎ እንደገና ይሞክሩ ወይም 'አትምርጥ' ቁልፍን ይጠቀሙ።"
     }
 }

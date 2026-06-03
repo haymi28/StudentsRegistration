@@ -139,7 +139,7 @@ export function ExportStudentClient({ students: initialStudents }: ExportStudent
                   <Checkbox
                     checked={selectedRowKeys.size > 0 && selectedRowKeys.size === filteredStudents.length}
                     onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                    aria-label="Select all students"
+                    aria-label={t('common.selectAllStudents')}
                     disabled={!filteredStudents.length}
                   />
                 </TableHead>
@@ -169,7 +169,7 @@ export function ExportStudentClient({ students: initialStudents }: ExportStudent
                     <TableCell className="font-medium whitespace-nowrap">{student.registrationNumber}</TableCell>
                     <TableCell className="whitespace-nowrap">{student.fullName}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="whitespace-nowrap">{student.class?.name || 'N/A'}</Badge>
+                      <Badge variant="secondary" className="whitespace-nowrap">{student.class?.name || t('common.na')}</Badge>
                     </TableCell>
                   </TableRow>
                 ))

@@ -14,7 +14,7 @@ import { getChangePasswordSchema } from '@/lib/validations/user';
 import { changeUserPassword } from '@/lib/data';
 import { PasswordInput } from './password-input';
 
-import { extractAppError } from '@/lib/errors';
+import { extractAppError, getUserFacingErrorMessage } from '@/lib/errors';
 import { refreshSession } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 
@@ -63,30 +63,16 @@ export function ChangePasswordForm() {
       }
 
     } catch (error) {
-
-      let description = t('common.errorDescription');
       const appError = extractAppError(error);
-      if (appError) {
-        description = appError.message;
-      } else if (error instanceof Error) {
-        description = error.message;
+      if (appError?.code === 'unauthorized' || (error instanceof Error && error.message.includes('password'))) {
+        form.setError('currentPassword', { type: 'manual', message: t('validation.currentPasswordIncorrect') });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: t('common.error'),
+          description: getUserFacingErrorMessage(error, t),
+        });
       }
-       toast({
-        variant: 'destructive',
-        title: t('common.error'),
-        description: description,
-      });
-
-       const message = error instanceof Error ? error.message : t('common.errorDescription');
-       if (message === "Current password is incorrect") {
-          form.setError('currentPassword', { type: 'manual', message: t('validation.currentPasswordIncorrect') });
-       } else {
-          toast({
-            variant: 'destructive',
-            title: t('common.error'),
-            description: message,
-          });
-       }
 
     }
 
