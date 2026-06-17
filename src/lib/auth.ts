@@ -228,6 +228,7 @@ export async function requireAnyPermission(permissionsList: string[]) {
 
 const ROUTE_PRIORITY = [
   { href: '/dashboard', permission: 'view_dashboard' },
+  { href: '/reports', permission: 'view_reports' },
   { href: '/students', permission: 'view_students' },
   { href: '/register', permission: 'manage_class_students' },
   { href: '/settings', permissions: ['manage_classes', 'manage_users', 'manage_roles'] },

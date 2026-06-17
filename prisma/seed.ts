@@ -12,6 +12,7 @@ async function main() {
   // --- All Permissions Definition ---
   const allPermissions = {
     view_dashboard: true,
+    view_reports: true,
     view_students: true,
     manage_class_students: true,
     manage_classes: true,

@@ -25,6 +25,7 @@ type RoleFormValues = z.infer<ReturnType<typeof getRoleSchema>>;
 
 const allPermissionsList = [
     'view_dashboard',
+    'view_reports',
     'view_students',
     'manage_class_students',
     'manage_classes',
@@ -47,6 +48,7 @@ interface PermissionItem {
 
 const permissionHierarchy: PermissionItem[] = [
     { id: 'dashboard', labelKey: 'nav.dashboard', permission: 'view_dashboard' },
+    { id: 'reports', labelKey: 'nav.reports', permission: 'view_reports' },
     { id: 'students', labelKey: 'nav.students', permission: 'view_students' },
     { id: 'new_student', labelKey: 'nav.newStudent', permission: 'manage_class_students' },
     { 

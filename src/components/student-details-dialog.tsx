@@ -57,7 +57,7 @@ export function StudentDetailsDialog({ student, open, onOpenChange }: StudentDet
               onClick={() => setIsIdCardOpen(true)}
             >
               <CreditCard className="h-4 w-4 mr-2" />
-              ID Card
+              {t('idCard.button')}
             </Button>
           </DialogHeader>
         <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto pr-4">

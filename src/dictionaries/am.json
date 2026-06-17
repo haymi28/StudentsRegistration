@@ -2,6 +2,7 @@
 {
     "nav": {
         "dashboard": "ዳሽቦርድ",
+        "reports": "ሪፖርቶች",
         "students": "ተማሪዎች",
         "newStudent": "አዲስ ተማሪ",
         "import": "አስመጣ",
@@ -39,6 +40,80 @@
             "title": "እንኳን ወደ የተማሪ አስተዳደር ስርዓት በደህና መጡ",
             "churchName": "የደብረ ገሊላ ዐማኑኤል ካቴድራል ሰ/ት/ቤት",
             "systemName": "የተማሪዎች መመዝገቢያና መቆጣጠሪያ ዘዴ"
+        }
+    },
+    "reports": {
+        "title": "ሪፖርቶች",
+        "description": "ከቀጥታ የምዝገባ መረጃ የተማሪ ትንታኔ እና የምዝገባ ሪፖርት።",
+        "filters": {
+            "title": "ማጣሪያዎች",
+            "description": "በምዝገባ ቀን፣ ክፍል፣ ጾታ ወይም የዕድሜ ቡድን ሪፖርቱን ያጥሩ።",
+            "startDate": "መጀመሪያ ቀን",
+            "endDate": "መጨረሻ ቀን",
+            "class": "ክፍል",
+            "gender": "ጾታ",
+            "ageGroup": "የዕድሜ ቡድን",
+            "allClasses": "ሁሉም ክፍሎች",
+            "allGenders": "ሁሉም ጾታዎች",
+            "allAgeGroups": "ሁሉም የዕድሜ ቡድኖች",
+            "apply": "ማጣሪያ ተግብር",
+            "reset": "እንደገና አስጀምር"
+        },
+        "cards": {
+            "totalStudents": "ጠቅላላ ተማሪዎች",
+            "activeStudents": "ንቁ ተማሪዎች",
+            "inactiveStudents": "ንቁ ያልሆኑ ተማሪዎች",
+            "topClass": "ከፍተኛ ክፍል",
+            "activeHint": "ለክፍል የተመደቡ",
+            "inactiveHint": "ለክፍል አልተመደቡም"
+        },
+        "charts": {
+            "byClass": "ተማሪዎች በክፍል",
+            "byGender": "ተማሪዎች በጾታ",
+            "byAgeGroup": "ተማሪዎች በዕድሜ ቡድን",
+            "registrationsByMonth": "አዲስ ምዝገባዎች በወር"
+        },
+        "tables": {
+            "byClass": "ተማሪዎች በክፍል",
+            "byGender": "ተማሪዎች በጾታ",
+            "byAgeGroup": "ተማሪዎች በዕድሜ ቡድን",
+            "byEducation": "ተማሪዎች በትምህርት ደረጃ",
+            "registrationsByMonth": "ምዝገባዎች በወር",
+            "joiningByMonth": "የመግቢያ እንቅስቃሴ በጊዜ",
+            "topClasses": "ከፍተኛ ክፍሎች በምዝገባ",
+            "name": "ስም",
+            "count": "ብዛት",
+            "educationLevel": "የትምህርት ደረጃ",
+            "joiningPeriod": "የመግቢያ ጊዜ",
+            "newJoiners": "አዲስ ተቀላቂዎች",
+            "registeredOn": "የተመዘገበበት",
+            "studentList": "የተጣራ የተማሪ ዝርዝር",
+            "studentListDescription": "ከአሁኑ ማጣሪያዎች ጋር የሚዛመዱ {count} ተማሪዎች ይታያሉ።",
+            "truncated": "ከ {count} ተማሪዎች ውስጥ የመጀመሪያ 100 ይታያሉ። ሙሉ ዝርዝር ለመውሰድ ወደ ውጭ ላክ ይጠቀሙ።"
+        },
+        "ageGroups": {
+            "0-6": "ዕድሜ 0–6",
+            "7-12": "ዕድሜ 7–12",
+            "13-17": "ዕድሜ 13–17",
+            "18-24": "ዕድሜ 18–24",
+            "25+": "ዕድሜ 25+",
+            "unknown": "ያልታወቀ ዕድሜ"
+        },
+        "attendance": {
+            "title": "የምዝገባ እና የክትትል አጠቃላይ እይታ",
+            "description": "የምዝገባ ሁኔታ ከክፍል መመደብ እና ከመግቢያ ቀን ይወጣል። ዕለታዊ የክትትል መዝገቦች በስርዓቱ ውስጥ ገና አልተመዘገቡም።",
+            "enrolled": "በክፍል የተመዘገቡ",
+            "unassigned": "ክፍል ያልተመደቡ"
+        },
+        "export": {
+            "excel": "ኤክሴል ላክ",
+            "pdf": "PDF ላክ",
+            "summary": "ማጠቃለያ",
+            "studentsSheet": "ተማሪዎች",
+            "generatedBy": "የተዘጋጀው በ"
+        },
+        "errors": {
+            "loadFailed": "የሪፖርት መረጃ መጫን አልተሳካም። እባክዎ እንደገና ይሞክሩ።"
         }
     },
     "login": {
@@ -476,6 +551,10 @@
             "title": "ዳሽቦርድ ይመልከቱ",
             "description": "ዳሽቦርድን ለመድረስ እና ስታቲስቲክስን ለማየት"
         },
+        "view_reports": {
+            "title": "ሪፖርቶች ይመልከቱ",
+            "description": "የተማሪ ትንታኔ እና የምዝገባ ሪፖርቶችን ለመድረስ"
+        },
         "import_students_text": {
             "title": "የጽሑፍ መረጃ አስመጣ",
             "description": "የተማሪ መዝገቦችን ከኤክሴል ፋይሎች በብዛት ማስመጣት"
@@ -619,6 +698,14 @@
         "noEmergencyContact": "የአደጋ ተጠሪ የለም",
         "failedPrint": "መታወቂያውን ለማተም አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
         "elementsNotFound": "የካርድ ክፍሎች አልተገኙም። እባክዎ ድምጽ ይውሰጡ እና እንደገና ይሞክሩ።",
-        "failedPDF": "PDF መዘጋጀት አልተሳካም። እባክዎ እንደገና ይሞክሩ ወይም 'አትምርጥ' ቁልፍን ይጠቀሙ።"
+        "failedPDF": "PDF መዘጋጀት አልተሳካም። እባክዎ እንደገና ይሞክሩ ወይም 'አትምርጥ' ቁልፍን ይጠቀሙ።",
+        "button": "መታወቂያ ካርድ",
+        "bulkButton": "መታወቂያ ካርዶች ({count})",
+        "bulkTitle": "የጅምላ መታወቂያ ካርድ ማመንጨት",
+        "bulkDescription": "ለተመረጡ {count} ተማሪዎች ከተማሪ ዝርዝር ገጽ ጋር ተመሳሳይ ቅርጸት በመጠቀም መታወቂያ ካርዶችን ይፍጠሩ።",
+        "bulkPrint": "ሁሉንም አትም",
+        "bulkDownload": "ሁሉንም አውርድ (PDF)",
+        "bulkGenerating": "መታወቂያ ካርዶች እየተዘጋጁ ናቸው...",
+        "bulkFailedPDF": "የጅምላ መታወቂያ ካርዶችን ማመንጨት አልተሳካም። እባክዎ እንደገና ይሞክሩ።"
     }
 }

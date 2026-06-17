@@ -3,7 +3,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, User, UserPlus, Users, Upload, Download, Settings, LayoutGrid, FileText, Image as ImageIcon } from 'lucide-react';
+import { LogOut, User, UserPlus, Users, Settings, LayoutGrid, FileText, Image as ImageIcon, BarChart3 } from 'lucide-react';
 import { Logo } from './logo';
 import {
   Sidebar,
@@ -56,6 +56,7 @@ export function AppSidebar() {
 
   const mainLinks = [
     { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutGrid, permission: 'view_dashboard' },
+    { href: '/reports', label: t('nav.reports'), icon: BarChart3, permission: 'view_reports' },
     { href: '/students', label: t('nav.students'), icon: Users, permission: 'view_students' },
     { href: '/register', label: t('nav.newStudent'), icon: UserPlus, permission: 'manage_class_students' },
   ];

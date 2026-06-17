@@ -11,6 +11,11 @@ import { updateUserSchema as serverUpdateUserSchema, createUserSchema as serverC
 import { getCreateClassSchema } from './validations/class';
 import { getServerSession } from './auth';
 import { throwAppError } from './errors';
+import {
+  computeReportAnalytics,
+  type ReportData,
+  type ReportFilters,
+} from './report-analytics';
 
 type StudentFormValues = z.infer<ReturnType<typeof getStudentRegistrationSchema>>;
 type ClassData = z.infer<ReturnType<typeof getCreateClassSchema>>;
@@ -682,6 +687,46 @@ export async function updateRole(id: string, data: RoleData) {
     if (!permissions.manage_roles) throwAppError('unauthorized', 'You are not authorized to update roles', { action: 'update_role' });
     await prisma.role.update({ where: { id }, data });
     revalidatePath('/roles');
+}
+
+/**
+ * Fetches aggregated report data with the same class-scoping rules as student list.
+ */
+export async function getReportData(filters: ReportFilters = {}): Promise<ReportData> {
+  const { isSuperAdmin, assignedClassIds, permissions } = await getAuthorizedContext();
+  if (!isSuperAdmin && !permissions.view_reports) {
+    throwAppError('unauthorized', 'You are not authorized to view reports.', { action: 'view_reports' });
+  }
+
+  const whereClause = buildStudentListWhere(
+    isSuperAdmin,
+    assignedClassIds,
+    filters.classId
+  ) as Prisma.StudentWhereInput;
+
+  if (filters.gender && filters.gender !== 'all') {
+    whereClause.gender = filters.gender;
+  }
+
+  if (filters.startDate || filters.endDate) {
+    whereClause.createdAt = {};
+    if (filters.startDate) {
+      whereClause.createdAt.gte = new Date(filters.startDate);
+    }
+    if (filters.endDate) {
+      const end = new Date(filters.endDate);
+      end.setHours(23, 59, 59, 999);
+      whereClause.createdAt.lte = end;
+    }
+  }
+
+  const students = await prisma.student.findMany({
+    where: whereClause,
+    include: { class: true },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return computeReportAnalytics(students, filters.ageGroup);
 }
 
 export async function deleteRole(id: string) {

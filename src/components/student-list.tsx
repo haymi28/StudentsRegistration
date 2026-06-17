@@ -28,10 +28,11 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRightLeft, Search, Eye, Edit, Trash2, MoreHorizontal, Loader2, ChevronLeft, ChevronRight, CreditCard } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StudentDetailsDialog } from './student-details-dialog';
 import { TransferStudentsDialog } from './transfer-students-dialog';
+import { BulkStudentIDCardDialog } from './bulk-student-id-card-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { deleteStudent, getClasses, deleteStudents } from '@/lib/data';
 import { Student, Class } from '@prisma/client';
@@ -76,6 +77,7 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(new Set());
   const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isBulkIdCardDialogOpen, setIsBulkIdCardDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [allClasses, setAllClasses] = useState<Class[]>(([]));
   const [selectedClass, setSelectedClass] = useState('all');
@@ -313,6 +315,11 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
   const canTransfer = isSuperAdmin || permissions.transfer_students;
   const canDelete = isSuperAdmin;
 
+  const selectedStudents = useMemo(
+    () => students.filter((s) => selectedRowKeys.has(s.id)),
+    [students, selectedRowKeys]
+  );
+
 
   return (
     <Card className="w-full">
@@ -395,6 +402,16 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
               />
             </div>
             <div className="flex items-center gap-2 self-start md:self-center ml-auto">
+                {selectedRowKeys.size > 0 && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => setIsBulkIdCardDialogOpen(true)}
+                    className="shrink-0"
+                  >
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    {t('idCard.bulkButton', { count: selectedRowKeys.size })}
+                  </Button>
+                )}
                 {selectedRowKeys.size > 0 && canTransfer && (
                   <Button onClick={() => setIsTransferDialogOpen(true)} className="shrink-0">
                     <ArrowRightLeft className="mr-2 h-4 w-4" />
@@ -409,6 +426,11 @@ export function StudentList({ initialStudents, session }: StudentListProps) {
                 )}
             </div>
           </div>
+          <BulkStudentIDCardDialog
+            students={selectedStudents}
+            open={isBulkIdCardDialogOpen}
+            onOpenChange={setIsBulkIdCardDialogOpen}
+          />
           <TransferStudentsDialog
             open={isTransferDialogOpen}
             onOpenChange={setIsTransferDialogOpen}
